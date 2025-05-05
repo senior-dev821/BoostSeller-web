@@ -41,7 +41,7 @@ export default function ResetPassword() {
                 Confirm Password <span className="text-error-500">*</span>
               </Label>
               <Input
-                type="password"
+                type="confirmPassword"
                 placeholder="Confirm your new password"
                 onChange={(e) => setConfirmPassword(e.target.value)}
               />

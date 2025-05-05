@@ -9,7 +9,6 @@ export async function POST(req: Request) {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return new Response(JSON.stringify({ error: true, message: 'User already exists' }), {
-        
       });
     }
 
@@ -32,8 +31,7 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ error: false,  message: 'User registered Successfully!', user }), {
       status: 201,
     });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: true, message: 'Server not found. Please try again.' }), {
-    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: true, message: 'Server not found. Please try again.' }));
   }
 }
