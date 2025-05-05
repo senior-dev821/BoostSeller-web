@@ -13,9 +13,9 @@ import {
   ListIcon,
   PageIcon,
   PieChartIcon,
-  PlugInIcon,
+  // PlugInIcon,
   TableIcon,
-  UserCircleIcon,
+  // UserCircleIcon,
 } from "../icons/index";
 // import SidebarWidget from "./SidebarWidget";
 
