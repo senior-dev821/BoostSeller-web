@@ -5,24 +5,24 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  BoxCubeIcon,
+  // BoxCubeIcon,
   // CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
+  // ListIcon,
   PageIcon,
-  PieChartIcon,
+  // PieChartIcon,
   PlugInIcon,
-	PaperPlaneIcon,
-	BoltIcon,
+	// PaperPlaneIcon,
+	// BoltIcon,
 	GroupIcon,
-  TableIcon,
+  // TableIcon,
   UserCircleIcon,
 	SettingsIcon,
 	ShootingStarIcon,
 } from "../icons/index";
-// import SidebarWidget from "./SidebarWidget";
+
 
 type NavItem = {
   name: string;
@@ -79,7 +79,7 @@ const superItems: NavItem[] = [
 	
   {
     icon: <PlugInIcon />,
-    name: "Authentication",
+    name: "Organization",
     subItems: [
       { name: "Sign In", path: "/login", super: true },
       { name: "Sign Up", path: "/register", super: false },

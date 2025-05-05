@@ -7,7 +7,7 @@ import Link from "next/link";
 
 export default function ResetPassword() {
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  // const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,9 +41,9 @@ export default function ResetPassword() {
                 Confirm Password <span className="text-error-500">*</span>
               </Label>
               <Input
-                type="password"
+                type="confirmPassword"
                 placeholder="Confirm your new password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                // onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
             <div>

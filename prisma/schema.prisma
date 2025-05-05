@@ -120,3 +120,13 @@ model Setting {
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 }
+
+model OTP {
+  id        String   @id @default(cuid())
+  email     String?
+  phone     String?
+  code      String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
