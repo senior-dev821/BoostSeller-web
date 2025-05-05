@@ -6,16 +6,21 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
   BoxCubeIcon,
-  CalenderIcon,
+  // CalenderIcon,
   ChevronDownIcon,
   GridIcon,
   HorizontaLDots,
   ListIcon,
   PageIcon,
   PieChartIcon,
-  // PlugInIcon,
+  PlugInIcon,
+	PaperPlaneIcon,
+	BoltIcon,
+	GroupIcon,
   TableIcon,
-  // UserCircleIcon,
+  UserCircleIcon,
+	SettingsIcon,
+	ShootingStarIcon,
 } from "../icons/index";
 // import SidebarWidget from "./SidebarWidget";
 
@@ -23,75 +28,63 @@ type NavItem = {
   name: string;
   icon: React.ReactNode;
   path?: string;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
+  subItems?: { name: string; path: string; super?: boolean; new?: boolean }[];
+	super?: boolean;
 };
 
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-    subItems: [{ name: "Ecommerce", path: "/", pro: false }],
+		path: "/",
   },
   {
-    icon: <CalenderIcon />,
-    name: "Calendar",
-    path: "/calendar",
+    icon: <UserCircleIcon />,
+    name: "Users",
+    subItems: [{ name: "Hostess", path: "/basic-tables", super: false },
+								{ name: "Performer", path: "/", super: false }],
   },
-  // {
-  //   icon: <UserCircleIcon />,
-  //   name: "User Profile",
-  //   path: "/profile",
-  // },
-
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [{ name: "Form Elements", path: "/form-elements", pro: false }],
+	{
+    icon: <GroupIcon />,
+    name: "Leads",
+     path: "/basic-tables",
   },
   {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [{ name: "Basic Tables", path: "/basic-tables", pro: false }],
+    name: "Groups",
+    icon: <ShootingStarIcon />,
+    path: "/form-elements",
   },
   {
-    name: "Pages",
+    name: "Sales Stages",
     icon: <PageIcon />,
+    path: "/basic-tables",
+		super: true,
+  },
+	{
+    icon: <SettingsIcon />,
+    name: "Settings",
     subItems: [
-      { name: "Blank Page", path: "/blank", pro: false },
-      { name: "404 Error", path: "/error-404", pro: false },
+      { name: "Alerts", path: "/alerts", super: false },
+      { name: "Avatar", path: "/avatars", super: false },
+      { name: "Badge", path: "/badge", super: false },
+      { name: "Buttons", path: "/buttons", super: false },
+      { name: "Images", path: "/images", super: false },
+      { name: "Videos", path: "/videos", super: false },
     ],
   },
+	
 ];
 
-const othersItems: NavItem[] = [
+const superItems: NavItem[] = [
+	
   {
-    icon: <PieChartIcon />,
-    name: "Charts",
+    icon: <PlugInIcon />,
+    name: "Authentication",
     subItems: [
-      { name: "Line Chart", path: "/line-chart", pro: false },
-      { name: "Bar Chart", path: "/bar-chart", pro: false },
+      { name: "Sign In", path: "/login", super: true },
+      { name: "Sign Up", path: "/register", super: false },
     ],
   },
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      { name: "Alerts", path: "/alerts", pro: false },
-      { name: "Avatar", path: "/avatars", pro: false },
-      { name: "Badge", path: "/badge", pro: false },
-      { name: "Buttons", path: "/buttons", pro: false },
-      { name: "Images", path: "/images", pro: false },
-      { name: "Videos", path: "/videos", pro: false },
-    ],
-  },
-  // {
-  //   icon: <PlugInIcon />,
-  //   name: "Authentication",
-  //   subItems: [
-  //     { name: "Sign In", path: "/signin", pro: false },
-  //     { name: "Sign Up", path: "/signup", pro: false },
-  //   ],
-  // },
 ];
 
 const AppSidebar: React.FC = () => {
@@ -128,7 +121,17 @@ const AppSidebar: React.FC = () => {
                 {nav.icon}
               </span>
               {(isExpanded || isHovered || isMobileOpen) && (
-                <span className={`menu-item-text`}>{nav.name}</span>
+                <span className={`menu-item-text`} style={{ display: 'flex', alignItems: 'center' }}>{nav.name}
+								{nav.subItems.some(subItem => subItem.super) && (
+									<span className={` ${
+										nav.subItems
+											? "menu-dropdown-badge-active"
+											: "menu-dropdown-badge-inactive"
+									} menu-dropdown-badge`} style={{ marginLeft: '8px' }}>
+										super
+									</span>
+								)}
+								</span>
               )}
               {(isExpanded || isHovered || isMobileOpen) && (
                 <ChevronDownIcon
@@ -159,7 +162,20 @@ const AppSidebar: React.FC = () => {
                   {nav.icon}
                 </span>
                 {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className={`menu-item-text`}>{nav.name}</span>
+                  <span className={`menu-item-text`} style={{ display: 'flex', alignItems: 'center' }}>{nav.name}
+										{nav.super && (
+											<span
+												className={` ${
+													isActive(nav.path)
+														? "menu-dropdown-badge-active"
+														: "menu-dropdown-badge-inactive"
+												} menu-dropdown-badge`}
+												style={{ marginLeft: '12px' }}
+											>
+												super
+											</span>
+										)}
+										</span>
                 )}
               </Link>
             )
@@ -201,7 +217,7 @@ const AppSidebar: React.FC = () => {
                             new
                           </span>
                         )}
-                        {subItem.pro && (
+                        {subItem.super && (
                           <span
                             className={`ml-auto ${
                               isActive(subItem.path)
@@ -209,7 +225,7 @@ const AppSidebar: React.FC = () => {
                                 : "menu-dropdown-badge-inactive"
                             } menu-dropdown-badge `}
                           >
-                            pro
+                            super
                           </span>
                         )}
                       </span>
@@ -240,7 +256,7 @@ const AppSidebar: React.FC = () => {
     // Check if the current path matches any submenu item
     let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : othersItems;
+      const items = menuType === "main" ? navItems : superItems;
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
@@ -313,7 +329,7 @@ const AppSidebar: React.FC = () => {
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/Logo1svg"
+                src="/images/logo/Logo1.svg"
                 alt="Logo"
                 width={64}
                 height={64}
@@ -348,7 +364,7 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Menu"
+                  "Main"
                 ) : (
                   <HorizontaLDots />
                 )}
@@ -365,16 +381,15 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Others"
+                  "Super"
                 ) : (
                   <HorizontaLDots />
                 )}
               </h2>
-              {renderMenuItems(othersItems, "others")}
+              {renderMenuItems(superItems, "others")}
             </div>
           </div>
         </nav>
-        {/* {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null} */}
       </div>
     </aside>
   );
