@@ -32,6 +32,6 @@ export async function POST(req: Request) {
       status: 201,
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: true, message: 'Server not found. Please try again.' }));
+    return new Response(JSON.stringify({ error: true, message: err }));
   }
 }
