@@ -42,7 +42,7 @@ export default function UserMetaCard() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
+            {/* <div className="flex items-center order-2 gap-2 grow xl:order-3 xl:justify-end">
               <a        
         target="_blank"
         rel="noreferrer" href='https://www.facebook.com/PimjoHQ' className="flex h-11 w-11 items-center justify-center gap-2 rounded-full border border-gray-300 bg-white text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200">
@@ -111,7 +111,7 @@ export default function UserMetaCard() {
                   />
                 </svg>
               </a>
-            </div>
+            </div> */}
           </div>
           <button
             onClick={openModal}
@@ -148,42 +148,42 @@ export default function UserMetaCard() {
           </div>
           <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div>
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
+              {/* <div> */}
+                {/* <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Social Links
-                </h5>
+                </h5> */}
 
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
+                {/* <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2"> */}
+                  {/* <div>
                     <Label>Facebook</Label>
                     <Input
                       type="text"
                       defaultValue="https://www.facebook.com/PimjoHQ"
                     />
-                  </div>
+                  </div> */}
 
-                  <div>
+                  {/* <div>
                     <Label>X.com</Label>
                     <Input type="text" defaultValue="https://x.com/PimjoHQ" />
-                  </div>
+                  </div> */}
 
-                  <div>
+                  {/* <div>
                     <Label>Linkedin</Label>
                     <Input
                       type="text"
                       defaultValue="https://www.linkedin.com/company/pimjo"
                     />
-                  </div>
+                  </div> */}
 
-                  <div>
+                  {/* <div>
                     <Label>Instagram</Label>
                     <Input
                       type="text"
                       defaultValue="https://instagram.com/PimjoHQ"
                     />
-                  </div>
-                </div>
-              </div>
+                  </div> */}
+                {/* </div>
+              </div> */}
               <div className="mt-7">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Personal Information
@@ -210,10 +210,10 @@ export default function UserMetaCard() {
                     <Input type="text" defaultValue="+09 363 398 46" />
                   </div>
 
-                  <div className="col-span-2">
+                  {/* <div className="col-span-2">
                     <Label>Bio</Label>
                     <Input type="text" defaultValue="Team Manager" />
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

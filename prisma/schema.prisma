@@ -59,8 +59,7 @@ model Lead {
   assignedAt    DateTime? @map("assigned_at")
   acceptedBy    Int?      @map("accepted_by")
   acceptedAt    DateTime? @map("accepted_at")
-  stage         Int
-  currentValue  Json?   @map("current_value") @db.JsonB
+  stageId       Int  			@map("stage_id")
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @default(now()) @updatedAt @map("updated_at")
 }
@@ -70,6 +69,15 @@ model Stage {
   name           String   @db.VarChar(100)
   sequence       Int
   requiredFields Json?  @map("required_fields") @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model lead_stage_mapping {
+  id           Int       @id @default(autoincrement())
+  leadId       Int       @map("lead_id")
+  stageId      Int       @map("stage_id")
+  currentValue Json?	   @map("current_value") @db.JsonB
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
 }
