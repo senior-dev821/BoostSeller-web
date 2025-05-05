@@ -22,7 +22,7 @@ import {
 	SettingsIcon,
 	ShootingStarIcon,
 } from "../icons/index";
-// import SidebarWidget from "./SidebarWidget";
+
 
 type NavItem = {
   name: string;
@@ -79,7 +79,7 @@ const superItems: NavItem[] = [
 	
   {
     icon: <PlugInIcon />,
-    name: "Authentication",
+    name: "Organization",
     subItems: [
       { name: "Sign In", path: "/login", super: true },
       { name: "Sign Up", path: "/register", super: false },
