@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       },
     });
 
-    return new Response(JSON.stringify({ error: false,  message: 'User registered Successfully!', user }), {
+    return new Response(JSON.stringify({ error: false,  message: 'User Registered Successfully!', user }), {
       status: 201,
     });
   } catch (err) {

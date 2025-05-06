@@ -121,7 +121,7 @@ model Setting {
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
 }
 
-model OTP {
+model Otp {
   id        String   @id @default(cuid())
   email     String?
   phone     String?
