@@ -1,4 +1,4 @@
-import prisma from '@/lib/prisma';
+import { prisma} from '@/lib/prisma';
 import bcrypt from 'bcrypt';
 
 export async function POST(req: Request) {
@@ -28,10 +28,11 @@ export async function POST(req: Request) {
       },
     });
 
-    return new Response(JSON.stringify({ error: false,  message: 'User Registered Successfully!', user }), {
+    return new Response(JSON.stringify({ error: false,  message: 'Register Successful!', user }), {
       status: 201,
     });
   } catch (err) {
-    return new Response(JSON.stringify({ error: true, message: err }));
+    // return new Response(JSON.stringify({ error: true, message: err }));
+    console.log(err);
   }
 }
