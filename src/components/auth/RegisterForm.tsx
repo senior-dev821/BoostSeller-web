@@ -76,7 +76,7 @@ export default function SignUpForm() {
                       id="name"
                       name="name"
                       placeholder="Enter your name"
-											value={formData.name}
+											// value={formData.name}
                     	onChange={handleChange}
                     />
                   
@@ -91,7 +91,7 @@ export default function SignUpForm() {
                     id="email"
                     name="email"
                     placeholder="Enter your email"
-										value={formData.email}
+										// value={formData.email}
 										onChange={handleChange}
                   />
                 </div>
@@ -117,7 +117,7 @@ export default function SignUpForm() {
                       placeholder="Enter your password"
                       type={showPassword ? "text" : "password"}
 											name="password"
-											value={formData.password}
+											// value={formData.password}
 											onChange={handleChange}
                     />
                     <span
