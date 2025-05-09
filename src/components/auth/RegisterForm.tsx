@@ -32,7 +32,7 @@ export default function SignUpForm() {
     setFormData({ ...formData, [name]: value });
   };
 
-	const handleSubmit = async (e: React.FormEvent<HTMLInputElement>) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 		
 		if (!formData.email || !formData.name || !formData.phoneNumber || !formData.password || !(e.target as HTMLFormElement).confirmpassword.value) {
