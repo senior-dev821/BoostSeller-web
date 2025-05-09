@@ -4,15 +4,15 @@ import ComponentCard from "../../common/ComponentCard";
 import Label from "../Label";
 import Input from "../input/InputField";
 import { EnvelopeIcon } from "../../../icons";
-import PhoneInput from "../group-input/PhoneInput";
+// import PhoneInput from "../group-input/PhoneInput";
 
 export default function InputGroup() {
-  const countries = [
-    { code: "US", label: "+1" },
-    { code: "GB", label: "+44" },
-    { code: "CA", label: "+1" },
-    { code: "AU", label: "+61" },
-  ];
+  // const countries = [
+  //   { code: "US", label: "+1" },
+  //   { code: "GB", label: "+44" },
+  //   { code: "CA", label: "+1" },
+  //   { code: "AU", label: "+61" },
+  // ];
   const handlePhoneNumberChange = (phoneNumber: string) => {
     console.log("Updated phone number:", phoneNumber);
   };
@@ -34,21 +34,11 @@ export default function InputGroup() {
         </div>
         <div>
           <Label>Phone</Label>
-          <PhoneInput
-            selectPosition="start"
-            countries={countries}
-            placeholder="+1 (555) 000-0000"
-            onChange={handlePhoneNumberChange}
-          />
+          
         </div>{" "}
         <div>
           <Label>Phone</Label>
-          <PhoneInput
-            selectPosition="end"
-            countries={countries}
-            placeholder="+1 (555) 000-0000"
-            onChange={handlePhoneNumberChange}
-          />
+          
         </div>
       </div>
     </ComponentCard>
