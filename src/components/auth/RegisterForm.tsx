@@ -20,7 +20,7 @@ export default function SignUpForm() {
 	const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
-  const [alertVariant, setAlertVariant] = useState('error'); // Default to error
+  const [alertVariant, setAlertVariant] = useState<'error' | 'success' | 'warning' | 'info'>('error'); // Default to error
 	const router = useRouter(); // Initialize useRouter
 
 	const handlePhoneNumberChange = (phoneNumber: string) => {
@@ -32,17 +32,17 @@ export default function SignUpForm() {
     setFormData({ ...formData, [name]: value });
   };
 
-	const handleSubmit = async (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent<HTMLInputElement>) => {
     e.preventDefault();
-
-		if (!formData.email || !formData.name || !formData.phoneNumber || !formData.password || !e.target.confirmpassword.value) {
+		
+		if (!formData.email || !formData.name || !formData.phoneNumber || !formData.password || !(e.target as HTMLFormElement).confirmpassword.value) {
       setAlertTitle('Input Error');
       setAlertMessage('Please fill in all fields.');
       setAlertVariant('error');
       setAlertVisible(true);
       return; // Stop further execution
     }
-		if (formData.password != e.target.confirmpassword.value) {
+		if (formData.password !=(e.target as HTMLFormElement).confirmpassword.value) {
       setAlertTitle('Input Error');
       setAlertMessage('Please confirm password again.');
       setAlertVariant('error');

@@ -16,14 +16,14 @@ export default function SignInForm() {
 	const [alertVisible, setAlertVisible] = useState(false);
   const [alertTitle, setAlertTitle] = useState('');
   const [alertMessage, setAlertMessage] = useState('');
-  const [alertVariant, setAlertVariant] = useState('error'); // Default to error
+	const [alertVariant, setAlertVariant] = useState<'error' | 'success' | 'warning' | 'info'>('error');
 	const router = useRouter(); // Initialize useRouter
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // Prevent default form submission
 
-    const email = e.currentTarget.email.value; // Get email from input
-    const password = e.currentTarget.password.value; // Get password from input
+    const email = (e.currentTarget as HTMLFormElement).email.value; // Get email from input
+  	const password = (e.currentTarget as HTMLFormElement).password.value; // Get password from input
 
 		if (!email && !password) {
       setAlertTitle('Input Error');

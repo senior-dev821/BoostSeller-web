@@ -25,6 +25,7 @@
     "autoprefixer": "^10.4.20",
     "bcrypt": "^5.1.1",
     "crypto": "^1.0.1",
+    "firebase": "^11.7.1",
     "flatpickr": "^4.6.13",
     "jsonwebtoken": "^9.0.2",
     "next": "15.2.3",
