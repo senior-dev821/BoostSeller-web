@@ -1,14 +1,16 @@
-import { prisma } from '@/lib/prisma';
+// import { prisma } from '../../../lib/prisma';
 import bcrypt from 'bcrypt';
-
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 export async function POST(req: Request) {
+	
   try {
     const { name, email, phoneNumber, password, role } = await req.json();
 
     // Check for existing user
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      return new Response(JSON.stringify({ error: true, message: 'User already exists' }), {
+      return new Response(JSON.stringify({ error: true, message: 'User already exists.' }), {
       });
     }
 
@@ -18,9 +20,9 @@ export async function POST(req: Request) {
     // Create new user
     const user = await prisma.user.create({
       data: {
-        name,
-        email,
-        phoneNumber,
+        name: name,
+        email: email,
+        phoneNumber: phoneNumber,
         password: hashedPassword,
         role: role,
         isVerified: false,
@@ -28,11 +30,11 @@ export async function POST(req: Request) {
       },
     });
 
-    return new Response(JSON.stringify({ error: false,  message: 'Register Successful!', user }), {
+    return new Response(JSON.stringify({ error: false,  message: 'Registration Successful!', user }), {
       status: 201,
     });
   } catch (err) {
-    // return new Response(JSON.stringify({ error: true, message: err }));
-    console.log(err);
+		console.log("error -- ", err);
+    return new Response(JSON.stringify({ error: true, message: 'Registration to register. \n Please try again.' }));
   }
 }

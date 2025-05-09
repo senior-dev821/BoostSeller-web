@@ -36,7 +36,7 @@ const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
     name: "Dashboard",
-		path: "/",
+		path: "/dashboard",
   },
   {
     icon: <UserCircleIcon />,
@@ -309,9 +309,9 @@ const AppSidebar: React.FC = () => {
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 dark:border-gray-800 text-gray-900 h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200 
         ${
           isExpanded || isMobileOpen
-            ? "w-[290px]"
+            ? "w-[260px]"
             : isHovered
-            ? "w-[290px]"
+            ? "w-[260px]"
             : "w-[90px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
@@ -324,30 +324,30 @@ const AppSidebar: React.FC = () => {
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
-        <Link href="/">
+        <Link href="/dashboard">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/Logo1.svg"
+                src="/images/logo/logo_light.png"
                 alt="Logo"
-                width={64}
+                width={220}
                 height={64}
               />
               <Image
                 className="hidden dark:block"
-                src="/images/logo/Logo1.svg"
+                src="/images/logo/logo_dark.png"
                 alt="Logo"
-                width={64}
+                width={220}
                 height={64}
               />
             </>
           ) : (
             <Image
-              src="/images/logo/Logo1.svg"
+              src="/images/favicon.ico"
               alt="Logo"
-              width={32}
-              height={32}
+              width={48}
+              height={48}
             />
           )}
         </Link>

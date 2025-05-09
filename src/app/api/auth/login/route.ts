@@ -1,13 +1,15 @@
-import { prisma } from '@/lib/prisma';
+
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'BoostSellerSecret';
 
-export async function POST(req:Request) {
+export async function POST(req: Request) {
   try {
     const { email, password } = await req.json()
 
+		// console.log("email = ", email);
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       return new Response(JSON.stringify({error: true, message: "User not found" }), {});
@@ -15,7 +17,7 @@ export async function POST(req:Request) {
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return new Response(JSON.stringify({ error: true, message: "Invalid credentials" }), {});
+      return new Response(JSON.stringify({ error: true, message: "Password is Invalid. \n Please enter correct password." }), {});
     }
 
     const token = jwt.sign(
@@ -25,7 +27,7 @@ export async function POST(req:Request) {
     );
     return new Response(JSON.stringify({
       error: false,
-      message: "Login successful!",
+      message: "Logged in successfully!",
       token,
       user: {
         id: user.id,
@@ -38,6 +40,6 @@ export async function POST(req:Request) {
     });
   } catch (error) {
     console.error("Login error:", error);
-    return new Response(JSON.stringify({error: true, message: "Internal server error" }), {});
+    return new Response(JSON.stringify({error: true, message: "Failed to login \n Please try again." }), {});
   }
 }
