@@ -1,6 +1,6 @@
-import ComponentCard from "@/components/common/ComponentCard";
+// import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import Alert from "@/components/ui/alert/Alert";
+// import Alert from "@/components/ui/alert/Alert";
 import { Metadata } from "next";
 import React from "react";
 
@@ -16,7 +16,7 @@ export default function Alerts() {
     <div>
       <PageBreadcrumb pageTitle="Alerts" />
       <div className="space-y-5 sm:space-y-6">
-        <ComponentCard title="Success Alert">
+        {/* <ComponentCard title="Success Alert">
           <Alert
             variant="success"
             title="Success Message"
@@ -79,7 +79,7 @@ export default function Alerts() {
             message="Be cautious when performing this action."
             showLink={false}
           />
-        </ComponentCard>
+        </ComponentCard> */}
       </div>
     </div>
   );
