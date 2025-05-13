@@ -41,8 +41,8 @@ const navItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
     name: "Users",
-    subItems: [{ name: "Hostess", path: "/basic-tables", super: false },
-								{ name: "Performer", path: "/", super: false }],
+    subItems: [{ name: "Hostess", path: "/hostess", super: false },
+								{ name: "Performer", path: "/performer", super: false }],
   },
 	{
     icon: <GroupIcon />,

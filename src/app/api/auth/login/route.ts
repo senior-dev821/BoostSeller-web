@@ -34,6 +34,9 @@ export async function POST(req: Request) {
         name: user.name,
         email: user.email,
         role: user.role,
+				phone_number: user.phoneNumber,
+        is_verified: user.isVerified,
+        is_approved: user.isApproved,
       }
     }), {
       status: 200,

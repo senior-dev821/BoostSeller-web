@@ -80,7 +80,7 @@ export default function SignInForm() {
       console.error("Login error:", error);
       setAlertTitle('Error');
       setAlertMessage("An error occurred. Please try again.");
-      setAlertVariant('error');
+      setAlertVariant('error'); 
       setAlertVisible(true);
     }
   };

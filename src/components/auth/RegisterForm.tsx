@@ -76,7 +76,7 @@ export default function SignUpForm() {
         setAlertVisible(true);
         // Redirect to dashboard on success
         setTimeout(() => {
-          router.push("/");
+          router.push("/twostepverify");
         }, 1500); // Redirect after 800 mili seconds
       }
       console.log(data.message); // Handle success (e.g., redirect or show a success message)
