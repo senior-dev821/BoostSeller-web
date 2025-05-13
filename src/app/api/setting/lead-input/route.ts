@@ -6,13 +6,13 @@ export async function POST(req: Request) {
     const { sequence, label, type } = await req.json();
 
     // Check for existing user
-    const existingFieldSetting = await prisma.leadInputSetting.findUnique({ where: { label } });
+    const existingFieldSetting = await prisma.LeadInputSetting.findUnique({ where: { label } });
     if (existingFieldSetting) {
       return new Response(JSON.stringify({ error: true, message: 'label already exists.' }), {
       });
     }
 
-    const fieldSetting = await prisma.leadInputSetting.create({
+    const fieldSetting = await prisma.LeadInputSetting.create({
       data: {
         sequence,
         label,
@@ -24,13 +24,14 @@ export async function POST(req: Request) {
       status: 201,
     });
   } catch (err) {
+		console.error("fetching error:", err);
     return new Response(JSON.stringify({ error: true, message: 'Failed to Create field Setting. \n Please try again.' }));
   }
 }
 
 export async function GET() {
   try {
-    const fields = await prisma.leadInputSetting.findMany({
+    const fields = await prisma.LeadInputSetting.findMany({
         orderBy: {
             sequence: 'asc'
         },
