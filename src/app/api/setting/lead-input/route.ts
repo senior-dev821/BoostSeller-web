@@ -1,18 +1,19 @@
-
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
+
 export async function POST(req: Request) {
   try {
     const { sequence, label, type } = await req.json();
 
     // Check for existing user
-    const existingFieldSetting = await prisma.LeadInputSetting.findUnique({ where: { label } });
+    const existingFieldSetting = await prisma.leadInputSetting.findUnique({ where: { label } });
     if (existingFieldSetting) {
       return new Response(JSON.stringify({ error: true, message: 'label already exists.' }), {
+        status: 400,
       });
     }
 
-    const fieldSetting = await prisma.LeadInputSetting.create({
+    const fieldSetting = await prisma.leadInputSetting.create({
       data: {
         sequence,
         label,
@@ -20,18 +21,21 @@ export async function POST(req: Request) {
       },
     });
 
-    return new Response(JSON.stringify({ error: false,  message: 'Add lead additional feild Successful!', fieldSetting }), {
+    return new Response(JSON.stringify({ error: false, message: 'Add lead additional field Successful!', fieldSetting }), {
       status: 201,
     });
   } catch (err) {
-		console.error("fetching error:", err);
-    return new Response(JSON.stringify({ error: true, message: 'Failed to Create field Setting. \n Please try again.' }));
+    console.error("fetching error:", err);
+    return new Response(JSON.stringify({ error: true, message: 'Failed to Create field Setting. \n Please try again.' }), {
+      status: 500,
+    });
   }
 }
 
+
 export async function GET() {
   try {
-    const fields = await prisma.LeadInputSetting.findMany({
+    const fields = await prisma.leadInputSetting.findMany({
         orderBy: {
             sequence: 'asc'
         },
