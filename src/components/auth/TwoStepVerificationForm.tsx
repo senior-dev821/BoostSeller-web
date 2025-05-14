@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 export default function TwoStepVerification() {
   const [code, setCode] = useState("");
-  const [userData, setUserData] = useState<any>(null);
+  const [userData, setUserData] = useState("");
 
   const router = useRouter();
 
