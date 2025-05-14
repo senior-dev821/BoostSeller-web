@@ -4,15 +4,58 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function ResetPassword() {
+	const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [confirmPassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+	const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle reset password logic here
-    console.log("New password:", password);
+
+    if (password !== confirmPassword) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      // Step 1: Send OTP
+      const res = await fetch("/api/auth/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await res.json();
+
+      if (result.error) {
+        alert(result.message);
+        setLoading(false);
+        return;
+      }
+
+      // Step 2: Save data to sessionStorage
+      sessionStorage.setItem(
+        "pendingVerify",
+        JSON.stringify({
+          email,
+          password,
+          context: "reset",
+        })
+      );
+
+      // Step 3: Redirect to verify page
+      router.push("/twostepverify");
+    } catch (err) {
+      console.error("Reset password error:", err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

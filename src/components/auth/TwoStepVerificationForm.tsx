@@ -1,17 +1,94 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function TwoStepVerification() {
   const [code, setCode] = useState("");
+  const [userData, setUserData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const saved = sessionStorage.getItem("pendingVerify");
+    if (saved) {
+      setUserData(JSON.parse(saved));
+    } else {
+      router.push("/register");
+    }
+  }, [router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle two-step verification logic here
-    console.log("Verification code submitted:", code);
+    if (!userData) return;
+
+    setLoading(true);
+
+    try {
+      // 1. Verify OTP
+      const verifyRes = await fetch("/api/auth/verify-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: userData.email,
+          code,
+          context: userData.context,
+        }),
+      });
+
+      const verifyResult = await verifyRes.json();
+      if (verifyResult.error) {
+        alert(verifyResult.message);
+        setLoading(false);
+        return;
+      }
+
+      // 2. Continue based on context
+      if (userData.context === "register") {
+        const registerRes = await fetch("/api/auth/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(userData),
+        });
+
+        const registerResult = await registerRes.json();
+        if (registerResult.error) {
+          alert(registerResult.message);
+          setLoading(false);
+          return;
+        }
+      }
+
+      if (userData.context === "reset") {
+        const resetRes = await fetch("/api/auth/change-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userData.email,
+            password: userData.password,
+          }),
+        });
+
+        const resetResult = await resetRes.json();
+        if (resetResult.error) {
+          alert(resetResult.message);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // 3. Cleanup & redirect
+      sessionStorage.removeItem("pendingVerify");
+      router.push("/login");
+    } catch (err) {
+      console.error("Verification failed:", err);
+      alert("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

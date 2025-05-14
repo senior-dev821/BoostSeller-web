@@ -1,8 +1,6 @@
 import bcrypt from 'bcrypt';
 
 import { PrismaClient } from '@prisma/client';
-import { generateOtp } from '@/lib/generateOtp';
-import { sendOtpEmail } from '@/lib/sendOtpEmail';
 
 const prisma = new PrismaClient();
 
@@ -50,23 +48,7 @@ export async function POST(req: Request) {
 				} 
 			});
     }
-
-    // 5. Generate OTP
-    const otp = generateOtp(); // e.g., "482173"
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-
-    // 6. Save OTP in DB
-    await prisma.otp.create({
-      data: {
-        email,
-        code: otp,
-        expiresAt,
-      },
-    });
-
-    // 7. Send OTP email
-    await sendOtpEmail(email, otp);
-
+		    
     return new Response(
       JSON.stringify({
         error: false,

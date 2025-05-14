@@ -51,30 +51,35 @@ export default function SignUpForm() {
     }
 
     try {
-			console.log("form data : ", formData);
-      const response = await fetch('/api/auth/register', {
+			console.log("form data : ", formData.email);
+			const email= formData.email;
+      const response = await fetch('/api/auth/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({email}),
       });
 
       const data = await response.json();
 			if (data.error) {
         // Handle login failure (e.g., show an error message)
-        setAlertTitle('Registration Failed');
+        setAlertTitle(data.message);
         setAlertMessage(data.message);
         setAlertVariant('error');
         setAlertVisible(true);
       } else {
         // Store the token if needed (e.g., in localStorage or context)
         // localStorage.setItem('token', data.token);
-				setAlertTitle('Registration Successful');
-        setAlertMessage("Please wait until approved");
+				setAlertTitle(data.message);
+        setAlertMessage(data.message);
         setAlertVariant('success');
         setAlertVisible(true);
-        // Redirect to dashboard on success
+        // Redirect to verify page on success
+				sessionStorage.setItem(
+					'pendingVerify',
+					JSON.stringify({ ...formData, context: 'register' })
+				);
         setTimeout(() => {
           router.push("/twostepverify");
         }, 1500); // Redirect after 800 mili seconds
