@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 export default function TwoStepVerification() {
   const [code, setCode] = useState("");
   const [userData, setUserData] = useState<any>(null);
-  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function TwoStepVerification() {
     e.preventDefault();
     if (!userData) return;
 
-    setLoading(true);
+
 
     try {
       // 1. Verify OTP
@@ -42,7 +42,7 @@ export default function TwoStepVerification() {
       const verifyResult = await verifyRes.json();
       if (verifyResult.error) {
         alert(verifyResult.message);
-        setLoading(false);
+
         return;
       }
 
@@ -57,7 +57,7 @@ export default function TwoStepVerification() {
         const registerResult = await registerRes.json();
         if (registerResult.error) {
           alert(registerResult.message);
-          setLoading(false);
+
           return;
         }
       }
@@ -75,7 +75,7 @@ export default function TwoStepVerification() {
         const resetResult = await resetRes.json();
         if (resetResult.error) {
           alert(resetResult.message);
-          setLoading(false);
+
           return;
         }
       }
@@ -87,7 +87,7 @@ export default function TwoStepVerification() {
       console.error("Verification failed:", err);
       alert("Something went wrong. Please try again.");
     } finally {
-      setLoading(false);
+
     }
   };
 

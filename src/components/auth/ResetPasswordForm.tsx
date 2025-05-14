@@ -10,7 +10,7 @@ export default function ResetPassword() {
 	const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+
   const router = useRouter();
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -21,7 +21,6 @@ export default function ResetPassword() {
       return;
     }
 
-    setLoading(true);
     try {
       // Step 1: Send OTP
       const res = await fetch("/api/auth/send-otp", {
@@ -34,7 +33,6 @@ export default function ResetPassword() {
 
       if (result.error) {
         alert(result.message);
-        setLoading(false);
         return;
       }
 
@@ -54,7 +52,7 @@ export default function ResetPassword() {
       console.error("Reset password error:", err);
       alert("Something went wrong. Please try again.");
     } finally {
-      setLoading(false);
+
     }
   };
 
@@ -70,6 +68,16 @@ export default function ResetPassword() {
           </p>
           <form onSubmit={handleSubmit} className="space-y-6 mt-5">
             <div>
+						<Label>
+                Email <span className="text-error-500">*</span>
+              </Label>
+              <Input
+                type="email"
+                placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+						<div>
               <Label>
                 New Password <span className="text-error-500">*</span>
               </Label>
@@ -86,7 +94,7 @@ export default function ResetPassword() {
               <Input
                 type="confirmPassword"
                 placeholder="Confirm your new password"
-                // onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => setConfirmPassword(e.target.value)}
               />
             </div>
             <div>
