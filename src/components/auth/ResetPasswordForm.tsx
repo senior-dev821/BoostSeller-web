@@ -3,26 +3,34 @@ import React, { useState } from "react";
 import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
+import { EyeCloseIcon, EyeIcon } from "@/icons";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function ResetPassword() {
-	const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
+	const [showPassword, setShowPassword] = useState(false);
+	const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
   const router = useRouter();
 
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
 	const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
+    if (formData.password !== (e.target as HTMLFormElement).confirmpassword.value) {
       alert("Passwords do not match.");
       return;
     }
 
     try {
       // Step 1: Send OTP
+			const email= formData.email;
       const res = await fetch("/api/auth/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -40,8 +48,7 @@ export default function ResetPassword() {
       sessionStorage.setItem(
         "pendingVerify",
         JSON.stringify({
-          email,
-          password,
+          ...formData, 
           context: "reset",
         })
       );
@@ -69,33 +76,63 @@ export default function ResetPassword() {
           <form onSubmit={handleSubmit} className="space-y-6 mt-5">
             <div>
 						<Label>
-                Email <span className="text-error-500">*</span>
+                Email<span className="text-error-500">*</span>
               </Label>
               <Input
                 type="email"
+								id="email"
+                name="email"
                 placeholder="Enter your email"
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={handleChange}
               />
             </div>
 						<div>
               <Label>
                 New Password <span className="text-error-500">*</span>
               </Label>
-              <Input
-                type="password"
-                placeholder="Enter your new password"
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative">
+                    <Input
+                      placeholder="Enter your password"
+                      type={showPassword ? "text" : "password"}
+											name="password"
+											// value={formData.password}
+											onChange={handleChange}
+                    />
+                    <span
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                    >
+                      {showPassword ? (
+                        <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
+                      ) : (
+                        <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
+                      )}
+                    </span>
+                  </div>
             </div>
             <div>
               <Label>
                 Confirm Password <span className="text-error-500">*</span>
               </Label>
-              <Input
-                type="confirmPassword"
-                placeholder="Confirm your new password"
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
+              <div className="relative">
+                    <Input
+                      placeholder="Confirm your password"
+                      type={showPassword ? "text" : "password"}
+											name="confirmpassword"
+											// value={formData.password}
+											onChange={handleChange}
+                    />
+                    <span
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute z-30 -translate-y-1/2 cursor-pointer right-4 top-1/2"
+                    >
+                      {showPassword ? (
+                        <EyeIcon className="fill-gray-500 dark:fill-gray-400" />
+                      ) : (
+                        <EyeCloseIcon className="fill-gray-500 dark:fill-gray-400" />
+                      )}
+                    </span>
+                  </div>
             </div>
             <div>
               <Button className="w-full" size="sm">

@@ -8,7 +8,10 @@ import { useRouter } from "next/navigation";
 
 export default function TwoStepVerification() {
   const [code, setCode] = useState("");
-  const [userData, setUserData] = useState("");
+  const [formData, setUserData] = useState({
+		email: '',
+		context:'',
+	});
 
   const router = useRouter();
 
@@ -23,7 +26,7 @@ export default function TwoStepVerification() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!userData) return;
+    if (!formData) return;
 
 
 
@@ -33,9 +36,9 @@ export default function TwoStepVerification() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: userData.email,
+          email: formData.email,
           code,
-          context: userData.context,
+          context: formData.context,
         }),
       });
 
@@ -47,11 +50,11 @@ export default function TwoStepVerification() {
       }
 
       // 2. Continue based on context
-      if (userData.context === "register") {
+      if (formData.context === "register") {
         const registerRes = await fetch("/api/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(userData),
+          body: JSON.stringify(formData),
         });
 
         const registerResult = await registerRes.json();
@@ -62,14 +65,11 @@ export default function TwoStepVerification() {
         }
       }
 
-      if (userData.context === "reset") {
+      if (formData.context === "reset") {
         const resetRes = await fetch("/api/auth/change-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: userData.email,
-            password: userData.password,
-          }),
+          body: JSON.stringify(formData),
         });
 
         const resetResult = await resetRes.json();
