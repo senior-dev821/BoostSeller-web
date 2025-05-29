@@ -9,6 +9,8 @@ import {
 
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
+import Button from "../ui/button/Button";
+import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 
 interface Order {
   id: number;
@@ -17,12 +19,12 @@ interface Order {
     name: string;
     role: string;
   };
-  projectName: string;
-  team: {
-    images: string[];
-  };
+  phone: string;
+  email: string;
   status: string;
-  budget: string;
+  completed: string;
+	accepted: string;
+	total: string;
 }
 
 // Define the table data using the interface
@@ -34,16 +36,12 @@ const tableData: Order[] = [
       name: "Lindsey Curtis",
       role: "Web Designer",
     },
-    projectName: "Agency Website",
-    team: {
-      images: [
-        "/images/user/user-22.jpg",
-        "/images/user/user-23.jpg",
-        "/images/user/user-24.jpg",
-      ],
-    },
-    budget: "3.9K",
-    status: "Active",
+    phone: "+7 324 1235 5777",
+		email: "lind@gmail.com",
+    completed: "1.9K",
+		accepted: "1.9K",
+		total: "3.9K",
+    status: "Approved",
   },
   {
     id: 2,
@@ -52,11 +50,11 @@ const tableData: Order[] = [
       name: "Kaiya George",
       role: "Project Manager",
     },
-    projectName: "Technology",
-    team: {
-      images: ["/images/user/user-25.jpg", "/images/user/user-26.jpg"],
-    },
-    budget: "24.9K",
+    phone: "+7 324 1235 5777",
+		email: "lind@gmail.com",
+    completed: "24.9K",
+		accepted: "1.9K",
+		total: "3.9K",
     status: "Pending",
   },
   {
@@ -66,12 +64,12 @@ const tableData: Order[] = [
       name: "Zain Geidt",
       role: "Content Writing",
     },
-    projectName: "Blog Writing",
-    team: {
-      images: ["/images/user/user-27.jpg"],
-    },
-    budget: "12.7K",
-    status: "Active",
+    phone: "+7 324 1235 5777",
+		email: "lind@gmail.com",
+    completed: "12.7K",
+		accepted: "1.9K",
+		total: "3.9K",
+    status: "Approved",
   },
   {
     id: 4,
@@ -80,16 +78,12 @@ const tableData: Order[] = [
       name: "Abram Schleifer",
       role: "Digital Marketer",
     },
-    projectName: "Social Media",
-    team: {
-      images: [
-        "/images/user/user-28.jpg",
-        "/images/user/user-29.jpg",
-        "/images/user/user-30.jpg",
-      ],
-    },
-    budget: "2.8K",
-    status: "Cancel",
+    phone: "+7 324 1235 5777",
+		email: "lind@gmail.com",
+    completed: "2.8K",
+		accepted: "1.9K",
+		total: "3.9K",
+    status: "Approved",
   },
   {
     id: 5,
@@ -98,20 +92,19 @@ const tableData: Order[] = [
       name: "Carla George",
       role: "Front-end Developer",
     },
-    projectName: "Website",
-    team: {
-      images: [
-        "/images/user/user-31.jpg",
-        "/images/user/user-32.jpg",
-        "/images/user/user-33.jpg",
-      ],
-    },
-    budget: "4.5K",
-    status: "Active",
+    phone: "+7 324 1235 5777",
+		email: "lind@gmail.com",
+    completed: "4.5K",
+		accepted: "1.9K",
+		total: "3.9K",
+    status: "Pending",
   },
 ];
 
-export default function BasicTableOne() {
+const ITEMS_PER_PAGE = 10;
+
+export default function HostessTable() {
+	
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -124,19 +117,19 @@ export default function BasicTableOne() {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  User
+                  Name
                 </TableCell>
                 <TableCell
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Project Name
+                  Phone
                 </TableCell>
                 <TableCell
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Team
+                  Email
                 </TableCell>
                 <TableCell
                   isHeader
@@ -148,7 +141,10 @@ export default function BasicTableOne() {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
                 >
-                  Score
+                  Leads (Completed/Accepted/Tatal)
+                </TableCell>
+								<TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                  Actions
                 </TableCell>
               </TableRow>
             </TableHeader>
@@ -171,38 +167,20 @@ export default function BasicTableOne() {
                         <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
                           {order.user.name}
                         </span>
-                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                          {order.user.role}
-                        </span>
                       </div>
                     </div>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {order.projectName}
+                    {order.phone}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    <div className="flex -space-x-2">
-                      {order.team.images.map((teamImage, index) => (
-                        <div
-                          key={index}
-                          className="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
-                        >
-                          <Image
-                            width={24}
-                            height={24}
-                            src={teamImage}
-                            alt={`Team member ${index + 1}`}
-                            className="w-full"
-                          />
-                        </div>
-                      ))}
-                    </div>
+										{order.email}
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
                     <Badge
                       size="sm"
                       color={
-                        order.status === "Active"
+                        order.status === "Approved"
                           ? "success"
                           : order.status === "Pending"
                           ? "warning"
@@ -213,7 +191,12 @@ export default function BasicTableOne() {
                     </Badge>
                   </TableCell>
                   <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                    {order.budget}
+                    {order.completed}/ {order.accepted}/ {order.total}
+                  </TableCell>
+									<TableCell className="px-4 py-3 space-x-2 text-start">
+                    <Button size="sm" variant="outline"><PencilIcon className="fill-gray-500 dark:fill-gray-400" /></Button>
+                    <Button size="sm" variant="outline"><InfoIcon className="fill-gray-500 dark:fill-gray-400" /></Button>
+                    <Button size="sm" variant="outline"><TrashBinIcon className="fill-gray-500 dark:fill-gray-400" /></Button>
                   </TableCell>
                 </TableRow>
               ))}

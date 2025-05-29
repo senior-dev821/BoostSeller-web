@@ -50,26 +50,26 @@ const navItems: NavItem[] = [
      path: "/basic-tables",
   },
   {
-    name: "Groups",
+    name: "Interests",
     icon: <ShootingStarIcon />,
-    path: "/form-elements",
+    path: "/interests",
   },
   {
     name: "Sales Stages",
     icon: <PageIcon />,
-    path: "/basic-tables",
+    path: "/sales-stage",
 		super: true,
   },
 	{
     icon: <SettingsIcon />,
     name: "Settings",
     subItems: [
-      { name: "Alerts", path: "/alerts", super: false },
-      { name: "Avatar", path: "/avatars", super: false },
-      { name: "Badge", path: "/badge", super: false },
+      { name: "Lead Input", path: "/leadinputform", super: false },
+      { name: "Hostess Detail", path: "/hostessdetail", super: false },
+      { name: "Lead Escalation Time", path: "/leadescalation", super: false },
       { name: "Buttons", path: "/buttons", super: false },
       { name: "Images", path: "/images", super: false },
-      { name: "Videos", path: "/videos", super: false },
+      { name: "profile", path: "/profile", super: false },
     ],
   },
 	
