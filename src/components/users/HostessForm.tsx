@@ -101,7 +101,7 @@ const tableData: Order[] = [
   },
 ];
 
-const ITEMS_PER_PAGE = 10;
+// const ITEMS_PER_PAGE = 10;
 
 export default function HostessTable() {
 	

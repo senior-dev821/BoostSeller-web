@@ -1,9 +1,9 @@
 "use client";
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import Input from '@/components/form/input/InputField';
+// import Input from '@/components/form/input/InputField';
 import Button from '@/components/ui/button/Button';
-import Label from '@/components/form/Label';
+// import Label from '@/components/form/Label';
 import Image from 'next/image';
 
 interface Hostess {
