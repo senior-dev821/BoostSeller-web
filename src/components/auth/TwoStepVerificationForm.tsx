@@ -32,7 +32,7 @@ export default function TwoStepVerification() {
 
     try {
       // 1. Verify OTP
-      const verifyRes = await fetch("/api/auth/verify-otp", {
+      const verifyRes = await fetch("/api/admin/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

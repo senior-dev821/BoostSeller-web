@@ -53,7 +53,7 @@ export default function SignUpForm() {
     try {
 			console.log("form data : ", formData.email);
 			const email= formData.email;
-      const response = await fetch('/api/auth/send-otp', {
+      const response = await fetch('/api/admin/auth/send-otp', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
