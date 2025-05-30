@@ -63,7 +63,7 @@ export default function LeadFormPage() {
     setHasChanges(true);
   };
 
-  const updateField = (id: string | number, key: keyof LeadInputSetting, value: any) => {
+  const updateField = (id: string | number, key: keyof LeadInputSetting, value: LeadInputSetting[keyof LeadInputSetting]) => {
     setCustomFields((prev) =>
       prev.map((field) => (field.id === id ? { ...field, [key]: value } : field))
     );

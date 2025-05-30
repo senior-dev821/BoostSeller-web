@@ -1,43 +1,52 @@
-// /api/register/request-otp/route.ts
-// import { PrismaClient } from '@prisma/client';
-import { generateOtp } from '@/lib/generateOtp';
-import { sendOtpEmail } from '@/lib/sendOtpEmail';
 
-import { prisma } from '@/lib/prisma';
+import nodemailer from 'nodemailer';
+import { PrismaClient } from '@prisma/client';
+import type SMTPTransport from 'nodemailer/lib/smtp-transport';
+
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-	
-  try {
-    const { email } = await req.json();
-		console.log("email = ", email);
-		if (!email) {
-			return new Response(
-				JSON.stringify({ error: true, message: "Email is required." }),
-				{ status: 400 }
-			);
-		}
-    const existingUser = await prisma.user.findUnique({ where: {email} });
+  const { address, otpType } = await req.json();
+  if(otpType == 1) {
+    try {
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const expires = new Date(Date.now() + 5 * 60 * 1000);
+        
+        await prisma.otp.create({
+            data: { email: address, code: otp, expiresAt: expires,},
+          });
 
-    if (existingUser) {
-      return new Response(JSON.stringify({ error: true, message: 'User already exists.' }), { status: 400 });
-    }
+        const transporter = nodemailer.createTransport({
+          host: process.env.SMTP_HOST,
+          port: process.env.SMTP_PORT,
+          secure: true, 
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS,
+          },
+        } as SMTPTransport.Options);
 
-    const otp = generateOtp();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
-		await prisma.otp.create({
-      data: {
-        email,
-        code: otp,
-        expiresAt,
-      },
-    });
+        const mailOptions = {
+          from: process.env.SMTP_USER,
+          to: address,
+          subject: 'Your OTP Code',
+          html: `<p>Your OTP code is <b>${otp}</b>. It will expire in 5 minutes.</p>`,
+        };
 
+        await transporter.sendMail(mailOptions);
 
-		await sendOtpEmail(email, otp);
-
-    return new Response(JSON.stringify({ error: false, message: 'OTP sent to email' }), { status: 200 });
-  } catch (err) {
-    console.error('OTP Request Error:', err);
-    return new Response(JSON.stringify({ error: true, message: 'Failed to send OTP' }), { status: 500 });
+        return new Response(JSON.stringify({error: false,  message: 'OTP sent successfully! Please check your email.' }), {
+          status: 200,
+        });
+      } catch (error) {
+        console.error('Error sending OTP:', error);
+        return new Response(
+          JSON.stringify({ error: true, message: 'Failed to send OTP. Please try again. Your email is not real.' }),
+          {}
+        );
+      }
+  } else {
+    // send SMS
   }
+  
 }

@@ -13,7 +13,7 @@ import {
   // ListIcon,
   PageIcon,
   // PieChartIcon,
-  PlugInIcon,
+  // PlugInIcon,
 	// PaperPlaneIcon,
 	// BoltIcon,
 	GroupIcon,

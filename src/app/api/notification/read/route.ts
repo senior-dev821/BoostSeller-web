@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const { id } = await req.json();
     const parsedId = parseInt(id);
-    const notification = await prisma.notification.update({
+    await prisma.notification.update({
         where: {
             id: parsedId,
         },

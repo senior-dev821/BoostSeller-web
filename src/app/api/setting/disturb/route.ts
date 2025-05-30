@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const { performerId, flag } = await req.json();
     const paresedPerformerId = parseInt(performerId);
-    const performer = await prisma.performer.update({
+    await prisma.performer.update({
         where: {
             id: paresedPerformerId,
         },

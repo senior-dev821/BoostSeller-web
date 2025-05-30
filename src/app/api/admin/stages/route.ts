@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma'; // adjust import as needed
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const stages = await prisma.stage.findMany({
     orderBy: { sequence: 'asc' },
   });

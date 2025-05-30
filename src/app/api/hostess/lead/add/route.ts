@@ -18,7 +18,7 @@ export async function POST(req: Request) {
       });
     }
 
-    const existHostess = await prisma.hostess.update({
+     await prisma.hostess.update({
       where: {
         'id': parsedHostessId,
       },
