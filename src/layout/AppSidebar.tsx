@@ -58,33 +58,30 @@ const navItems: NavItem[] = [
     name: "Sales Stages",
     icon: <PageIcon />,
     path: "/sales-stage",
-		super: true,
+		// super: true,
   },
-	{
-    icon: <SettingsIcon />,
-    name: "Settings",
-    subItems: [
-      { name: "Lead Input", path: "/leadinputform", super: false },
-      { name: "Hostess Detail", path: "/hostessdetail", super: false },
-      { name: "Lead Escalation Time", path: "/leadescalation", super: false },
-      { name: "Buttons", path: "/buttons", super: false },
-      { name: "Images", path: "/images", super: false },
-      { name: "profile", path: "/profile", super: false },
-    ],
-  },
+	
 	
 ];
 
 const superItems: NavItem[] = [
-	
-  {
-    icon: <PlugInIcon />,
-    name: "Organization",
+	{
+    icon: <SettingsIcon />,
+    name: "Settings",
     subItems: [
-      { name: "Sign In", path: "/login", super: true },
-      { name: "Sign Up", path: "/register", super: false },
+      // { name: "Hostess Detail", path: "/hostessdetail", super: false },
+      { name: "Lead Escalation Time", path: "/leadescalation", super: false },
+			{ name: "Lead Input", path: "/leadinputform", super: false },
     ],
   },
+  // {
+  //   icon: <PlugInIcon />,
+  //   name: "Organization",
+  //   subItems: [
+  //     { name: "Sign In", path: "/login", super: true },
+  //     { name: "Sign Up", path: "/register", super: false },
+  //   ],
+  // },
 ];
 
 const AppSidebar: React.FC = () => {
@@ -381,7 +378,7 @@ const AppSidebar: React.FC = () => {
                 }`}
               >
                 {isExpanded || isHovered || isMobileOpen ? (
-                  "Super"
+                  "Setting"
                 ) : (
                   <HorizontaLDots />
                 )}
