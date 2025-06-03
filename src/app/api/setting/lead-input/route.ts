@@ -14,7 +14,6 @@ export async function POST(req: Request) {
   try {
     const body: unknown = await req.json();
 
-    // Validate body is an array of LeadInputField
     if (!Array.isArray(body)) {
       return Response.json({ error: "Invalid input" }, { status: 400 });
     }
@@ -25,41 +24,51 @@ export async function POST(req: Request) {
       const { id, label, type, sequence, items = [], required } = field;
 
       if (id) {
+        // Updating an existing field
         const existing = await prisma.leadInputSetting.findUnique({
           where: { id: Number(id) },
         });
 
         if (existing) {
-          const fieldSetting = await prisma.leadInputSetting.update({
+          // If the label is changing, make sure new label doesn't already exist
+          if (existing.label !== label) {
+            const duplicate = await prisma.leadInputSetting.findUnique({
+              where: { label },
+            });
+
+            if (duplicate) {
+              console.warn(`Duplicate label "${label}" found. Skipping update for id ${id}.`);
+              return null;
+            }
+          }
+
+          return await prisma.leadInputSetting.update({
             where: { id: Number(id) },
-            data: {
-              label,
-              type,
-              sequence,
-              required,
-              items,
-            },
+            data: { label, type, sequence, required, items },
           });
-          return fieldSetting;
         } else {
           console.warn(`Field with id ${id} not found. Skipping update.`);
           return null;
         }
       } else {
-        const fieldSetting = await prisma.leadInputSetting.create({
-          data: {
-            label,
-            type,
-            sequence,
-            required,
-            items,
-          },
+        // Creating a new field
+        const duplicate = await prisma.leadInputSetting.findUnique({
+          where: { label },
         });
-        return fieldSetting;
+
+        if (duplicate) {
+          console.warn(`Label "${label}" already exists. Skipping create.`);
+          return null;
+        }
+
+        return await prisma.leadInputSetting.create({
+          data: { label, type, sequence, required, items },
+        });
       }
     });
 
     const results = await Promise.all(operations);
+
     return Response.json({
       error: false,
       message: "Fields saved",
@@ -76,6 +85,7 @@ export async function POST(req: Request) {
     );
   }
 }
+
 
 
 
