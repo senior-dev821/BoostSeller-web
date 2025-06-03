@@ -37,6 +37,14 @@ interface StageItem {
   elements: Element[];
 }
 
+interface BackendStageItem {
+  id: number;
+  name: string;
+  description: string;
+  sequence: number;
+  requiredFields?: Element[];
+}
+
 interface SortableItemProps {
   item: StageItem;
   onClick: (item: StageItem) => void;
@@ -82,16 +90,13 @@ export default function StageForm() {
   useEffect(() => {
     fetch('/api/admin/stages')
       .then(res => res.json())
-      .then((data: any[]) => {
-        const formatted: StageItem[] = data.map((s) => ({
-          id: s.id,
-          name: s.name,
-          description: s.description,
-          sequence: s.sequence,
+      .then((data: BackendStageItem[]) => {
+        const mappedStages: StageItem[] = data.map((s) => ({
+          ...s,
           elements: s.requiredFields ?? [],
         }));
-        setStages(formatted);
-        setOriginalOrder(formatted.map((s) => s.id));
+        setStages(mappedStages);
+        setOriginalOrder(mappedStages.map((s) => s.id));
       });
   }, []);
 
@@ -125,7 +130,7 @@ export default function StageForm() {
     setIsModalOpen(true);
   };
 
-  const updateElement = <K extends keyof Element>(id: string, key: K, value: Element[K]) => {
+  const updateElement = (id: string, key: keyof Element, value: any) => {
     setSelectedStage((prev) =>
       prev
         ? {
@@ -181,7 +186,8 @@ export default function StageForm() {
     });
   };
 
-  const hasOrderChanged = () => JSON.stringify(originalOrder) !== JSON.stringify(stages.map((s) => s.id));
+  const hasOrderChanged = () =>
+    JSON.stringify(originalOrder) !== JSON.stringify(stages.map((s) => s.id));
 
   return (
     <div className="p-6 space-y-6">
@@ -218,7 +224,7 @@ export default function StageForm() {
       )}
 
       {isModalOpen && selectedStage && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center">
           <div className="bg-gray-800 rounded p-6 w-[800px] max-h-[90vh] overflow-y-auto relative">
             <h2 className="text-xl text-gray-200 font-bold mb-4">Edit Stage</h2>
             <Input
@@ -235,7 +241,7 @@ export default function StageForm() {
             />
             <div className="flex gap-6">
               <div className="flex-1 space-y-3">
-                {selectedStage?.elements.map((el) => (
+                {selectedStage.elements.map((el) => (
                   <div key={el.id} className="border rounded p-3 space-y-1">
                     <Input
                       defaultValue={el.label}
@@ -285,7 +291,7 @@ export default function StageForm() {
                 {selectedStage.elements.sort((a, b) => a.sequence - b.sequence).map((el) => (
                   <div key={el.id} className="mb-3">
                     <label className="block text-sm font-semibold mb-1">{el.label}</label>
-                    {el.type === 'input' && <Input disabled placeholder="Text" />}
+                    {el.type === 'text' && <Input disabled placeholder="Text" />}
                     {el.type === 'textarea' && <Textarea disabled placeholder="Textarea" />}
                     {el.type === 'dropdown' && (
                       <Select

@@ -12,7 +12,7 @@ import {
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 import Button from "../ui/button/Button";
-import { Modal } from "@/components/ui/modal";
+// import { Modal } from "@/components/ui/modal";
 import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 
 interface Lead {
@@ -50,25 +50,38 @@ interface additionalInfo {
 
 export default function BasicTableOne() {
   const [leads, setLeads] = useState<Lead[]>([]);
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  // const [showDeleteModal, setShowDeleteModal] = useState(false);
   useEffect(() => {
     fetch("/api/admin/lead")
       .then((res) => res.json())
       .then((data) => setLeads(data));
   }, []);
 
-  function getBudgetFromLead(lead: Lead): string | undefined {
+  // function getBudgetFromLead(lead: Lead): string | undefined {
+  //   return lead.additionalInfo.find(
+  //     info => info.label === "Budget" && info.type === "currency"
+  //   )?.value;
+  // }
+
+  // const handleEditClick = (lead: Lead) => {
+
+  // }
+
+  // const handleInfoClick = (lead: Lead) => {
+
+  // }
+	function getBudgetFromLead(lead: Lead): string | undefined {
     return lead.additionalInfo.find(
       info => info.label === "Budget" && info.type === "currency"
     )?.value;
   }
 
-  const handleEditClick = (lead: Lead) => {
+  const handleEditClick = () => {
 
   }
 
-  const handleInfoClick = (lead: Lead) => {
+  const handleInfoClick = () => {
 
   }
 
@@ -249,14 +262,14 @@ export default function BasicTableOne() {
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleEditClick(lead)}
+                      onClick={() => handleEditClick()}
                     >
                       <PencilIcon className="fill-gray-500 dark:fill-gray-400" />
                     </Button>
                     <Button
                       size="sm"
                       variant="outline"
-                      onClick={() => handleInfoClick(lead)}
+                      onClick={() => handleInfoClick()}
                     >
                       <InfoIcon className="fill-gray-500 dark:fill-gray-400" />
                     </Button>
@@ -264,8 +277,8 @@ export default function BasicTableOne() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        setSelectedLead(lead);
-                        setShowDeleteModal(true);
+                        // setSelectedLead();
+                        // setShowDeleteModal(true);
                       }}
                     >
                       <TrashBinIcon className="fill-gray-500 dark:fill-gray-400" />
