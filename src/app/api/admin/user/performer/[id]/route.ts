@@ -51,7 +51,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       },
     });
 
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: { id: updatedHostess.userId },
       data: {
         name,

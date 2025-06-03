@@ -1,19 +1,29 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
+type LeadInputField = {
+  id?: number;
+  label: string;
+  type: string;
+  sequence: number;
+  items?: string[];
+  required: boolean;
+};
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body: unknown = await req.json();
 
+    // Validate body is an array of LeadInputField
     if (!Array.isArray(body)) {
       return Response.json({ error: "Invalid input" }, { status: 400 });
     }
 
-    const operations = body.map(async (field: any) => {
-      const { id, label, type, sequence, items = [], required } = field;
-      // const items = Array.isArray(options) ? options.map((item) => item.trim()) : [];
+    const fields = body as LeadInputField[];
 
-      // Check if field with given ID exists
+    const operations = fields.map(async (field) => {
+      const { id, label, type, sequence, items = [], required } = field;
+
       if (id) {
         const existing = await prisma.leadInputSetting.findUnique({
           where: { id: Number(id) },
@@ -26,13 +36,12 @@ export async function POST(req: Request) {
               label,
               type,
               sequence,
-							required,
+              required,
               items,
             },
           });
           return fieldSetting;
         } else {
-          // Log and skip or create instead of throwing
           console.warn(`Field with id ${id} not found. Skipping update.`);
           return null;
         }
@@ -42,7 +51,7 @@ export async function POST(req: Request) {
             label,
             type,
             sequence,
-						required,
+            required,
             items,
           },
         });
@@ -67,6 +76,7 @@ export async function POST(req: Request) {
     );
   }
 }
+
 
 
 export async function GET() {
