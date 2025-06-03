@@ -1,6 +1,5 @@
 // components/ResponseTimeReport.tsx
 import { Card } from "@/components/ui/card";
-import DateRangePicker from "@/components/ui/DateRangePicker";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 const trendData = [
@@ -22,7 +21,6 @@ export default function ResponseTimeReport() {
     <Card className="p-6 space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Response Time Report</h2>
-        <DateRangePicker />
       </div>
 
       {/* Trend Line Chart */}
