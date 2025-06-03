@@ -70,6 +70,8 @@
 //   }
 // }
 
+// File: src/app/api/admin/user/hostess/[id]/route.ts
+
 import { NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
 
@@ -78,9 +80,9 @@ const prisma = new PrismaClient();
 // DELETE handler
 export async function DELETE(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Record<string, string> }
 ) {
-  const id = context.params.id;
+  const id = params.id;
   if (!id) {
     return new Response(JSON.stringify({ error: 'ID is required' }), {
       status: 400,
@@ -98,24 +100,23 @@ export async function DELETE(
       },
     });
 
-    return new Response(
-      JSON.stringify({ ok: true, message: 'Field deleted successfully' })
-    );
+    return new Response(JSON.stringify({ ok: true, message: 'Deleted successfully' }), {
+      status: 200,
+    });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({ error: 'Failed to delete field' }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: 'Delete failed' }), {
+      status: 500,
+    });
   }
 }
 
 // PUT handler
 export async function PUT(
   req: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: Record<string, string> }
 ) {
-  const id = context.params.id;
+  const id = params.id;
   if (!id) {
     return new Response(JSON.stringify({ error: 'ID is required' }), {
       status: 400,
@@ -141,14 +142,14 @@ export async function PUT(
       },
     });
 
-    return new Response(
-      JSON.stringify({ ok: true, message: 'Hostess updated successfully' })
-    );
+    return new Response(JSON.stringify({ ok: true, message: 'Updated successfully' }), {
+      status: 200,
+    });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({ error: 'Failed to update hostess' }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({ error: 'Update failed' }), {
+      status: 500,
+    });
   }
 }
+
