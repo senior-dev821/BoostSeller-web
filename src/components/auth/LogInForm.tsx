@@ -48,7 +48,7 @@ export default function SignInForm() {
     }
 
     try {
-      const response = await fetch('/api/auth/login', { // Adjust the URL to your API endpoint
+      const response = await fetch('/api/admin/auth/login', { // Adjust the URL to your API endpoint
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

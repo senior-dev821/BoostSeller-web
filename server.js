@@ -79,13 +79,14 @@ const server = createServer((req, res) => {
       }
 
       const setting = await prisma.setting.findFirst();
-      const assignPeriod = setting.assignPeriod * 1000;
+      const assignPeriod = setting.assignPeriod;
 
       const performers = await prisma.performer.findMany({
         where: {
           available: true,
           id: {
-            notIn: Array.from(triedPerformerIds),
+            // notIn: Array.from(triedPerformerIds ?? []),
+            notIn: triedPerformerIds ?? [],
           }
         },
       });
@@ -99,7 +100,9 @@ const server = createServer((req, res) => {
         const conversion = acceptedCount === 0 
         ? 0
         : completedCount / acceptedCount;
-        const responseSpeed = 1 - (avgResponseTime / assignPeriod);
+        const responseSpeed = avgResponseTime === 0 
+        ? 0
+        : 1 - (avgResponseTime / assignPeriod);
         const acceptanceRatio = assignedCount === 0 
         ? 0
         : acceptedCount / assignedCount;
@@ -221,7 +224,7 @@ const server = createServer((req, res) => {
           }
           await assignLeadToPerformer(leadId);
         } 
-      }, assignPeriod);
+      }, assignPeriod * 1000);
     }
 
   socket.on('lead_skip', async (data) => {

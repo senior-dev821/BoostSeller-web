@@ -1,4 +1,6 @@
-import React from "react";
+"use client"
+
+import React, { useEffect, useState } from "react";
 import {
   Table,
   TableBody,
@@ -7,115 +9,170 @@ import {
   TableRow,
 } from "../ui/table";
 
+import Button from "../ui/button/Button";
+import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
+import { Modal } from "@/components/ui/modal";
+import { User, Phone, Mail, ShieldCheck, Inbox, CheckCircle, BadgeCheck, Archive, Users, BarChart, Timer } from "lucide-react";
 
-interface Order {
+interface Performer {
   id: number;
+  available: boolean;
+  assignedCount: number;
+  acceptedCount: number;
+  completedCount: number;
+  closedCount: number;
+  avgResponseTime: number;
+  createdAt: string;
+  groupId: number;
+  groupName: string;
+  score: number;
+  groupRank: number;
   user: {
-    image: string;
+    id: number,
+    avatarPath?: string;
     name: string;
     role: string;
+    phoneNumber: string;
+    email: string;
+    isApproved: boolean;
   };
-  projectName: string;
-  team: {
-    images: string[];
-  };
-  status: string;
-  budget: string;
+
 }
 
-// Define the table data using the interface
-const tableData: Order[] = [
-  {
-    id: 1,
-    user: {
-      image: "/images/user/user-17.jpg",
-      name: "Lindsey Curtis",
-      role: "Web Designer",
-    },
-    projectName: "Agency Website",
-    team: {
-      images: [
-        "/images/user/user-22.jpg",
-        "/images/user/user-23.jpg",
-        "/images/user/user-24.jpg",
-      ],
-    },
-    budget: "3.9K",
-    status: "Active",
-  },
-  {
-    id: 2,
-    user: {
-      image: "/images/user/user-18.jpg",
-      name: "Kaiya George",
-      role: "Project Manager",
-    },
-    projectName: "Technology",
-    team: {
-      images: ["/images/user/user-25.jpg", "/images/user/user-26.jpg"],
-    },
-    budget: "24.9K",
-    status: "Pending",
-  },
-  {
-    id: 3,
-    user: {
-      image: "/images/user/user-17.jpg",
-      name: "Zain Geidt",
-      role: "Content Writing",
-    },
-    projectName: "Blog Writing",
-    team: {
-      images: ["/images/user/user-27.jpg"],
-    },
-    budget: "12.7K",
-    status: "Active",
-  },
-  {
-    id: 4,
-    user: {
-      image: "/images/user/user-20.jpg",
-      name: "Abram Schleifer",
-      role: "Digital Marketer",
-    },
-    projectName: "Social Media",
-    team: {
-      images: [
-        "/images/user/user-28.jpg",
-        "/images/user/user-29.jpg",
-        "/images/user/user-30.jpg",
-      ],
-    },
-    budget: "2.8K",
-    status: "Cancel",
-  },
-  {
-    id: 5,
-    user: {
-      image: "/images/user/user-21.jpg",
-      name: "Carla George",
-      role: "Front-end Developer",
-    },
-    projectName: "Website",
-    team: {
-      images: [
-        "/images/user/user-31.jpg",
-        "/images/user/user-32.jpg",
-        "/images/user/user-33.jpg",
-      ],
-    },
-    budget: "4.5K",
-    status: "Active",
-  },
-];
+interface Group {
+  id: number;
+  name: string;
+}
 
-export default function BasicTableOne() {
+
+export default function PerformerTable() {
+  const [performers, setPerformers] = useState<Performer[]>([]);
+  const [groups, setGroups] = useState<Group[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [selectedPerformer, setSelectedPerformer] = useState<Performer | null>(null);
+  const [editPerformer, setEditPerformer] = useState<Performer | null>(null);
+  const [showInfoModal, setShowInfoModal] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editPhoneNumber, setEditPhoneNumber] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editApproved, setEditApproved] = useState(false);
+  const [editGroupName, setEditGroupName] = useState("");
+  const [editAvailable, setEditAvailable] = useState(false);
+  const [editGroupId, setEditGroupId] = useState<number>(0);
+  const [selectedGroup, setSelectedGroup] = useState<string>("All");
+
+
+  const handleEditClick = (performer: Performer) => {
+    setEditPerformer(performer);
+    setEditName(performer.user.name);
+    setEditPhoneNumber(performer.user.phoneNumber);
+    setEditEmail(performer.user.email);
+    setEditApproved(performer.user.isApproved);
+    setEditAvailable(performer.available);
+    setEditGroupId(performer.groupId);
+    setEditGroupName(performer.groupName);
+    setShowEditModal(true);
+  }
+
+  const handleInfoClick = (performer: Performer) => {
+    setSelectedPerformer(performer);
+    setShowInfoModal(true);
+  }
+
+  const handleCancelEdit = () => {
+    setShowEditModal(false);
+    setEditPerformer(null);
+  };
+
+  const handleSaveChanges = async () => {
+    if (!editPerformer) return;
+
+    try {
+      const res = await fetch(`/api/admin/user/performer/${editPerformer.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: editName,
+          phoneNumber: editPhoneNumber,
+          email: editEmail,
+          isApproved: editApproved,
+          isAvailable: editAvailable,
+          groupId: editGroupId,
+        }),
+      });
+
+      if (res.ok) {
+        // Update local state after successful save
+        setPerformers((prev) =>
+          prev.map((performer) =>
+            performer.id === editPerformer.id
+              ? {
+                ...performer,
+                available: editAvailable,
+                groupName: editGroupName,
+                groupId: editGroupId,
+                user: {
+                  ...performer.user,
+                  name: editName,
+                  phoneNumber: editPhoneNumber,
+                  email: editEmail,
+                  isApproved: editApproved,
+                },
+              }
+              : performer
+          )
+        );
+        setShowEditModal(false);
+      } else {
+        console.error("Failed to save hostess info");
+      }
+    } catch (error) {
+      console.error("Error saving hostess info:", error);
+    }
+  };
+
+  const handleCloseInfo = () => {
+    setShowInfoModal(false);
+    setSelectedPerformer(null);
+  };
+
+  useEffect(() => {
+    fetch("/api/admin/user/performer")
+      .then((res) => res.json())
+      .then((data) => setPerformers(data));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/admin/setting/group")
+      .then((res) => res.json())
+      .then((data) => setGroups(data));
+  }, []);
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
         <div className="min-w-[1102px]">
+          <div className="  pt-4 mb-4 flex justify-end items-center gap-2 px-4">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Group:</label>
+            <select
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
+              className="px-3 py-1.5 border border-gray-300 rounded-md text-sm dark:bg-gray-800 dark:text-white"
+            >
+              <option value="All">All</option>
+              <option value="None">Not Assigned</option>
+              {groups.map((group) => (
+                <option key={group.id} value={group.name}>
+                  {group.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
           <Table>
             {/* Table Header */}
             <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
@@ -128,97 +185,435 @@ export default function BasicTableOne() {
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  Project Name
+                  Group
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  Team
+                  Phone Number
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  Status
+                  Email Address
                 </TableCell>
                 <TableCell
                   isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
+                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  Score
+                  Approved Status
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
+                >
+                  Available
+                </TableCell>
+                <TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
+                >
+                  Register Date
+                </TableCell>
+                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                  Actions
                 </TableCell>
               </TableRow>
             </TableHeader>
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {tableData.map((order) => (
-                <TableRow key={order.id}>
-                  <TableCell className="px-5 py-4 sm:px-6 text-start">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 overflow-hidden rounded-full">
-                        <Image
-                          width={40}
-                          height={40}
-                          src={order.user.image}
-                          alt={order.user.name}
-                        />
-                      </div>
-                      <div>
-                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {order.user.name}
-                        </span>
-                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                          {order.user.role}
-                        </span>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    {order.projectName}
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    <div className="flex -space-x-2">
-                      {order.team.images.map((teamImage, index) => (
-                        <div
-                          key={index}
-                          className="w-6 h-6 overflow-hidden border-2 border-white rounded-full dark:border-gray-900"
-                        >
+              {performers
+                .filter((performer) => {
+                  if (selectedGroup === "All") return true;
+                  if (selectedGroup === "None") return !performer.groupName;
+                  return performer.groupName === selectedGroup;
+                })
+                .map((performer) => (
+                  <TableRow key={performer.id}>
+                    <TableCell className="px-5 py-4 sm:px-6 text-start">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 overflow-hidden rounded-full">
                           <Image
-                            width={24}
-                            height={24}
-                            src={teamImage}
-                            alt={`Team member ${index + 1}`}
-                            className="w-full"
+                            width={40}
+                            height={40}
+                            src={performer.user.avatarPath || "/images/user/user-01.jpg"}
+                            alt={performer.user.name}
                           />
                         </div>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-start text-theme-sm dark:text-gray-400">
-                    <Badge
-                      size="sm"
-                      color={
-                        order.status === "Active"
-                          ? "success"
-                          : order.status === "Pending"
-                          ? "warning"
-                          : "error"
-                      }
-                    >
-                      {order.status}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="px-4 py-3 text-gray-500 text-theme-sm dark:text-gray-400">
-                    {order.budget}
-                  </TableCell>
-                </TableRow>
-              ))}
+                        <div>
+                          <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            {performer.user.name}
+                          </span>
+                          <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                            {performer.user.role}
+                          </span>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                      {performer.groupName !== undefined ? performer.groupName : "Not assigned Group"}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                      {performer.user.phoneNumber}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                      {performer.user.email}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                      <Badge
+                        size="sm"
+                        color={performer.user.isApproved ? "success" : "error"}
+                      >
+                        {performer.user.isApproved ? "Approved" : "Pending"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                      <Badge
+                        size="sm"
+                        color={performer.available ? "success" : "error"}
+                      >
+                        {performer.available ? "Available" : "Do Not Disturb"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                      {new Intl.DateTimeFormat("en-US", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                      }).format(new Date(performer.createdAt))}
+                    </TableCell>
+                    <TableCell className="px-4 py-3 space-x-2 text-center">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleEditClick(performer)}
+                      >
+                        <PencilIcon className="fill-gray-500 dark:fill-gray-400" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleInfoClick(performer)}
+                      >
+                        <InfoIcon className="fill-gray-500 dark:fill-gray-400" />
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedPerformer(performer);
+                          setShowDeleteModal(true);
+                        }}
+                      >
+                        <TrashBinIcon className="fill-gray-500 dark:fill-gray-400" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
             </TableBody>
           </Table>
+          <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} className="max-w-[584px] p-5 lg:p-10">
+            <div className="p-4 w-120">
+              <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white text-center">
+                Confirm Deletion
+              </h2>
+              <p className="text-gray-700 dark:text-gray-300 mb-6 text-center">
+                Are you sure you want to delete{" "}
+                <strong>{selectedPerformer?.user.name}</strong>?
+              </p>
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={async () => {
+                    if (!selectedPerformer) return;
+                    try {
+                      const res = await fetch(`/api/admin/user/performer/${selectedPerformer.id}`, {
+                        method: "DELETE",
+                      });
+
+                      if (res.ok) {
+                        setPerformers(prev =>
+                          prev.filter(p => p.id !== selectedPerformer.id)
+                        );
+                        setShowDeleteModal(false);
+                      } else {
+                        console.error("Failed to delete performer");
+                      }
+                    } catch (err) {
+                      console.error("Error deleting performer:", err);
+                    }
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </Modal>
+
+          {/* Edit Modal */}
+          <Modal
+            isOpen={showEditModal}
+            onClose={handleCancelEdit}
+            className="max-w-[584px] p-5 lg:p-10"
+          >
+            <div className="p-4 w-full max-w-md mx-auto">
+              {/* Avatar and Name on top */}
+              <div className="flex flex-col items-center mb-6">
+                <div className="w-24 h-24 overflow-hidden rounded-full mb-3">
+                  <Image
+                    width={96}
+                    height={96}
+                    src={editPerformer?.user.avatarPath || "/images/user/user-01.jpg"}
+                    alt={editName}
+                    className="object-cover"
+                  />
+                </div>
+                <h3 className="text-xl font-semibold">{editName}</h3>
+              </div>
+
+              {/* Editable fields */}
+              <div className="space-y-4">
+                <div>
+                  <p className="mt-2 text-sm text-blue-600 bg-blue-500 border border-blue-300 px-3 py-2 rounded-md">
+                    This performer must belong to a group in order to participate in lead distribution.
+                  </p>
+                  <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                    Assigned Group
+                  </label>
+                  <select
+                    value={editGroupId}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      const selectedGroup = groups.find(g => g.id === Number(val));
+
+                      if (selectedGroup) {
+                        setEditGroupId(selectedGroup.id);
+                        setEditGroupName(selectedGroup.name);
+                      } else {
+                        setEditGroupId(0);
+                        setEditGroupName('');
+                      }
+                    }}
+                    className="w-full rounded border border-gray-700 px-3 py-2 bg-gray-900  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">-- Select Group --</option>
+                    {groups.map((group) => (
+                      <option key={group.id} value={group.id}>
+                        {group.name}
+                      </option>
+                    ))}
+                  </select>
+
+                </div>
+
+                <div>
+                  <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                    Name
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                    Phone Number
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={editPhoneNumber}
+                    onChange={(e) => setEditPhoneNumber(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={editEmail}
+                    onChange={(e) => setEditEmail(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editApproved}
+                      onChange={() => setEditApproved(prev => !prev)}
+                      className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    />
+                    Approved Status
+                  </label>
+                  <Badge size="sm" color={editApproved ? "success" : "error"}>
+                    {editApproved ? "Approved" : "Pending"}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={editAvailable}
+                      onChange={() => setEditAvailable(prev => !prev)}
+                      className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    />
+                    Available
+                  </label>
+                  <Badge size="sm" color={editAvailable ? "success" : "error"}>
+                    {editAvailable ? "Available" : "Do Not Disturb"}
+                  </Badge>
+                </div>
+
+              </div>
+
+              {/* Buttons */}
+              <div className="mt-6 flex justify-end gap-3">
+
+                <Button onClick={handleSaveChanges}>Save Changes</Button>
+                <Button variant="outline" onClick={handleCancelEdit}>
+                  Cancel
+                </Button>
+
+              </div>
+            </div>
+          </Modal>
+
+          {/* Info Modal */}
+          <Modal isOpen={showInfoModal} onClose={handleCloseInfo} className=" bg-gray-900 text-white rounded-xl p-6 max-w-[584px] p-5 lg:p-10">
+            <div className="w-full">
+              {/* Avatar & Name */}
+              <div className="flex flex-col items-center mb-6">
+                <div className="w-24 h-24 rounded-full overflow-hidden mb-3 border-4 border-white shadow-md">
+                  <Image
+                    width={96}
+                    height={96}
+                    src={selectedPerformer?.user.avatarPath || "/images/user/user-01.jpg"}
+                    alt={selectedPerformer?.user.name ?? ""}
+                    className="object-cover"
+                  />
+                </div>
+                <h3 className="text-2xl font-semibold">{selectedPerformer?.user.name}</h3>
+                <h3 className="text-2xl font-semibold">
+                  Effectiveness Score :{" "}
+                  <span className="font-bold text-red-500">
+                    {selectedPerformer?.score?.toFixed(2) ?? "0.00"}
+                  </span>
+                </h3>
+              </div>
+
+              {/* Info Cards */}
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
+                  <Users className="text-blue-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Group</div>
+                    <div className="text-center">{selectedPerformer?.groupName}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
+                  <BarChart className="text-yellow-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Group Rank</div>
+                    <div className="text-center">{selectedPerformer?.groupRank}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <User className="text-blue-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Role</div>
+                    <div>{selectedPerformer?.user.role}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <Phone className="text-green-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Phone Number</div>
+                    <div>{selectedPerformer?.user.phoneNumber}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <Mail className="text-purple-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Email</div>
+                    <div>{selectedPerformer?.user.email}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <ShieldCheck className="text-yellow-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Status</div>
+                    <Badge
+                      size="sm"
+                      color={selectedPerformer?.user.isApproved ? "success" : "error"}
+                    >
+                      {selectedPerformer?.user.isApproved ? "Approved" : "Pending"}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <Inbox className="text-purple-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Assigned Leads</div>
+                    <div className="text-center">{selectedPerformer?.assignedCount ?? 0}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <CheckCircle className="text-purple-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Accepted Leads</div>
+                    <div className="text-center">{selectedPerformer?.acceptedCount ?? 0}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <BadgeCheck className="text-purple-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Completed Leads</div>
+                    <div className="text-center">{selectedPerformer?.completedCount ?? 0}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <Archive className="text-purple-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Closed Leads</div>
+                    <div className="text-center">{selectedPerformer?.closedCount ?? 0}</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <Timer className="text-purple-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Average Response Time</div>
+                    <div className="text-center">{selectedPerformer?.avgResponseTime}s</div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                  <CheckCircle className="text-purple-400 w-5 h-5" />
+                  <div>
+                    <div className="text-sm font-medium text-gray-400">Available</div>
+                    <Badge
+                      size="sm"
+                      color={selectedPerformer?.available ? "success" : "error"}
+                    >
+                      {selectedPerformer?.user.isApproved ? "Available" : "Do Not Disturb"}
+                    </Badge>
+                  </div>
+                </div>
+
+              </div>
+
+
+            </div>
+          </Modal>
         </div>
       </div>
     </div>

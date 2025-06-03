@@ -50,14 +50,32 @@ export async function POST(req: Request) {
       });
     }
 
+    // const nextStage = await prisma.stage.findFirst({
+    //   where: {
+    //     id: {
+    //       gt: parseInt(stageId),
+    //     }
+    //   },
+    //   orderBy: {
+    //     id: 'asc'
+    //   }
+    // });
+
+    const curStage = await prisma.stage.findUnique({
+      where: {
+        id: parseInt(stageId),
+      },
+    });
+
+    
     const nextStage = await prisma.stage.findFirst({
       where: {
-        id: {
-          gt: parseInt(stageId),
+        sequence: {
+          gt: curStage?.sequence,
         }
       },
       orderBy: {
-        id: 'asc'
+        sequence: 'asc'
       }
     });
 

@@ -32,7 +32,7 @@ export default function TwoStepVerification() {
 
     try {
       // 1. Verify OTP
-      const verifyRes = await fetch("/api/auth/verify-otp", {
+      const verifyRes = await fetch("/api/admin/auth/verify-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -51,7 +51,7 @@ export default function TwoStepVerification() {
 
       // 2. Continue based on context
       if (formData.context === "register") {
-        const registerRes = await fetch("/api/auth/register", {
+        const registerRes = await fetch("/api/admin/auth/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
@@ -66,7 +66,7 @@ export default function TwoStepVerification() {
       }
 
       if (formData.context === "reset") {
-        const resetRes = await fetch("/api/auth/change-password", {
+        const resetRes = await fetch("/api/admin/auth/change-password", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),

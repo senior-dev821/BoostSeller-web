@@ -243,13 +243,14 @@ export default function StageForm() {
                         { value: "input", label: "Text" },
                         { value: "checkbox", label: "Checkbox" },
                         { value: "checkbox group", label: "Checkbox Group" },
-                        { value: "select", label: "Dropdown" },
+                        { value: "dropdown", label: "Dropdown" },
                         { value: "comment", label: "Comment" },
                         { value: "date", label: "Date" },
                         { value: "currency", label: "Currency" },
                         { value: "photo", label: "Photo Attachment" },
                         { value: "file", label: "File Attachment" },
                         { value: "camera", label: "Camera" },
+                        { value: "toggle", label: "Toggle" },
                       ]}
                       defaultValue={el.type}
                       onChange={(val) => updateElement(el.id, "type", val)}
@@ -266,7 +267,7 @@ export default function StageForm() {
                         onChange={(e) => updateElement(el.id, 'required', e.target.checked)}
                       /> Required
                     </label>
-                    {(el.type === 'select' || el.type.includes('checkbox')) && (
+                    {(el.type === 'dropdown' || el.type.includes('checkbox')) && (
                       <Input
                         placeholder="Comma separated items"
                         defaultValue={(el.items ?? []).join(',') || ""}
@@ -283,7 +284,7 @@ export default function StageForm() {
                     <label className="block text-sm font-semibold mb-1">{el.label}</label>
                     {el.type === 'text' && <Input disabled placeholder="Text" />}
                     {el.type === 'textarea' && <Textarea disabled placeholder="Textarea" />}
-                    {el.type === 'select' && (
+                    {el.type === 'dropdown' && (
                       <Select
                         options={(el.items ?? []).map((opt) => ({ value: opt, label: opt }))}
                         defaultValue={(el.items?.[0]) ?? ""}
