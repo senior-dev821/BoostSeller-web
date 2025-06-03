@@ -176,7 +176,7 @@ export default function PerformerTable() {
 
           <Table>
             {/* Table Header */}
-            <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+            <TableHeader className="border-b border-gray-100 dark:border-white/[1]">
               <TableRow>
                 <TableCell
                   isHeader
