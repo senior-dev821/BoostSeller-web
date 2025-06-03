@@ -82,13 +82,16 @@ export default function StageForm() {
   useEffect(() => {
     fetch('/api/admin/stages')
       .then(res => res.json())
-      .then(data => {
-        const stages = data.map((s: any) => ({
-          ...s,
+      .then((data: any[]) => {
+        const formatted: StageItem[] = data.map((s) => ({
+          id: s.id,
+          name: s.name,
+          description: s.description,
+          sequence: s.sequence,
           elements: s.requiredFields ?? [],
         }));
-        setStages(stages);
-        setOriginalOrder(stages.map((s: StageItem) => s.id));
+        setStages(formatted);
+        setOriginalOrder(formatted.map((s) => s.id));
       });
   }, []);
 
@@ -122,7 +125,7 @@ export default function StageForm() {
     setIsModalOpen(true);
   };
 
-  const updateElement = (id: string, key: keyof Element, value: any) => {
+  const updateElement = <K extends keyof Element>(id: string, key: K, value: Element[K]) => {
     setSelectedStage((prev) =>
       prev
         ? {
@@ -215,7 +218,7 @@ export default function StageForm() {
       )}
 
       {isModalOpen && selectedStage && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded p-6 w-[800px] max-h-[90vh] overflow-y-auto relative">
             <h2 className="text-xl text-gray-200 font-bold mb-4">Edit Stage</h2>
             <Input
@@ -282,7 +285,7 @@ export default function StageForm() {
                 {selectedStage.elements.sort((a, b) => a.sequence - b.sequence).map((el) => (
                   <div key={el.id} className="mb-3">
                     <label className="block text-sm font-semibold mb-1">{el.label}</label>
-                    {el.type === 'text' && <Input disabled placeholder="Text" />}
+                    {el.type === 'input' && <Input disabled placeholder="Text" />}
                     {el.type === 'textarea' && <Textarea disabled placeholder="Textarea" />}
                     {el.type === 'dropdown' && (
                       <Select
