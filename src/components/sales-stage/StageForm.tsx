@@ -130,7 +130,8 @@ export default function StageForm() {
     setIsModalOpen(true);
   };
 
-  const updateElement = (id: string, key: keyof Element, value: any) => {
+  const updateElement = <K extends keyof Element>(id: string, key: K, value: Element[K]) => {
+
     setSelectedStage((prev) =>
       prev
         ? {
