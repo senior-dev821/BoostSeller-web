@@ -70,28 +70,56 @@
 //   }
 // }
 
-import { NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-// import type { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 
 const prisma = new PrismaClient();
 
-export async function PUT(req: NextRequest, context: { params: { id: string } }) {
-  const id = context.params.id;
-
-  if (!id) {
-    return new Response(JSON.stringify({ error: "ID is required" }), { status: 400 });
-  }
-
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
+    const id = params.id;
+
+    if (!id) {
+      return new Response(JSON.stringify({ error: "ID is required" }), { status: 400 });
+    }
+
+    const hostess = await prisma.hostess.delete({
+      where: { id: Number(id) },
+    });
+
+    await prisma.user.delete({
+      where: {
+        id: hostess.userId,
+      },
+    });
+
+    return new Response(JSON.stringify({ ok: true, message: "Field deleted successfully" }));
+  } catch (error) {
+    console.error(error);
+    return new Response(JSON.stringify({ error: "Failed to delete field" }), { status: 500 });
+  }
+}
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const id = params.id;
+
+    if (!id) {
+      return new Response(JSON.stringify({ error: "ID is required" }), { status: 400 });
+    }
+
     const data = await req.json();
     const { name, phoneNumber, email, isApproved } = data;
 
     const updatedHostess = await prisma.hostess.update({
       where: { id: Number(id) },
-      data: {
-        // optionally update hostess fields if needed
-      },
+      data: {},
     });
 
     await prisma.user.update({
@@ -104,32 +132,9 @@ export async function PUT(req: NextRequest, context: { params: { id: string } })
       },
     });
 
-    return new Response(JSON.stringify({ ok: true, message: "Hostess updated successfully" }), { status: 200 });
+    return new Response(JSON.stringify({ ok: true, message: "Hostess updated successfully" }));
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: "Failed to update hostess" }), { status: 500 });
-  }
-}
-
-export async function DELETE(req: NextRequest, context: { params: { id: string } }) {
-  const id = context.params.id;
-
-  if (!id) {
-    return new Response(JSON.stringify({ error: "ID is required" }), { status: 400 });
-  }
-
-  try {
-    const hostess = await prisma.hostess.delete({
-      where: { id: Number(id) },
-    });
-
-    await prisma.user.delete({
-      where: { id: hostess.userId },
-    });
-
-    return new Response(JSON.stringify({ ok: true, message: "Field deleted successfully" }), { status: 200 });
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: "Failed to delete field" }), { status: 500 });
   }
 }
