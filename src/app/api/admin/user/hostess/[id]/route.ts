@@ -1,12 +1,9 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
-
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
   try {
-    
-    const resolvedParams = await params;
-    const id = resolvedParams.id;
+    const id = params.id;
 
     if (!id) {
       return Response.json({ error: "ID is required" }, { status: 400 });
@@ -17,9 +14,9 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
     });
 
     await prisma.user.delete({
-        where: {
-            id: hostess.userId,
-        },
+      where: {
+        id: hostess.userId,
+      },
     });
 
     return Response.json({ ok: true, message: "Field deleted successfully" });
@@ -29,27 +26,21 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
   }
 }
 
-
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
   try {
+    const id = params.id;
 
-    const resolvedParams = await params;
-    const id = resolvedParams.id;
     if (!id) {
       return Response.json({ error: "ID is required" }, { status: 400 });
     }
 
-    // Parse JSON body from the request
     const data = await req.json();
-
     const { name, phoneNumber, email, isApproved } = data;
 
-    // Update hostess and user info (adjust if your schema differs)
     const updatedHostess = await prisma.hostess.update({
       where: { id: Number(id) },
       data: {
-        // Assuming hostess has these fields; if not, remove or adjust accordingly
-        // If hostess table doesn't have these fields, you probably want to update user instead
+        // Include any fields that actually belong to the hostess model
       },
     });
 
