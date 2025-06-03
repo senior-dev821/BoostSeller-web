@@ -91,12 +91,13 @@ export default function PerformerTable() {
     if (!editPerformer) return;
 
     try {
-      const res = await fetch(`/api/admin/user/performer/${editPerformer.id}`, {
-        method: "PUT",
+      const res = await fetch('/api/admin/user/performer/edit', {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+					id: editPerformer.id,
           name: editName,
           phoneNumber: editPhoneNumber,
           email: editEmail,
@@ -333,8 +334,14 @@ export default function PerformerTable() {
                   onClick={async () => {
                     if (!selectedPerformer) return;
                     try {
-                      const res = await fetch(`/api/admin/user/performer/${selectedPerformer.id}`, {
-                        method: "DELETE",
+                      const res = await fetch('/api/admin/user/performer/delete', {
+                        method: "POST",
+												headers: {
+													"Content-Type": "application/json",
+												},
+												body: JSON.stringify({
+													id: selectedPerformer.id,
+												}),
                       });
 
                       if (res.ok) {

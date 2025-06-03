@@ -68,12 +68,13 @@ export default function HostessTable() {
     if (!editHostess) return;
 
     try {
-      const res = await fetch(`/api/admin/user/hostess/${editHostess.id}`, {
-        method: "PUT",
+      const res = await fetch('/api/admin/user/hostess/edit', {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+					id: editHostess.id,
           name: editName,
           phoneNumber: editPhoneNumber,
           email: editEmail,
@@ -293,8 +294,14 @@ export default function HostessTable() {
                   onClick={async () => {
                     if (!selectedHostess) return;
                     try {
-                      const res = await fetch(`/api/admin/user/hostess/${selectedHostess.id}`, {
-                        method: "DELETE",
+                      const res = await fetch('/api/admin/user/hostess/delete', {
+												method: "POST",
+                        headers: {
+													"Content-Type": "application/json",
+												},
+												body: JSON.stringify({
+													id: selectedHostess.id,
+												}),
                       });
 
                       if (res.ok) {
