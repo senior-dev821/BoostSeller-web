@@ -1,7 +1,6 @@
 // components/LeadFunnelReport.tsx
 import { Card } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, LabelList } from "recharts";
-import DateRangePicker  from "@/components/ui/DateRangePicker";
 
 const data = [
   { stage: "New", count: 120 },
@@ -19,7 +18,6 @@ export default function LeadFunnelReport() {
       <h2 className="text-xl font-semibold mb-4">Lead Funnel Report</h2>
       <div className="flex justify-between items-center mb-4">
         <p className="text-muted-foreground">Total Leads: {total}</p>
-        <DateRangePicker />
       </div>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={data}>
