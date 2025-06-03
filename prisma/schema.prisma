@@ -70,6 +70,7 @@ model Lead {
   registerId    String    @unique  @map("register_id")
   phoneNumber   String    @db.VarChar(15) @map("phone_number")
   interestId    Int       @map("interest_id")
+	triedPerformerIds  Int[]  @map("tired_performer_ids")
   additionalInfo Json?    @map("additional_info") @db.JsonB
   addedBy       Int      @map("added_by")
   status        String    @default("assigned") @db.VarChar(20)
