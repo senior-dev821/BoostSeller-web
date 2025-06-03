@@ -72,7 +72,7 @@
 
 import { NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import type { NextResponse } from 'next/server';
+// import type { NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
 
