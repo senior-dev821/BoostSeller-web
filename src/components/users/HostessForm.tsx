@@ -410,7 +410,7 @@ export default function HostessTable() {
           </Modal>
 
           {/* Info Modal */}
-          <Modal isOpen={showInfoModal} onClose={handleCloseInfo} className=" bg-gray-900 text-white rounded-xl p-6 max-w-[584px] p-5 lg:p-10">
+          <Modal isOpen={showInfoModal} onClose={handleCloseInfo} className=" bg-gray-900 text-white rounded-xl p-6 max-w-[584px] lg:p-10">
             <div className="w-full">
               {/* Avatar & Name */}
               <div className="flex flex-col items-center mb-6">
