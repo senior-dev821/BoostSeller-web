@@ -207,7 +207,7 @@ export default function BasicTableOne() {
                       </div>
                     </div>
                     )
-                    : ("Yet not assigned.")
+                    : ("Not Yet.")
                     }
                   </TableCell>
                   <TableCell className="px-5 py-4 sm:px-6 text-center">
@@ -232,7 +232,7 @@ export default function BasicTableOne() {
                       </div>
                     </div>
                     )
-                    : ("Yet not accepted.")
+                    : ("Not Yet.")
                     }
                     
                   </TableCell>

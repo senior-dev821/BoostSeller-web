@@ -16,6 +16,7 @@ import Button from "../ui/button/Button";
 import { Modal } from "@/components/ui/modal";
 import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 import { User, Phone, Mail, ShieldCheck, Layers, CheckCircle, ClipboardCheck } from "lucide-react";
+import Pagination from "@/components/form/form-elements/Pagination";
 
 interface Lead {
   id: number;
@@ -45,6 +46,9 @@ interface Hostess {
 
 export default function HostessTable() {
   const [hostesses, setHostesses] = useState<Hostess[]>([]);
+	const [currentPage, setCurrentPage] = useState(1); //
+  const pageSize = 10; //
+
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedHostess, setSelectedHostess] = useState<Hostess | null>(null);
 
@@ -133,6 +137,12 @@ export default function HostessTable() {
     setSelectedHostess(null);
   };
 
+	const totalPages = Math.ceil(hostesses.length / pageSize);
+  const paginatedHostesses = hostesses.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -186,8 +196,8 @@ export default function HostessTable() {
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
 
-              {hostesses.length > 0 ? (
-                hostesses.map((hostess) => (
+              {paginatedHostesses.length > 0 ? (
+                paginatedHostesses.map((hostess) => (
                   <TableRow key={hostess.id}>
                     <TableCell className="px-5 py-4 sm:px-6 text-center">
                       <div className="flex items-center gap-3">
@@ -275,6 +285,7 @@ export default function HostessTable() {
             </TableBody>
           </Table>
 
+					
           {/* Delete Modal */}
 
           <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} className="max-w-[584px] p-5 lg:p-10">
@@ -556,6 +567,16 @@ export default function HostessTable() {
 
         </div>
       </div>
+			{/* ✅ Pagination */}
+			{hostesses.length > pageSize && (
+						<div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
+							<Pagination
+								currentPage={currentPage}
+								totalPages={totalPages}
+								onPageChange={setCurrentPage}
+							/>
+						</div>
+					)}
     </div>
 
 

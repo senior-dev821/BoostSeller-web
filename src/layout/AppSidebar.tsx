@@ -41,13 +41,15 @@ const navItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
     name: "Users",
-    subItems: [{ name: "Hostess", path: "/hostess", super: false },
-								{ name: "Performer", path: "/performer", super: false }],
+    subItems: [
+			{ name: "Hostess", path: "/hostess", super: false },
+			{ name: "Performer", path: "/performer", super: false }
+		],
   },
 	{
     icon: <GroupIcon />,
     name: "Leads",
-     path: "/basic-tables",
+     path: "/leads",
   },
   {
     name: "Interests",
@@ -58,7 +60,6 @@ const navItems: NavItem[] = [
     name: "Sales Stages",
     icon: <PageIcon />,
     path: "/sales-stage",
-		// super: true,
   },
 	
 	
@@ -71,7 +72,7 @@ const superItems: NavItem[] = [
     subItems: [
       // { name: "Hostess Detail", path: "/hostessdetail", super: false },
       { name: "Lead Escalation Time", path: "/leadescalation", super: false },
-			{ name: "Lead Input", path: "/leadinputform", super: false },
+			{ name: "Lead Input Fields", path: "/leadinputform", super: false },
     ],
   },
   // {

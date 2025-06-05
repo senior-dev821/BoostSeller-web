@@ -15,6 +15,7 @@ import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 import { Modal } from "@/components/ui/modal";
 import { User, Phone, Mail, ShieldCheck, Inbox, CheckCircle, BadgeCheck, Archive, Users, BarChart, Timer } from "lucide-react";
+import Pagination from "@/components/form/form-elements/Pagination";
 
 interface Performer {
   id: number;
@@ -49,6 +50,10 @@ interface Group {
 
 export default function PerformerTable() {
   const [performers, setPerformers] = useState<Performer[]>([]);
+
+	const [currentPage, setCurrentPage] = useState(1); //
+  const pageSize = 10;
+
   const [groups, setGroups] = useState<Group[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -153,6 +158,12 @@ export default function PerformerTable() {
       .then((res) => res.json())
       .then((data) => setGroups(data));
   }, []);
+
+	const totalPages = Math.ceil(performers.length / pageSize);
+  const paginatedPerformers = performers.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -228,7 +239,7 @@ export default function PerformerTable() {
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {performers
+              {paginatedPerformers
                 .filter((performer) => {
                   if (selectedGroup === "All") return true;
                   if (selectedGroup === "None") return !performer.groupName;
@@ -317,6 +328,7 @@ export default function PerformerTable() {
                 ))}
             </TableBody>
           </Table>
+
           <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} className="max-w-[584px] p-5 lg:p-10">
             <div className="p-4 w-120">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white text-center">
@@ -623,6 +635,16 @@ export default function PerformerTable() {
           </Modal>
         </div>
       </div>
+			{/* ✅ Pagination */}
+			{performers.length > pageSize && (
+						<div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
+							<Pagination
+								currentPage={currentPage}
+								totalPages={totalPages}
+								onPageChange={setCurrentPage}
+							/>
+						</div>
+					)}
     </div>
   );
 }

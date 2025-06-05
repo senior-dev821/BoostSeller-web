@@ -3,17 +3,16 @@ import jwt from 'jsonwebtoken';
 import { redirect } from 'next/navigation';
 
 import ComponentCard from "@/components/common/ComponentCard";
-// import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import PerformerForm from "@/components/users/PerformerForm";
+import BasicTableOne from "@/components/leads/LeadsForm";
 import { Metadata } from "next";
 import React from "react";
 
 const JWT_SECRET = process.env.JWT_SECRET || 'BoostSellerSecret';
 
 export const metadata: Metadata = {
-  title: "Performer | BoostSeller",
+  title: "Basic Table | BoostSeller",
   description:
-    "This is Performer page for BoostSeller Admin Dashboard",
+    "This is Basic Table  page for BoostSeller Admin Dashboard",
   // other metadata
 };
 
@@ -35,10 +34,9 @@ export default async function BasicTables() {
 
   return (
     <div>
-      {/* <PageBreadcrumb pageTitle="Performers" /> */}
       <div className="space-y-6">
-        <ComponentCard title="Performers">
-          <PerformerForm />
+        <ComponentCard title="Leads">
+          <BasicTableOne />
         </ComponentCard>
       </div>
     </div>
