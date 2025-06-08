@@ -36,7 +36,7 @@ export async function POST(req: Request) {
             return new Response(JSON.stringify({ error: true, message: 'User already exists.', exist: true,}), {
           });
         }
-        await prisma.hostess.create({ 
+        const hostess =  await prisma.hostess.create({ 
           data: { 
             userId: user.id 
           } 
@@ -47,9 +47,10 @@ export async function POST(req: Request) {
             return new Response(JSON.stringify({ error: true, message: 'User already exists.', exist: true,}), {
           });
         }
-        await prisma.performer.create({ 
+        const performer = await prisma.performer.create({ 
           data: { 
-            userId: user.id 
+            userId: user.id,
+            groupIds: [], 
           } 
         });
       }

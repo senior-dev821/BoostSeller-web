@@ -26,11 +26,6 @@ model User {
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
   avatarPath  String?  @map("avatar_path") @db.VarChar(100)
   fcmToken    String?  @db.VarChar(255)
-
-  // relation
-
-  hostess   Hostess?
-  performer Performer?
 }
 
 model Hostess {
@@ -41,8 +36,6 @@ model Hostess {
   completedCount Int      @default(0) @map("completed_count")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
-  user           User     @relation(fields: [userId], references: [id])
-  lead           Lead[]
 }
 
 model Performer {
@@ -56,24 +49,22 @@ model Performer {
   skippedCount    Int      @default(0) @map("skipped_count")
   avgResponseTime Float    @default(0) @map("avg_response_time")
   score           Float    @default(0)
-  groupId         Int?     @map("group_id")
+  groupIds        Int[]    @map("group_ids")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
-  user            User     @relation(fields: [userId], references: [id])
-  group           Group?   @relation(fields: [groupId], references: [id])
 }
 
 model Lead {
   id                Int       @id @default(autoincrement())
   name              String    @db.VarChar(100)
   registerId        String    @unique @map("register_id")
+  idStr             String    @map("id_str")
   phoneNumber       String    @map("phone_number") @db.VarChar(15)
   interestId        Int       @map("interest_id")
-  triedPerformerIds Int[]     @map("tired_performer_ids")
-  additionalInfo    Json?     @map("additional_info") @db.JsonB
-  addedBy           Int       @map("added_by")
-  status            String    @default("assigned") @db.VarChar(20)
   isReturn          Boolean   @default(false) @map("is_return")
+  additionalInfo    Json?     @map("additional_info") @db.JsonB
+  addedBy           Int?      @map("added_by")
+  status            String    @default("assigned") @db.VarChar(20)
   assignedTo        Int?      @map("assigned_to")
   assignedAt        DateTime? @map("assigned_at")
   acceptedBy        Int?      @map("accepted_by")
@@ -81,17 +72,16 @@ model Lead {
   stageId           Int       @map("stage_id")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
+  triedPerformerIds Int[]     @map("tired_performer_ids")
   interest          Interest  @relation(fields: [interestId], references: [id])
-  hostess           Hostess   @relation(fields: [addedBy], references: [id])
 }
 
 model Stage {
   id             Int      @id @default(autoincrement())
   name           String   @db.VarChar(100)
-  description    String   @db.VarChar(256)
-  interestId     Int      @map("interest_id")
   sequence       Int
   requiredFields Json?    @map("required_fields") @db.JsonB
+  interestId     Int      @map("interest_id")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
 }
@@ -106,21 +96,19 @@ model lead_stage_mapping {
 }
 
 model Interest {
-  id          Int      @id @default(autoincrement())
-  name        String   @unique @db.VarChar(100)
-  description String   @db.VarChar(256)
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
-  leads       Lead[]
+  id        Int      @id @default(autoincrement())
+  name      String   @unique @db.VarChar(100)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  leads     Lead[]
 }
 
 model Group {
-  id          Int         @id @default(autoincrement())
-  name        String      @unique @db.VarChar(100)
-  description String      @db.VarChar(256)
-  createdAt   DateTime    @default(now()) @map("created_at")
-  updatedAt   DateTime    @default(now()) @updatedAt @map("updated_at")
-  performers  Performer[]
+  id         Int      @id @default(autoincrement())
+  name       String   @unique @db.VarChar(100)
+  interestId Int      @unique @map("interest_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
 }
 
 model InterestGroupMapping {
@@ -145,7 +133,6 @@ model Setting {
   id           Int      @id @default(autoincrement())
   assignPeriod Int      @default(0) @map("assign_period")
   performLimit Int      @default(0) @map("perform_limit")
-  closeReason  Json?    @map("close_reason") @db.JsonB
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 }
@@ -165,7 +152,6 @@ model LeadInputSetting {
   sequence Int
   label    String   @unique
   type     String
-  required Boolean  @default(false)
   items    String[]
 }
 
