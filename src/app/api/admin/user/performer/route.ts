@@ -7,7 +7,6 @@ export async function GET() {
   const performers = await prisma.performer.findMany({
     include: {
       user: true,
-      group: true,
     },
   });
 
@@ -30,8 +29,7 @@ export async function GET() {
         ? 0
         : acceptedCount / assignedCount;
       const score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
-      const groupName = performer.group?.name;
-      return { ...performer, score, groupName };
+      return { ...performer, score };
     })
     .sort((a, b) => {
       if (b.score !== a.score) return b.score - a.score;

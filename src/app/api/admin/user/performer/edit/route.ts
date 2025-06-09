@@ -3,14 +3,13 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
     try {
-        const { id, name, phoneNumber, email, isApproved, isAvailable, groupId } = await req.json();
+        const { id, name, phoneNumber, email, isApproved, isAvailable } = await req.json();
         const updatePerformer = await prisma.performer.update({
             where: {
                 id: id,
             },
             data: {
-              available: isAvailable,
-                groupId:groupId,
+              available: isAvailable
             },
         });
 
