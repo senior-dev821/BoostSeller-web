@@ -3,9 +3,16 @@ import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-export async function PUT(req: NextRequest, context: { params: { id: string } }) {
-  const { id } = context.params;
+export async function PUT(req: NextRequest) {
   try {
+    // Get the ID from the request URL
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop(); // Gets the [id] from /api/setting/interest/[id]
+
+    if (!id) {
+      return NextResponse.json({ error: true, message: 'Missing ID in URL' }, { status: 400 });
+    }
+
     const { name, description } = await req.json();
 
     const interest = await prisma.interest.update({
@@ -29,21 +36,30 @@ export async function PUT(req: NextRequest, context: { params: { id: string } })
 }
 
 
+export async function DELETE(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const id = url.pathname.split('/').pop();
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-	const interestId = Number(params.id);
-	try {
+    if (!id) {
+      return NextResponse.json({ error: true, message: 'Missing ID in URL' }, { status: 400 });
+    }
 
-		// Delete the related Group first
-		await prisma.group.delete({ where: { interestId : interestId} });
-	
-		// Then delete the Interest
-		await prisma.interest.delete({ where: { id: interestId } });
-		return NextResponse.json({ success: true });
+    const interestId = Number(id);
+
+    // Delete the related Group first
+    await prisma.group.delete({ where: { interestId } });
+
+    // Then delete the Interest
+    await prisma.interest.delete({ where: { id: interestId } });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("fetching error:", error);
-    return new NextResponse(JSON.stringify({error: true, message: "Failed to delete interests. \n Please try again." }), {
-      
-    });
+    return NextResponse.json(
+      { error: true, message: "Failed to delete interest. Please try again." },
+      { status: 500 }
+    );
   }
 }
+
