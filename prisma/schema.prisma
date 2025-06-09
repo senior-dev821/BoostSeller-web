@@ -89,6 +89,7 @@ model Lead {
 model Stage {
   id             Int      @id @default(autoincrement())
   name           String   @db.VarChar(100)
+	description    String   @db.VarChar(255)
   sequence       Int
   requiredFields Json?    @map("required_fields") @db.JsonB
   interestId     Int      @map("interest_id")

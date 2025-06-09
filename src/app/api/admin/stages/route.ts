@@ -24,13 +24,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: 'Reordered' });
   }
 
-  const { name, description, sequence, requiredFields } = body;
+  const { name, description, sequence, interestId, requiredFields } = body;
 
   const newStage = await prisma.stage.create({
     data: {
       name,
       description,
       sequence,
+			interestId,
       requiredFields,
     },
   });
@@ -40,7 +41,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(req: NextRequest) {
   const body = await req.json();
-  const { id, name, description, sequence, requiredFields } = body;
+  const { id, name, description, sequence, interestId, requiredFields } = body;
 
   const updatedStage = await prisma.stage.update({
     where: { id },
@@ -48,6 +49,7 @@ export async function PUT(req: NextRequest) {
       name,
       description,
       sequence,
+			interestId,
       requiredFields,
     },
   });
