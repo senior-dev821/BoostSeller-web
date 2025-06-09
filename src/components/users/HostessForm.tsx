@@ -17,7 +17,6 @@ import { Modal } from "@/components/ui/modal";
 import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 import { User, Phone, Mail, ShieldCheck, Layers, CheckCircle, ClipboardCheck } from "lucide-react";
 import Pagination from "@/components/form/form-elements/Pagination";
-import next from "next";
 
 interface Lead {
   id: number;

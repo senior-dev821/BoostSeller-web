@@ -11,7 +11,6 @@ import {
 
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
-import Button from "../ui/button/Button";
 
 interface Lead {
   id: number;
