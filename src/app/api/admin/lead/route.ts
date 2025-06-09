@@ -4,19 +4,19 @@ const prisma = new PrismaClient();
 import { NextResponse } from "next/server";
 
 export async function GET() {
-    const leads = await prisma.lead.findMany({
-        include: {
-            interest: true,
-            hostess: {
-                include: {
-                    user: true,
-                },
+	const leads = await prisma.lead.findMany({
+    include: {
+        interest: true,
+        hostess: {
+            include: {
+                user: true,
             },
         },
-        orderBy: {
-            createdAt: 'desc',
-        },
-    });
+    },
+    orderBy: {
+        createdAt: 'desc',
+    },
+});
 
     const expandedLeads = await Promise.all(
         leads.map(async (lead) => {

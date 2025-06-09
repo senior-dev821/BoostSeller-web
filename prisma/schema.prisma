@@ -26,6 +26,11 @@ model User {
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
   avatarPath  String?  @map("avatar_path") @db.VarChar(100)
   fcmToken    String?  @db.VarChar(255)
+
+  // relation
+
+  hostess   Hostess?
+  performer Performer?
 }
 
 model Hostess {
@@ -36,6 +41,8 @@ model Hostess {
   completedCount Int      @default(0) @map("completed_count")
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
+  user           User     @relation(fields: [userId], references: [id])
+  lead           Lead[]
 }
 
 model Performer {
@@ -52,6 +59,7 @@ model Performer {
   groupIds        Int[]    @map("group_ids")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @default(now()) @updatedAt @map("updated_at")
+  user            User     @relation(fields: [userId], references: [id])
 }
 
 model Lead {
@@ -74,6 +82,8 @@ model Lead {
   updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
   triedPerformerIds Int[]     @map("tired_performer_ids")
   interest          Interest  @relation(fields: [interestId], references: [id])
+  hostessId         Int				@map("hostess_id")
+  hostess           Hostess?  @relation(fields: [hostessId], references: [id])
 }
 
 model Stage {
