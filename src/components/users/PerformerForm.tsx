@@ -559,12 +559,6 @@ export default function PerformerTable() {
                   />
                 </div>
                 <h3 className="text-2xl font-semibold">{selectedPerformer?.user.name}</h3>
-                <h3 className="text-2xl font-semibold">
-                  Effectiveness Score :{" "}
-                  <span className="font-bold text-red-500">
-                    {selectedPerformer?.score?.toFixed(2) ?? "0.00"}
-                  </span>
-                </h3>
               </div>
 
               {/* Info Cards */}
