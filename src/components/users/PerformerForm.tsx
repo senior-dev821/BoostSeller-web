@@ -14,7 +14,7 @@ import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 import { Modal } from "@/components/ui/modal";
-import { User, Phone, Mail, ShieldCheck, Inbox, CheckCircle, BadgeCheck, Archive, Users, BarChart, Timer } from "lucide-react";
+import { User, Phone, Mail, ShieldCheck, Inbox, CheckCircle, BadgeCheck, Archive, Star, BarChart, Timer } from "lucide-react";
 import Pagination from "@/components/form/form-elements/Pagination";
 
 interface Performer {
@@ -571,10 +571,10 @@ export default function PerformerTable() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
-                  <Users className="text-blue-400 w-5 h-5" />
+                  <Star className="text-blue-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Group</div>
-                    <div className="text-center">{selectedPerformer?.groupName}</div>
+                    <div className="text-sm font-medium text-gray-400">Score</div>
+                    <div className="text-center">{selectedPerformer?.score?.toFixed(2) ?? "0.00"}</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
