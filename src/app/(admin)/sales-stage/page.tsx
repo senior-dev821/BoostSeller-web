@@ -29,6 +29,7 @@ export default async function BasicTables() {
   try {
     jwt.verify(token, JWT_SECRET);
   } catch (error) {
+		console.log("Error:",error);
     redirect('/login');
   }
 

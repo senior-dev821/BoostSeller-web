@@ -29,6 +29,7 @@ export default async function interestGroupMapping() {
   try {
     jwt.verify(token, JWT_SECRET);
   } catch (error) {
+		console.log("Error:",error);
     redirect('/login');
   }
 

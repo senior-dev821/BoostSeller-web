@@ -32,6 +32,7 @@ export default async function Ecommerce() {
   try {
     jwt.verify(token, JWT_SECRET);
   } catch (error) {
+		console.log("Error:",error);
     redirect('/login');
   }
 

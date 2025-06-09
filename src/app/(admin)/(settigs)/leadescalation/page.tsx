@@ -20,6 +20,7 @@ export default async function SettingsPage() {
   try {
     jwt.verify(token, JWT_SECRET);
   } catch (error) {
+		console.log("Error:",error);
     redirect('/login');
   }
 
