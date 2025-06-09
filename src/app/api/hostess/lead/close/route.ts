@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const { registerId } = await req.json();
 
-    const lead = await prisma.lead.update({
+    await prisma.lead.update({
       where: {
         registerId: registerId,
       },
