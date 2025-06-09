@@ -163,6 +163,7 @@ model LeadInputSetting {
   label    String   @unique
   type     String
   items    String[]
+	required Boolean	@default(false)
 }
 
 model Notification {
