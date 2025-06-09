@@ -26,7 +26,7 @@ interface Performer {
   closedCount: number;
   avgResponseTime: number;
   createdAt: string;
-  groupId: number;
+  groupIds: number[];
   groupName: string;
   score: number;
   groupRank: number;
@@ -51,7 +51,7 @@ interface Group {
 export default function PerformerTable() {
   const [performers, setPerformers] = useState<Performer[]>([]);
 
-	const [currentPage, setCurrentPage] = useState(1); //
+  const [currentPage, setCurrentPage] = useState(1); //
   const pageSize = 10;
 
   const [groups, setGroups] = useState<Group[]>([]);
@@ -66,9 +66,9 @@ export default function PerformerTable() {
   const [editApproved, setEditApproved] = useState(false);
   const [editGroupName, setEditGroupName] = useState("");
   const [editAvailable, setEditAvailable] = useState(false);
-  const [editGroupId, setEditGroupId] = useState<number>(0);
+  const [editGroupIds, setEditGroupIds] = useState<number[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string>("All");
-
+  const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   const handleEditClick = (performer: Performer) => {
     setEditPerformer(performer);
@@ -77,7 +77,7 @@ export default function PerformerTable() {
     setEditEmail(performer.user.email);
     setEditApproved(performer.user.isApproved);
     setEditAvailable(performer.available);
-    setEditGroupId(performer.groupId);
+    setEditGroupIds(performer.groupIds);
     setEditGroupName(performer.groupName);
     setShowEditModal(true);
   }
@@ -102,13 +102,13 @@ export default function PerformerTable() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-					id: editPerformer.id,
+          id: editPerformer.id,
           name: editName,
           phoneNumber: editPhoneNumber,
           email: editEmail,
           isApproved: editApproved,
           isAvailable: editAvailable,
-          groupId: editGroupId,
+          groupIds: editGroupIds,
         }),
       });
 
@@ -121,7 +121,7 @@ export default function PerformerTable() {
                 ...performer,
                 available: editAvailable,
                 groupName: editGroupName,
-                groupId: editGroupId,
+                groupIds: editGroupIds,
                 user: {
                   ...performer.user,
                   name: editName,
@@ -147,6 +147,18 @@ export default function PerformerTable() {
     setSelectedPerformer(null);
   };
 
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = Number(e.target.value);
+    if (!editGroupIds.includes(value)) {
+      setEditGroupIds([...editGroupIds, value]);
+    }
+  };
+
+  const removeGroup = (idToRemove: number) => {
+    setEditGroupIds((ids) => ids.filter((id) => id !== idToRemove));
+  };
+
+
   useEffect(() => {
     fetch("/api/admin/user/performer")
       .then((res) => res.json())
@@ -159,7 +171,7 @@ export default function PerformerTable() {
       .then((data) => setGroups(data));
   }, []);
 
-	const totalPages = Math.ceil(performers.length / pageSize);
+  const totalPages = Math.ceil(performers.length / pageSize);
   const paginatedPerformers = performers.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -253,7 +265,11 @@ export default function PerformerTable() {
                           <Image
                             width={40}
                             height={40}
-                            src={performer.user.avatarPath || "/images/user/user-01.jpg"}
+                            src={
+                              performer.user.avatarPath
+                                ? `${nextServerUrl}${performer.user.avatarPath}`
+                                : "/images/user/user-01.jpg"
+                            }
                             alt={performer.user.name}
                           />
                         </div>
@@ -348,12 +364,12 @@ export default function PerformerTable() {
                     try {
                       const res = await fetch('/api/admin/user/performer/delete', {
                         method: "POST",
-												headers: {
-													"Content-Type": "application/json",
-												},
-												body: JSON.stringify({
-													id: selectedPerformer.id,
-												}),
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          id: selectedPerformer.id,
+                        }),
                       });
 
                       if (res.ok) {
@@ -384,11 +400,15 @@ export default function PerformerTable() {
             <div className="p-4 w-full max-w-md mx-auto">
               {/* Avatar and Name on top */}
               <div className="flex flex-col items-center mb-6">
-                <div className="w-24 h-24 overflow-hidden rounded-full mb-3">
+                <div className="w-24 h-24 rounded-full overflow-hidden mb-3 border-4 border-white shadow-md">
                   <Image
                     width={96}
                     height={96}
-                    src={editPerformer?.user.avatarPath || "/images/user/user-01.jpg"}
+                    src={
+                      editPerformer?.user.avatarPath
+                        ? `${nextServerUrl}${editPerformer?.user.avatarPath}`
+                        : "/images/user/user-01.jpg"
+                    }
                     alt={editName}
                     className="object-cover"
                   />
@@ -399,35 +419,48 @@ export default function PerformerTable() {
               {/* Editable fields */}
               <div className="space-y-4">
                 <div>
-                  <p className="mt-2 text-sm text-blue-600 bg-blue-500 border border-blue-300 px-3 py-2 rounded-md">
+                  <p className="mt-2 text-sm text-white-600 bg-blue-500 border border-blue-300 px-3 py-2 rounded-md">
                     This performer must belong to a group in order to participate in lead distribution.
                   </p>
                   <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
                     Assigned Group
                   </label>
                   <select
-                    value={editGroupId}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      const selectedGroup = groups.find(g => g.id === Number(val));
-
-                      if (selectedGroup) {
-                        setEditGroupId(selectedGroup.id);
-                        setEditGroupName(selectedGroup.name);
-                      } else {
-                        setEditGroupId(0);
-                        setEditGroupName('');
-                      }
-                    }}
-                    className="w-full rounded border border-gray-700 px-3 py-2 bg-gray-900  focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    defaultValue="default"
+                    onChange={handleSelectChange}
+                    className="w-full rounded border border-gray-700 px-3 py-2 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
-                    <option value="">-- Select Group --</option>
+                    <option value="default" disabled>-- Select Group --</option>
                     {groups.map((group) => (
                       <option key={group.id} value={group.id}>
                         {group.name}
                       </option>
                     ))}
                   </select>
+
+                  {editGroupIds.length > 0 && (
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {editGroupIds.map((id) => {
+                        const group = groups.find((g) => g.id === id);
+                        if (!group) return null;
+                        return (
+                          <div
+                            key={id}
+                            className="flex items-center gap-2 px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded-full"
+                          >
+                            <span>{group.name}</span>
+                            <button
+                              type="button"
+                              onClick={() => removeGroup(id)}
+                              className="text-red-500 hover:text-red-700 font-bold"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
 
                 </div>
 
@@ -516,7 +549,11 @@ export default function PerformerTable() {
                   <Image
                     width={96}
                     height={96}
-                    src={selectedPerformer?.user.avatarPath || "/images/user/user-01.jpg"}
+                    src={
+                      selectedPerformer?.user.avatarPath
+                        ? `${nextServerUrl}${selectedPerformer?.user.avatarPath}`
+                        : "/images/user/user-01.jpg"
+                    }
                     alt={selectedPerformer?.user.name ?? ""}
                     className="object-cover"
                   />
@@ -635,16 +672,16 @@ export default function PerformerTable() {
           </Modal>
         </div>
       </div>
-			{/* ✅ Pagination */}
-			{performers.length > pageSize && (
-						<div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
-							<Pagination
-								currentPage={currentPage}
-								totalPages={totalPages}
-								onPageChange={setCurrentPage}
-							/>
-						</div>
-					)}
+      {/* ✅ Pagination */}
+      {performers.length > pageSize && (
+        <div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
   );
 }

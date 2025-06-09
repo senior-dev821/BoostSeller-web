@@ -17,6 +17,7 @@ import { Modal } from "@/components/ui/modal";
 import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 import { User, Phone, Mail, ShieldCheck, Layers, CheckCircle, ClipboardCheck } from "lucide-react";
 import Pagination from "@/components/form/form-elements/Pagination";
+import next from "next";
 
 interface Lead {
   id: number;
@@ -46,7 +47,7 @@ interface Hostess {
 
 export default function HostessTable() {
   const [hostesses, setHostesses] = useState<Hostess[]>([]);
-	const [currentPage, setCurrentPage] = useState(1); //
+  const [currentPage, setCurrentPage] = useState(1); //
   const pageSize = 10; //
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -60,8 +61,8 @@ export default function HostessTable() {
   const [editEmail, setEditEmail] = useState("");
   const [editApproved, setEditApproved] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
-
-
+  const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+ 
   useEffect(() => {
     fetch("/api/admin/user/hostess")
       .then((res) => res.json())
@@ -78,7 +79,7 @@ export default function HostessTable() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-					id: editHostess.id,
+          id: editHostess.id,
           name: editName,
           phoneNumber: editPhoneNumber,
           email: editEmail,
@@ -137,7 +138,7 @@ export default function HostessTable() {
     setSelectedHostess(null);
   };
 
-	const totalPages = Math.ceil(hostesses.length / pageSize);
+  const totalPages = Math.ceil(hostesses.length / pageSize);
   const paginatedHostesses = hostesses.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
@@ -205,7 +206,11 @@ export default function HostessTable() {
                           <Image
                             width={40}
                             height={40}
-                            src={hostess.user.avatarPath || "/images/user/user-01.jpg"}
+                            src={
+                              hostess.user.avatarPath
+                                ? `${nextServerUrl}${hostess.user.avatarPath}`
+                                : "/images/user/user-04.jpg"
+                            }
                             alt={hostess.user.name}
                           />
                         </div>
@@ -285,7 +290,7 @@ export default function HostessTable() {
             </TableBody>
           </Table>
 
-					
+
           {/* Delete Modal */}
 
           <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} className="max-w-[584px] p-5 lg:p-10">
@@ -306,13 +311,13 @@ export default function HostessTable() {
                     if (!selectedHostess) return;
                     try {
                       const res = await fetch('/api/admin/user/hostess/delete', {
-												method: "POST",
+                        method: "POST",
                         headers: {
-													"Content-Type": "application/json",
-												},
-												body: JSON.stringify({
-													id: selectedHostess.id,
-												}),
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          id: selectedHostess.id,
+                        }),
                       });
 
                       if (res.ok) {
@@ -344,11 +349,15 @@ export default function HostessTable() {
             <div className="p-4 w-full max-w-md mx-auto">
               {/* Avatar and Name on top */}
               <div className="flex flex-col items-center mb-6">
-                <div className="w-24 h-24 overflow-hidden rounded-full mb-3">
+                <div className="w-24 h-24 rounded-full overflow-hidden mb-3 border-4 border-white shadow-md">
                   <Image
                     width={96}
                     height={96}
-                    src={editHostess?.user.avatarPath || "/images/user/user-01.jpg"}
+                    src={
+                      editHostess?.user.avatarPath
+                                ? `${nextServerUrl}${editHostess?.user.avatarPath}`
+                                : "/images/user/user-04.jpg"  
+                    }
                     alt={editName}
                     className="object-cover"
                   />
@@ -429,7 +438,11 @@ export default function HostessTable() {
                   <Image
                     width={96}
                     height={96}
-                    src={selectedHostess?.user.avatarPath || "/images/user/user-01.jpg"}
+                    src={
+                      selectedHostess?.user.avatarPath
+                                ? `${nextServerUrl}${selectedHostess?.user.avatarPath}`
+                                : "/images/user/user-04.jpg"
+                    }
                     alt={selectedHostess?.user.name ?? ""}
                     className="object-cover"
                   />
@@ -499,84 +512,21 @@ export default function HostessTable() {
                   </div>
                 </div>
               </div>
-
-
-
-              {/* Leads Table */}
-              <h4 className="text-xl font-semibold mb-2">Leads</h4>
-              <div className="rounded-lg border border-gray-700 overflow-hidden">
-                <div className="max-h=[300px] overflow-y-auto">
-                  <Table>
-                    {/* Table Header */}
-                    <TableHeader className="border-b border-gray-100 dark:border-white/[0.1]">
-                      <TableRow>
-                        <TableCell
-                          isHeader
-                          className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400"
-                        >
-                          Name
-                        </TableCell>
-                        <TableCell
-                          isHeader
-                          className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
-                        >
-                          Status
-                        </TableCell>
-                        <TableCell
-                          isHeader
-                          className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
-                        >
-                          Created Date
-                        </TableCell>
-                      </TableRow>
-                    </TableHeader>
-
-                    {/* Table Body */}
-                    <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                      {selectedHostess?.lead?.length ? (
-                        selectedHostess.lead.map((lead) => (
-                          <TableRow key={lead.id} className="hover:bg-gray-800 transition">
-                            <TableCell className="px-5 py-4 text-white text-theme-sm">
-                              {lead.name}
-                            </TableCell>
-                            <TableCell className="px-5 py-4 text-center">
-                              {lead.status}
-                            </TableCell>
-                            <TableCell className="px-5 py-4 text-center text-white text-theme-sm">
-                              {new Date(lead.createdAt).toLocaleDateString()}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell
-
-                            className="px-5 py-6 text-center text-gray-400 text-sm flex justify-center items-center"
-                          >
-                            No leads found.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-
-                  </Table>
-                </div>
-              </div>
             </div>
           </Modal>
 
         </div>
       </div>
-			{/* ✅ Pagination */}
-			{hostesses.length > pageSize && (
-						<div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
-							<Pagination
-								currentPage={currentPage}
-								totalPages={totalPages}
-								onPageChange={setCurrentPage}
-							/>
-						</div>
-					)}
+      {/* ✅ Pagination */}
+      {hostesses.length > pageSize && (
+        <div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
 
 

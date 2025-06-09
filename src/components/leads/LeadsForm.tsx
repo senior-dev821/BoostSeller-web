@@ -12,8 +12,6 @@ import {
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 import Button from "../ui/button/Button";
-// import { Modal } from "@/components/ui/modal";
-import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 
 interface Lead {
   id: number;
@@ -50,40 +48,22 @@ interface additionalInfo {
 
 export default function BasicTableOne() {
   const [leads, setLeads] = useState<Lead[]>([]);
-  // const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  // const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
   useEffect(() => {
     fetch("/api/admin/lead")
       .then((res) => res.json())
       .then((data) => setLeads(data));
   }, []);
 
-  // function getBudgetFromLead(lead: Lead): string | undefined {
-  //   return lead.additionalInfo.find(
-  //     info => info.label === "Budget" && info.type === "currency"
-  //   )?.value;
-  // }
 
-  // const handleEditClick = (lead: Lead) => {
 
-  // }
-
-  // const handleInfoClick = (lead: Lead) => {
-
-  // }
-	function getBudgetFromLead(lead: Lead): string | undefined {
+  function getBudgetFromLead(lead: Lead): string | undefined {
     return lead.additionalInfo.find(
       info => info.label === "Budget" && info.type === "currency"
     )?.value;
   }
 
-  const handleEditClick = () => {
-
-  }
-
-  const handleInfoClick = () => {
-
-  }
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -142,12 +122,6 @@ export default function BasicTableOne() {
                 >
                   Budget
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
-                >
-                  Actions
-                </TableCell>
               </TableRow>
             </TableHeader>
 
@@ -170,7 +144,10 @@ export default function BasicTableOne() {
                         <Image
                           width={40}
                           height={40}
-                          src={lead.hostess.user.avatarPath || "/images/user/user-01.jpg"}
+                          src={
+                            lead.hostess.user.avatarPath
+                              ? `${nextServerUrl}${lead.hostess.user.avatarPath}`
+                              : "/images/user/user-04.jpg"}
                           alt={lead.name}
                         />
                       </div>
@@ -187,54 +164,58 @@ export default function BasicTableOne() {
 
                   <TableCell className="px-5 py-4 sm:px-6 text-center">
                     {lead.assignedName !== ""
-                    ? (
-                      <div className="flex items-center justify-center gap-3">
-                      <div className="w-10 h-10 overflow-hidden rounded-full">
-                        <Image
-                          width={40}
-                          height={40}
-                          src={lead.assignedAvatarPath || "/images/user/user-01.jpg"}
-                          alt={lead.assignedName}
-                        />
-                      </div>
-                      <div>
-                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {lead.assignedName}
-                        </span>
-                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                          {"performer"}
-                        </span>
-                      </div>
-                    </div>
-                    )
-                    : ("Not Yet.")
+                      ? (
+                        <div className="flex items-center justify-center gap-3">
+                          <div className="w-10 h-10 overflow-hidden rounded-full">
+                            <Image
+                              width={40}
+                              height={40}
+                              src={
+                                lead.assignedAvatarPath
+                                  ? `${nextServerUrl}${lead.assignedAvatarPath}`
+                                  : "/images/user/user-04.jpg"
+                              }
+                              alt={lead.assignedName}
+                            />
+                          </div>
+                          <div>
+                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              {lead.assignedName}
+                            </span>
+                            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                              {"performer"}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                      : ("Not Yet.")
                     }
                   </TableCell>
                   <TableCell className="px-5 py-4 sm:px-6 text-center">
                     {lead.acceptedName !== ""
-                    ? (
-                      <div className="flex items-center justify-center gap-3">
-                      <div className="w-10 h-10 overflow-hidden rounded-full">
-                        <Image
-                          width={40}
-                          height={40}
-                          src={lead.acceptedAvatarPath || "/images/user/user-01.jpg"}
-                          alt={lead.acceptedName}
-                        />
-                      </div>
-                      <div>
-                        <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                          {lead.acceptedName}
-                        </span>
-                        <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                          {"performer"}
-                        </span>
-                      </div>
-                    </div>
-                    )
-                    : ("Not Yet.")
+                      ? (
+                        <div className="flex items-center justify-center gap-3">
+                          <div className="w-10 h-10 overflow-hidden rounded-full">
+                            <Image
+                              width={40}
+                              height={40}
+                              src={lead.acceptedAvatarPath || "/images/user/user-01.jpg"}
+                              alt={lead.acceptedName}
+                            />
+                          </div>
+                          <div>
+                            <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              {lead.acceptedName}
+                            </span>
+                            <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                              {"performer"}
+                            </span>
+                          </div>
+                        </div>
+                      )
+                      : ("Not Yet.")
                     }
-                    
+
                   </TableCell>
 
                   <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
@@ -258,36 +239,12 @@ export default function BasicTableOne() {
                   <TableCell className="px-4 py-3 text-gray-500 text-theme-sm text-center dark:text-gray-400">
                     {getBudgetFromLead(lead) ?? "Not specified"}
                   </TableCell>
-                  <TableCell className="px-4 py-3 space-x-2 text-center">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleEditClick()}
-                    >
-                      <PencilIcon className="fill-gray-500 dark:fill-gray-400" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleInfoClick()}
-                    >
-                      <InfoIcon className="fill-gray-500 dark:fill-gray-400" />
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => {
-                        // setSelectedLead();
-                        // setShowDeleteModal(true);
-                      }}
-                    >
-                      <TrashBinIcon className="fill-gray-500 dark:fill-gray-400" />
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
+
+
         </div>
       </div>
     </div>
