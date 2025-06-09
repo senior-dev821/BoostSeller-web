@@ -4,59 +4,60 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import Button from '@/components/ui/button/Button';
 import Input from '@/components/form/input/InputField';
-import Label from "@/components/form/Label";
+import Label from "@/components/form/Label"
 
-export default function LeadEscalationCard() {
-  const [timeout, setTimeout] = useState(0);
+export default function PerformerLimitationCard() {
+  const [limit, setLimit] = useState(0);
   const [saving, setSaving] = useState(false);
-	const [initialTimeout, setInitialTimeout] = useState(0);
+	const [initialLimit, setInitialLimit] = useState(0);
 
   // Fetch setting on load
   useEffect(() => {
-    fetch('/api/setting/escalationtime')
+    fetch('/api/setting/performerlimitation')
       .then((res) => res.json())
       .then((data) => {
-        const value = data.assignPeriod || 0;
-        setTimeout(value);
-        setInitialTimeout(value);
+        const value = data.performLimit || 0;
+        setLimit(value);
+        setInitialLimit(value);
       });
   }, []);
 
 	const handleSave = async () => {
-    if (timeout === initialTimeout) return;
+    if (limit === initialLimit) return;
     setSaving(true);
 
-    const res = await fetch('/api/setting/escalationtime', {
+    const res = await fetch('/api/setting/performerlimitation', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ assignPeriod: timeout }),
+      body: JSON.stringify({ performLimit: limit }),
     });
 
     await res.json();
-    setInitialTimeout(timeout); // update saved state
+    setInitialLimit(limit); // update saved state
     setSaving(false);
   };
 
-  const hasChanges = timeout !== initialTimeout;
+  const hasChanges = limit !== initialLimit;
+  
 
   return (
     <Card className="w-full max-w-md p-6 shadow-xl">
       <CardContent className="space-y-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-semibold">Lead Escalation Timeout</h2>
+          <h2 className="text-lg font-semibold">Performer Limitation</h2>
         </div>
         <p className="text-sm text-muted-foreground">
-          Set the time (in seconds) after which an unclaimed lead will be escalated.
+				Sets the maximum number of leads a performer can work with at the same time.
         </p>
 
         <div className="space-y-2">
-          <Label htmlFor="timeout">Timeout (seconds)</Label>
+          <Label htmlFor="limit">Maximum Number</Label>
           <Input
-            id="timeout"
+            id="limit"
             type="number"
             min="0"
-            defaultValue={timeout}
-            onChange={(e) => setTimeout(Number(e.target.value))}
+            defaultValue={limit}
+            onChange={(e) => setLimit(Number(e.target.value))}
           />
         </div>
 

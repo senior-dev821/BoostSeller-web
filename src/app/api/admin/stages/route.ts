@@ -1,19 +1,22 @@
 // app/api/admin/stages/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma'; // adjust import as needed
+import { prisma } from '@/lib/prisma';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const interestId = req.nextUrl.searchParams.get('interestId');
+
   const stages = await prisma.stage.findMany({
+    where: interestId ? { interestId: parseInt(interestId) } : undefined,
     orderBy: { sequence: 'asc' },
   });
+
   return NextResponse.json(stages);
 }
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  // Handle reordering or new stage creation
   if (Array.isArray(body)) {
     for (const item of body) {
       await prisma.stage.update({
@@ -31,7 +34,7 @@ export async function POST(req: NextRequest) {
       name,
       description,
       sequence,
-			interestId,
+      interestId,
       requiredFields,
     },
   });
@@ -49,7 +52,7 @@ export async function PUT(req: NextRequest) {
       name,
       description,
       sequence,
-			interestId,
+      interestId,
       requiredFields,
     },
   });

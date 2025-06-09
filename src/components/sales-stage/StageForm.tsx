@@ -17,7 +17,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import Button from '@/components/ui/button/Button';
 import Input from '@/components/form/input/InputField';
-import Textarea from '@/components/form/input/TextArea';
+// import Textarea from '@/components/form/input/TextArea';
 import Select from '@/components/form/Select';
 
 interface Element {
@@ -35,6 +35,7 @@ interface StageItem {
   description: string;
   sequence: number;
   elements: Element[];
+  interestId: number;
 }
 
 interface BackendStageItem {
@@ -42,7 +43,13 @@ interface BackendStageItem {
   name: string;
   description: string;
   sequence: number;
+  interestId: number;
   requiredFields?: Element[];
+}
+
+interface Interest {
+  id: number;
+  name: string;
 }
 
 interface SortableItemProps {
@@ -80,6 +87,8 @@ function SortableItem({ item, onClick }: SortableItemProps) {
 }
 
 export default function StageForm() {
+  const [interests, setInterests] = useState<Interest[]>([]);
+  const [selectedInterestId, setSelectedInterestId] = useState<number | null>(null);
   const [stages, setStages] = useState<StageItem[]>([]);
   const [selectedStage, setSelectedStage] = useState<StageItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -87,8 +96,27 @@ export default function StageForm() {
   const [originalOrder, setOriginalOrder] = useState<number[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
+	useEffect(() => {
+		fetch('/api/setting/interest')
+			.then(res => res.json())
+			.then((data) => {
+				if (Array.isArray(data.interests)) {
+					setInterests(data.interests);
+				} else {
+					console.error("Expected array from /api/setting/interest but got:", data);
+					setInterests([]); // fallback to avoid crash
+				}
+			})
+			.catch(err => {
+				console.error("Failed to fetch interests:", err);
+				setInterests([]); // fallback on error
+			});
+	}, []);
+	
+
   useEffect(() => {
-    fetch('/api/admin/stages')
+    if (selectedInterestId === null) return;
+    fetch(`/api/admin/stages?interestId=${selectedInterestId}`)
       .then(res => res.json())
       .then((data: BackendStageItem[]) => {
         const mappedStages: StageItem[] = data.map((s) => ({
@@ -98,7 +126,7 @@ export default function StageForm() {
         setStages(mappedStages);
         setOriginalOrder(mappedStages.map((s) => s.id));
       });
-  }, []);
+  }, [selectedInterestId]);
 
   const handleDragStart = () => setIsDragging(true);
 
@@ -131,20 +159,16 @@ export default function StageForm() {
   };
 
   const updateElement = <K extends keyof Element>(id: string, key: K, value: Element[K]) => {
-
     setSelectedStage((prev) =>
-      prev
-        ? {
-            ...prev,
-            elements: prev.elements.map((el) => (el.id === id ? { ...el, [key]: value } : el)),
-          }
-        : null
+      prev ? {
+        ...prev,
+        elements: prev.elements.map((el) => (el.id === id ? { ...el, [key]: value } : el)),
+      } : null
     );
   };
 
   const addElement = () => {
     if (!selectedStage) return;
-
     const newElement: Element = {
       id: Math.random().toString(36).substring(2),
       label: 'New Field',
@@ -153,21 +177,18 @@ export default function StageForm() {
       required: false,
       items: [],
     };
-
     setSelectedStage((prev) => (prev ? { ...prev, elements: [...prev.elements, newElement] } : prev));
   };
 
   const saveStageDetails = () => {
     if (!selectedStage) return;
-
     const payload = {
       ...selectedStage,
       requiredFields: selectedStage.elements,
+      interestId: selectedStage.interestId,
     };
-
     const method = selectedStage.id ? 'PUT' : 'POST';
     const endpoint = '/api/admin/stages';
-
     fetch(endpoint, {
       method,
       headers: { 'Content-Type': 'application/json' },
@@ -193,21 +214,37 @@ export default function StageForm() {
   return (
     <div className="p-6 space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-white">Sales Stages</h2>
-        <Button
-          onClick={() => {
-            setSelectedStage({
-              id: 0,
-              name: '',
-              description: '',
-              sequence: stages.length + 1,
-              elements: [],
-            });
-            setIsModalOpen(true);
-          }}
-        >
-          + New Stage
-        </Button>
+        <div className="flex items-center gap-4">
+          <Select
+            options={
+							Array.isArray(interests)
+								? interests.map((i) => ({ label: i.name, value: i.id.toString() }))
+								: []
+						}
+            onChange={(val) => setSelectedInterestId(parseInt(val))}
+            defaultValue=""
+            placeholder="Select Interest"
+            className="w-[200px]"
+          />
+					</div>
+          <Button
+						onClick={() => {
+							if (!selectedInterestId) return; // Prevent action
+							setSelectedStage({
+								id: 0,
+								name: '',
+								description: '',
+								sequence: stages.length + 1,
+								elements: [],
+								interestId: selectedInterestId,
+							});
+							setIsModalOpen(true);
+						}}
+						disabled={!selectedInterestId}
+						variant={!selectedInterestId ? "outline" : "primary"}
+					>
+						+ New Stage
+					</Button>
       </div>
 
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -240,75 +277,49 @@ export default function StageForm() {
               placeholder="Description"
               className="mb-4"
             />
-            <div className="flex gap-6">
-              <div className="flex-1 space-y-3">
-                {selectedStage.elements.map((el) => (
-                  <div key={el.id} className="border rounded p-3 space-y-1">
+            <div className="space-y-3">
+              {selectedStage.elements.map((el) => (
+                <div key={el.id} className="border rounded p-3 space-y-1">
+                  <Input defaultValue={el.label} onChange={(e) => updateElement(el.id, 'label', e.target.value)} />
+                  <Select
+                    options={[
+                      { value: "input", label: "Text" },
+                      { value: "checkbox", label: "Checkbox" },
+                      { value: "checkbox group", label: "Checkbox Group" },
+                      { value: "dropdown", label: "Dropdown" },
+                      { value: "comment", label: "Comment" },
+                      { value: "date", label: "Date" },
+                      { value: "currency", label: "Currency" },
+                      { value: "photo", label: "Photo Attachment" },
+                      { value: "file", label: "File Attachment" },
+                      { value: "camera", label: "Camera" },
+                      { value: "toggle", label: "Toggle" },
+                    ]}
+                    defaultValue={el.type}
+                    onChange={(val) => updateElement(el.id, "type", val)}
+                  />
+                  <Input
+                    type="number"
+                    defaultValue={el.sequence}
+                    onChange={(e) => updateElement(el.id, 'sequence', parseInt(e.target.value))}
+                  />
+                  <label className="text-sm">
+                    <input
+                      type="checkbox"
+                      checked={el.required}
+                      onChange={(e) => updateElement(el.id, 'required', e.target.checked)}
+                    /> Required
+                  </label>
+                  {(el.type === 'dropdown' || el.type.includes('checkbox')) && (
                     <Input
-                      defaultValue={el.label}
-                      onChange={(e) => updateElement(el.id, 'label', e.target.value)}
+                      placeholder="Comma separated items"
+                      defaultValue={(el.items ?? []).join(',') || ""}
+                      onChange={(e) => updateElement(el.id, 'items', e.target.value.split(',').map(i => i.trim()))}
                     />
-                    <Select
-                      options={[
-                        { value: "input", label: "Text" },
-                        { value: "checkbox", label: "Checkbox" },
-                        { value: "checkbox group", label: "Checkbox Group" },
-                        { value: "dropdown", label: "Dropdown" },
-                        { value: "comment", label: "Comment" },
-                        { value: "date", label: "Date" },
-                        { value: "currency", label: "Currency" },
-                        { value: "photo", label: "Photo Attachment" },
-                        { value: "file", label: "File Attachment" },
-                        { value: "camera", label: "Camera" },
-                        { value: "toggle", label: "Toggle" },
-                      ]}
-                      defaultValue={el.type}
-                      onChange={(val) => updateElement(el.id, "type", val)}
-                    />
-                    <Input
-                      type="number"
-                      defaultValue={el.sequence}
-                      onChange={(e) => updateElement(el.id, 'sequence', parseInt(e.target.value))}
-                    />
-                    <label className="text-sm">
-                      <input
-                        type="checkbox"
-                        checked={el.required}
-                        onChange={(e) => updateElement(el.id, 'required', e.target.checked)}
-                      /> Required
-                    </label>
-                    {(el.type === 'dropdown' || el.type.includes('checkbox')) && (
-                      <Input
-                        placeholder="Comma separated items"
-                        defaultValue={(el.items ?? []).join(',') || ""}
-                        onChange={(e) => updateElement(el.id, 'items', e.target.value.split(',').map(i => i.trim()))}
-                      />
-                    )}
-                  </div>
-                ))}
-                <Button onClick={addElement} variant="outline">+ Add Element</Button>
-              </div>
-              <div className="w-[280px] h-[500px] bg-gray-700 text-gray-300 rounded p-4 overflow-y-auto">
-                {selectedStage.elements.sort((a, b) => a.sequence - b.sequence).map((el) => (
-                  <div key={el.id} className="mb-3">
-                    <label className="block text-sm font-semibold mb-1">{el.label}</label>
-                    {el.type === 'text' && <Input disabled placeholder="Text" />}
-                    {el.type === 'textarea' && <Textarea disabled placeholder="Textarea" />}
-                    {el.type === 'dropdown' && (
-                      <Select
-                        options={(el.items ?? []).map((opt) => ({ value: opt, label: opt }))}
-                        defaultValue={(el.items?.[0]) ?? ""}
-                        onChange={() => {}}
-                      />
-                    )}
-                    {(el.type === 'checkbox group' || el.type === 'checkbox') && (
-                      (el.items ?? []).map((opt, i) => (
-                        <label key={i} className="block text-sm"><input type="checkbox" disabled /> {opt}</label>
-                      ))
-                    )}
-                  </div>
-                ))}
-              </div>
+                  )}
+                </div>
+              ))}
+              <Button onClick={addElement} variant="outline">+ Add Element</Button>
             </div>
             <div className="mt-4 flex justify-end gap-3">
               <Button variant="outline" onClick={() => setIsModalOpen(false)}>Cancel</Button>
