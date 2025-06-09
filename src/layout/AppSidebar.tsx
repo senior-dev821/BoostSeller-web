@@ -71,7 +71,7 @@ const superItems: NavItem[] = [
     name: "Settings",
     subItems: [
       // { name: "Hostess Detail", path: "/hostessdetail", super: false },
-      { name: "Lead Escalation Time", path: "/leadescalation", super: false },
+      { name: "General", path: "/general", super: false },
 			{ name: "Lead Input Fields", path: "/leadinputform", super: false },
     ],
   },

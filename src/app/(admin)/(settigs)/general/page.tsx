@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { redirect } from 'next/navigation';
 
 import LeadEscalationCard from '@/components/setting/LeadEscalationCard';
-
+import PerformerLimitationCard from '@/components/setting/PerformerLimitationCard';
 const JWT_SECRET = process.env.JWT_SECRET || 'BoostSellerSecret';
 
 export default async function SettingsPage() {
@@ -25,8 +25,10 @@ export default async function SettingsPage() {
   }
 
   return (
-    <main className="h-[70vh]  flex items-center justify-center bg-muted/10 px-4">
+    <main className="h-[70vh]  flex items-center justify-center bg-muted/10 px-4 gap-8">
       <LeadEscalationCard />
+
+			<PerformerLimitationCard />
     </main>
   );
 }
