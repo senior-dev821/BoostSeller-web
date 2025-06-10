@@ -45,24 +45,30 @@ interface additionalInfo {
 }
 
 
-export default function BasicTableOne() {
+export default function LeadForm() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   useEffect(() => {
-    fetch("/api/admin/lead")
-      .then((res) => res.json())
-      .then((data) => setLeads(data));
-  }, []);
-
-
+		fetch("/api/admin/lead")
+			.then(async (res) => {
+				if (!res.ok) {
+					const errText = await res.text();
+					throw new Error(`Failed to fetch leads: ${errText}`);
+				}
+				return res.json();
+			})
+			.then((data) => setLeads(data))
+			.catch((err) => {
+				console.error("Error loading leads:", err);
+			});
+	}, []);
 
   function getBudgetFromLead(lead: Lead): string | undefined {
     return lead.additionalInfo.find(
       info => info.label === "Budget" && info.type === "currency"
     )?.value;
   }
-
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">

@@ -1,60 +1,70 @@
-
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { NextResponse } from "next/server";
 
 export async function GET() {
-	const leads = await prisma.lead.findMany({
-    include: {
+  try {
+    const leads = await prisma.lead.findMany({
+      include: {
         interest: true,
         hostess: {
-            include: {
-                user: true,
-            },
+          include: {
+            user: true,
+          },
         },
-    },
-    orderBy: {
+      },
+      orderBy: {
         createdAt: 'desc',
-    },
-});
+      },
+    });
 
     const expandedLeads = await Promise.all(
-        leads.map(async (lead) => {
-            const assignedTo = lead.assignedTo ?? undefined;
-            const acceptedBy = lead.acceptedBy ?? undefined;
-            let assignedName = '';
-            let assignedAvatarPath = '';
-            let acceptedName = '';
-            let acceptedAvatarPath = '';
+      leads.map(async (lead) => {
+        const assignedTo = lead.assignedTo ?? undefined;
+        const acceptedBy = lead.acceptedBy ?? undefined;
 
-            const assignedPerformer = await prisma.performer.findUnique({
-                where: {
-                    id: assignedTo,
-                },
-                include: {
-                    user: true,
-                }
-            });
+        let assignedName = '';
+        let assignedAvatarPath = '';
+        let acceptedName = '';
+        let acceptedAvatarPath = '';
 
-            if(assignedTo !== undefined) {
-                assignedName = assignedPerformer?.user.name ?? '';
-                assignedAvatarPath = assignedPerformer?.user.avatarPath ?? '';
-            }
+        const assignedPerformer = assignedTo
+          ? await prisma.performer.findUnique({
+              where: { id: assignedTo },
+              include: { user: true },
+            })
+          : null;
 
-            if(acceptedBy !== undefined) {
-                acceptedName = assignedPerformer?.user.name ?? '';
-                acceptedAvatarPath = assignedPerformer?.user.avatarPath ?? '';
-            }
+        const acceptedPerformer = acceptedBy
+          ? await prisma.performer.findUnique({
+              where: { id: acceptedBy },
+              include: { user: true },
+            })
+          : null;
 
-            return {
-                ...lead,
-                assignedName,
-                assignedAvatarPath,
-                acceptedName,
-                acceptedAvatarPath,
-            };
-        })
+        if (assignedPerformer?.user) {
+          assignedName = assignedPerformer.user.name;
+          assignedAvatarPath = assignedPerformer.user.avatarPath ?? '';
+        }
+
+        if (acceptedPerformer?.user) {
+          acceptedName = acceptedPerformer.user.name;
+          acceptedAvatarPath = acceptedPerformer.user.avatarPath ?? '';
+        }
+
+        return {
+          ...lead,
+          assignedName,
+          assignedAvatarPath,
+          acceptedName,
+          acceptedAvatarPath,
+        };
+      })
     );
 
     return NextResponse.json(expandedLeads);
+  } catch (error) {
+    console.error("Error fetching leads:", error);
+    return NextResponse.json({ error: true, message: "Internal server error" }, { status: 500 });
+  }
 }

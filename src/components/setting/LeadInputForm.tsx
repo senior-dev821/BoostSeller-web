@@ -12,6 +12,7 @@ import { Modal } from "@/components/ui/modal";
 
 interface LeadInputSetting {
   id: number;
+	uid: string;
   label: string;
   type: string;
 	sequence: number,
@@ -30,28 +31,38 @@ export default function LeadFormPage() {
 				const res = await fetch("/api/setting/lead-input");
 				if (!res.ok) throw new Error("Failed to fetch fields");
 				const data = await res.json();
-				
+	
 				if (Array.isArray(data.fields)) {
-					setCustomFields(data.fields);
+					const enrichedFields = data.fields.map((field: LeadInputSetting) => ({
+						...field,
+						uid:
+							typeof crypto !== "undefined" && crypto.randomUUID
+								? crypto.randomUUID()
+								: Date.now().toString() + Math.random().toString(36),
+					}));
+					setCustomFields(enrichedFields);
 				} else {
-					// console.error("Invalid response format", data);
-					setCustomFields([]); // fallback to empty
+					setCustomFields([]);
 				}
 			} catch (error) {
 				console.error("Error loading custom fields:", error);
-				setCustomFields([]); // fallback to empty
+				setCustomFields([]);
 			}
 		};
 	
 		fetchFields();
 	}, []);
 	
-	
   const addField = () => {
+		const uid = typeof crypto !== "undefined" && crypto.randomUUID
+    ? crypto.randomUUID()
+    : Date.now().toString() + Math.random().toString(36);
+
 		setCustomFields([
       ...customFields,
       {
 			id: 0,
+			uid,
 			label: "New Field",
 			type: "input",
 			sequence:0,
@@ -81,11 +92,12 @@ export default function LeadFormPage() {
 
   const handleSave = async () => {
 		try {
-						const payload = customFields.map((field, index) => ({
+			const payload = customFields.map(({ uid, ...field }, index) => ({
 				...field,
-								sequence: index + 1,
-				items: field.type === "dropdown" ? field.items || [] : [], // ensure only dropdown has items
+				sequence: index + 1,
+				items: field.type === "dropdown" ? field.items || [] : [],
 			}));
+			
 	
 			const res = await fetch("/api/setting/lead-input", {
 				method: "POST",
@@ -124,7 +136,7 @@ export default function LeadFormPage() {
           </div>
 
           {customFields.map((field) => (
-            <div key={field.id} className="bg-gray-800 border rounded-lg p-4 space-y-2 shadow-theme-xs">
+            <div key={field.uid} className="bg-gray-800 border rounded-lg p-4 space-y-2 shadow-theme-xs">
               <div className="grid md:grid-cols-4 gap-4">
                 <Input
                   placeholder="Label"
@@ -228,7 +240,7 @@ export default function LeadFormPage() {
             </div>
 
             {customFields.map((field) => (
-              <div key={field.id}>
+              <div key={field.uid}>
                 <Label className="block mb-1">
                   {field.label} {field.required && <span className="text-red-500">*</span>}
                 </Label>
