@@ -91,15 +91,27 @@ export async function POST(req: Request) {
     } 
 		
     const nextStageId = nextStage.id;
-    await prisma.lead.update({
-      where: {
-        registerId: leadRegisterId,
-      },
-      data: {
-        stageId: nextStageId,
-        status: nextStage.name,
-      },
-    });
+		if(acceptedLead) {
+			await prisma.lead.update({
+				where: {
+					registerId: leadRegisterId,
+				},
+				data: {
+					stageId: nextStageId,
+					status: nextStage.name,
+				},
+			});
+		}
+
+		else {
+			return new Response(JSON.stringify({
+        error: true,
+        message: 'Lead not found.',
+      }), {
+         headers: { 'Content-Type': 'application/json' },
+      });
+		}
+    
 
 
     return new Response(JSON.stringify({
