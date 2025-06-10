@@ -229,7 +229,7 @@ export async function POST(req: Request) {
         status: 200,
       });
     } 
-
+		console.log(nextStage);
     const nextStageId = nextStage.id;
     await prisma.lead.update({
       where: {
