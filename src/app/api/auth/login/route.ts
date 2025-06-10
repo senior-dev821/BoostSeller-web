@@ -25,6 +25,11 @@ export async function POST(req: Request) {
         data: {fcmToken}, 
     });
 
+    const isApproved = user.isApproved;
+    if(!isApproved) {
+      return new Response(JSON.stringify({ error: true, approve: false, message: "Your account is pending admin approval." }), {});
+    }
+
     let hostess  = {};
     let performer = {};
 
