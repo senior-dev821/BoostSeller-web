@@ -92,7 +92,7 @@ export default function LeadFormPage() {
 
   const handleSave = async () => {
 		try {
-			const payload = customFields.map(({ uid, ...field }, index) => ({
+			const payload = customFields.map(({ uid: _uid, ...field }, index) => ({
 				...field,
 				sequence: index + 1,
 				items: field.type === "dropdown" ? field.items || [] : [],
