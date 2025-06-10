@@ -70,14 +70,14 @@ export async function POST(req: Request) {
     if (!user) {
       return new Response(JSON.stringify({error: true, message: "User not found" }), {});
     }
-
-    const isMatch = await bcrypt.compare(password, user.password);
+		if (user.role == "admin" || user.role == "admin"){
+			const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return new Response(JSON.stringify({ error: true, message: "Password is Invalid. \n Please enter correct password." }), {});
     }
 
     const token = jwt.sign(
-      { id: user.id, email: user.email },
+      { id: user.id, email: user.email, role: user.role},
       JWT_SECRET,
       { expiresIn: '7d' } // Optional: adjust token lifespan
     );
@@ -106,6 +106,11 @@ export async function POST(req: Request) {
       status: 200,
       headers: responseHeaders,
     });
+		}
+		else {
+			return new Response(JSON.stringify({ error: true, message: "Your role is Invalid. \n Please enter correct account for Admin or Super Admin." }), {});
+		}
+    
 
   } catch (error) {
     console.error("Login error:", error);
