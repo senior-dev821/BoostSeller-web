@@ -92,12 +92,19 @@ export default function LeadFormPage() {
 
   const handleSave = async () => {
 		try {
-			const payload = customFields.map(({ uid: _uid, ...field }, index) => ({
-				...field,
-				sequence: index + 1,
-				items: field.type === "dropdown" ? field.items || [] : [],
-			}));
-			
+			// const payload = customFields.map(({ uid: _uid, ...field }, index) => ({
+			// 	...field,
+			// 	sequence: index + 1,
+			// 	items: field.type === "dropdown" ? field.items || [] : [],
+			// }));
+			const payload = customFields.map((field, index) => {
+				const { uid, ...rest } = field;
+				return {
+					...rest,
+					sequence: index + 1,
+					items: field.type === "dropdown" ? field.items || [] : [],
+				};
+			});
 	
 			const res = await fetch("/api/setting/lead-input", {
 				method: "POST",
