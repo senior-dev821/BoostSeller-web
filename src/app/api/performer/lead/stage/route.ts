@@ -229,12 +229,11 @@ export async function POST(req: Request) {
         status: 200,
       });
     } 
-		console.log(nextStage);
-		console.log(leadRegisterId);
+		
     const nextStageId = nextStage.id;
     await prisma.lead.update({
       where: {
-        registerId: leadRegisterId,
+        registerId: acceptedLead.registerId,
       },
       data: {
         stageId: nextStageId,
