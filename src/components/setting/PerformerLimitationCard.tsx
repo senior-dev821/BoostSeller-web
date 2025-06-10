@@ -56,7 +56,7 @@ export default function PerformerLimitationCard() {
             id="limit"
             type="number"
             min="0"
-            defaultValue={limit}
+            value={limit}
             onChange={(e) => setLimit(Number(e.target.value))}
           />
         </div>

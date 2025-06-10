@@ -55,7 +55,7 @@ export default function LeadEscalationCard() {
             id="timeout"
             type="number"
             min="0"
-            defaultValue={timeout}
+            value={timeout}
             onChange={(e) => setTimeout(Number(e.target.value))}
           />
         </div>
