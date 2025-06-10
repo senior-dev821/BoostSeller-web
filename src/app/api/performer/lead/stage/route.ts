@@ -230,6 +230,7 @@ export async function POST(req: Request) {
       });
     } 
 		console.log(nextStage);
+		console.log(leadRegisterId);
     const nextStageId = nextStage.id;
     await prisma.lead.update({
       where: {
