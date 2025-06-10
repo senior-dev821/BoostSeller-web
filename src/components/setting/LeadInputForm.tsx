@@ -99,6 +99,7 @@ export default function LeadFormPage() {
 			// }));
 			const payload = customFields.map((field, index) => {
 				const { uid, ...rest } = field;
+				console.log(uid);
 				return {
 					...rest,
 					sequence: index + 1,
