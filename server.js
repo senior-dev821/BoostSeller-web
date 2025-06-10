@@ -92,6 +92,9 @@ const server = createServer((req, res) => {
       const performers = await prisma.performer.findMany({
         where: {
           available: true,
+          user: {
+            isApproved: true,
+          },
           id: {
             // notIn: Array.from(triedPerformerIds),
             notIn: triedPerformerIds ?? [],
@@ -318,6 +321,29 @@ const server = createServer((req, res) => {
       await assignLeadToPerformer(leadId);
     });
 
+
+    socket.on('user_approval_changed', async ({ userId, isApproved }) => {
+  
+      const targetSocket = clients.get(userId.toString());
+      
+      const statusMessage = isApproved
+        ? 'Your account is approved! You now have full access.'
+        : 'Your account has been marked as pending approval.';
+      const statusTitle = isApproved
+        ? '📢 Your account is approved!'
+        : '📢 Your account is blocked!.';
+      
+      if (targetSocket) {
+        targetSocket.emit('approval_status_changed', {
+          approved: isApproved,
+          message: statusMessage,
+        });
+      } else {
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        sendPushNotification(user.fcmToken, statusTitle, statusMessage);
+      }
+    });
+
     socket.on('disconnect', () => {
       for (const [userId, s] of clients.entries()) {
         if (s.id === socket.id) clients.delete(userId);
@@ -325,6 +351,10 @@ const server = createServer((req, res) => {
       console.log('Client disconnected:', socket.id);
     });
   });
+
+
+  
+
 
   const PORT = process.env.PORT || 3000;
 

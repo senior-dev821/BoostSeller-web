@@ -1,7 +1,8 @@
 
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
+import { io, Socket } from 'socket.io-client';
 import {
   Table,
   TableBody,
@@ -61,12 +62,42 @@ export default function HostessTable() {
   const [editApproved, setEditApproved] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
+  const socketRef = useRef<Socket | null>(null);
+
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io(); // Only initialize once
+    }
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to WebSocket server");
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, []);
+
+  
  
   useEffect(() => {
     fetch("/api/admin/user/hostess")
       .then((res) => res.json())
       .then((data) => setHostesses(data));
   }, []);
+
+
+  const handleApprovalToggle = (userId : number | undefined) => {
+     if (typeof userId !== "number") return;
+    const newStatus = editApproved;
+    
+    socketRef.current?.emit("user_approval_changed", {
+      userId: userId,
+      isApproved: !newStatus,
+    });
+  };
+
 
   const handleSaveChanges = async () => {
     if (!editHostess) return;
@@ -404,7 +435,10 @@ export default function HostessTable() {
                     <input
                       type="checkbox"
                       checked={editApproved}
-                      onChange={() => setEditApproved(prev => !prev)}
+                      onChange={() => {
+                        setEditApproved(prev => !prev);
+                        handleApprovalToggle(editHostess?.user.id);
+                      }}
                       className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
                     Approved Status
