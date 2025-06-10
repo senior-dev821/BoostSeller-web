@@ -188,12 +188,14 @@ export default function PerformerTable() {
               className="px-3 py-1.5 border border-gray-300 rounded-md text-sm dark:bg-gray-800 dark:text-white"
             >
               <option value="All">All</option>
-              <option value="None">Not Assigned</option>
+              
               {groups.map((group) => (
-                <option key={group.id} value={group.name}>
+                <option key={group.id} value={group.id}>
                   {group.name}
                 </option>
               ))}
+
+              <option value="None">Not Assigned</option>
             </select>
           </div>
 
@@ -254,8 +256,8 @@ export default function PerformerTable() {
               {paginatedPerformers
                 .filter((performer) => {
                   if (selectedGroup === "All") return true;
-                  if (selectedGroup === "None") return !performer.groupName;
-                  return performer.groupName === selectedGroup;
+                  if (selectedGroup === "None") return !performer.groupIds || performer.groupIds.length === 0;
+                  return performer.groupIds?.includes(Number(selectedGroup));
                 })
                 .map((performer) => (
                   <TableRow key={performer.id}>
