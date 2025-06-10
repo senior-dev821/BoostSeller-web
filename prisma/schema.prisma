@@ -72,7 +72,7 @@ model Lead {
   isReturn          Boolean   @default(false) @map("is_return")
   additionalInfo    Json?     @map("additional_info") @db.JsonB
   addedBy           Int?      @map("added_by")
-  status            String    @default("assigned") @db.VarChar(20)
+  status            String    @default("assigned") @db.VarChar(100)
   assignedTo        Int?      @map("assigned_to")
   assignedAt        DateTime? @map("assigned_at")
   acceptedBy        Int?      @map("accepted_by")

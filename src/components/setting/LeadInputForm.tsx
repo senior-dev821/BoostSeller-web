@@ -1,14 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-// import { v4 as uuidv4 } from "uuid";
+
 
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 import Label from "@/components/form/Label";
 import Switch from "@/components/form/switch/Switch";
 import Select from "@/components/form/Select";
-import { Modal } from "@/components/ui/modal"; // assuming you have a modal component
-
+import { Modal } from "@/components/ui/modal"; 
 // Types
 
 interface LeadInputSetting {
@@ -24,7 +23,7 @@ export default function LeadFormPage() {
   const [customFields, setCustomFields] = useState<LeadInputSetting[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [fieldToDelete, setFieldToDelete] = useState<LeadInputSetting | null>(null);
-
+	
 	useEffect(() => {
 		const fetchFields = async () => {
 			try {
@@ -49,20 +48,20 @@ export default function LeadFormPage() {
 	
 	
   const addField = () => {
-    setCustomFields([
+		setCustomFields([
       ...customFields,
       {
-        id: 0,
-        label: "New Field",
-        type: "input",
-				sequence:0,
-        required: false,
-        items: [],
-      },
+			id: 0,
+			label: "New Field",
+			type: "input",
+			sequence:0,
+			required: false,
+			items: [],
+		},
     ]);
-    setHasChanges(true);
-  };
-
+		setHasChanges(true);
+	};
+	
   const updateField = (id: string | number, key: keyof LeadInputSetting, value: LeadInputSetting[keyof LeadInputSetting]) => {
     setCustomFields((prev) =>
       prev.map((field) => (field.id === id ? { ...field, [key]: value } : field))
@@ -82,9 +81,9 @@ export default function LeadFormPage() {
 
   const handleSave = async () => {
 		try {
-			const payload = customFields.map((field, index) => ({
+						const payload = customFields.map((field, index) => ({
 				...field,
-				sequence: index + 1,
+								sequence: index + 1,
 				items: field.type === "dropdown" ? field.items || [] : [], // ensure only dropdown has items
 			}));
 	
@@ -102,7 +101,7 @@ export default function LeadFormPage() {
 			console.error("Save failed:", error);
 		}
 	};
-	
+
 	
 
   return (
@@ -114,6 +113,7 @@ export default function LeadFormPage() {
             <Input disabled placeholder="Name (fixed)" />
             <Input disabled placeholder="Phone (fixed)" />
             <Select options={[{ value: "", label: "" }]} onChange={() => {}} placeholder="Interest (fixed)" />
+						<Input disabled placeholder="ID" />
           </div>
         </div>
 
@@ -221,6 +221,10 @@ export default function LeadFormPage() {
                 ]}
 								onChange={() => {}}
               />
+            </div>
+						<div>
+              <Label className="block mb-1">ID <span className="text-red-500">*</span></Label>
+              <Input placeholder="ID" />
             </div>
 
             {customFields.map((field) => (
