@@ -7,7 +7,7 @@ import Input from '@/components/form/input/InputField';
 import Label from "@/components/form/Label"
 
 export default function PerformerLimitationCard() {
-  const [limit, setLimit] = useState(0);
+  const [limit, setLimit] = useState<number | string>(0);
   const [saving, setSaving] = useState(false);
 	const [initialLimit, setInitialLimit] = useState(0);
 
@@ -33,7 +33,7 @@ export default function PerformerLimitationCard() {
     });
 
     await res.json();
-    setInitialLimit(limit); // update saved state
+    setInitialLimit(Number(limit)); // update saved state
     setSaving(false);
   };
 
@@ -57,7 +57,10 @@ export default function PerformerLimitationCard() {
             type="number"
             min="0"
             value={limit}
-            onChange={(e) => setLimit(Number(e.target.value))}
+            onChange={(e) => {
+              const value = e.target.value;
+              setLimit(value === '' ? '' : Number(value));
+            }}
           />
         </div>
 

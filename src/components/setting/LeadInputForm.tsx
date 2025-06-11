@@ -8,6 +8,7 @@ import Label from "@/components/form/Label";
 import Switch from "@/components/form/switch/Switch";
 import Select from "@/components/form/Select";
 import { Modal } from "@/components/ui/modal"; 
+import { Trash2Icon } from 'lucide-react';
 // Types
 
 interface LeadInputSetting {
@@ -180,9 +181,13 @@ export default function LeadFormPage() {
               </div>
 
               <div className="text-right">
-                <Button variant="outline" onClick={() => setFieldToDelete(field)}>
-                  Remove
-                </Button>
+                 <button
+                  onClick={() => setFieldToDelete(field)}
+                  className="text-red-500 hover:text-red-700"
+                  title="Remove"
+                >
+                  <Trash2Icon className="w-4 h-4" />
+                </button>
               </div>
             </div>
           ))}

@@ -7,7 +7,7 @@ import Input from '@/components/form/input/InputField';
 import Label from "@/components/form/Label";
 
 export default function LeadEscalationCard() {
-  const [timeout, setTimeout] = useState(0);
+  const [timeout, setTimeout] = useState<number | string>(0);
   const [saving, setSaving] = useState(false);
 	const [initialTimeout, setInitialTimeout] = useState(0);
 
@@ -33,7 +33,7 @@ export default function LeadEscalationCard() {
     });
 
     await res.json();
-    setInitialTimeout(timeout); // update saved state
+    setInitialTimeout(Number(timeout)); // update saved state
     setSaving(false);
   };
 
@@ -56,7 +56,10 @@ export default function LeadEscalationCard() {
             type="number"
             min="0"
             value={timeout}
-            onChange={(e) => setTimeout(Number(e.target.value))}
+            onChange={(e) => {
+              const value = e.target.value;
+              setTimeout(value === '' ? '' : Number(value));
+            }}
           />
         </div>
 

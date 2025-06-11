@@ -686,7 +686,7 @@ export default function PerformerTable() {
                   <Timer className="text-purple-400 w-5 h-5" />
                   <div>
                     <div className="text-sm font-medium text-gray-400">Average Response Time</div>
-                    <div className="text-center">{selectedPerformer?.avgResponseTime}s</div>
+                    <div className="text-center">{selectedPerformer?.avgResponseTime.toFixed(2)}s</div>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">

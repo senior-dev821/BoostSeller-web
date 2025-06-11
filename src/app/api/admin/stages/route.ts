@@ -59,3 +59,23 @@ export async function PUT(req: NextRequest) {
 
   return NextResponse.json(updatedStage);
 }
+
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return Response.json({ error: "ID is required" }, { status: 400 });
+    }
+
+    await prisma.stage.delete({
+      where: { id: Number(id) },
+    });
+
+    return Response.json({ message: "Field deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    return Response.json({ error: "Failed to delete field" }, { status: 500 });
+  }
+}
