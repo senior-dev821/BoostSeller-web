@@ -3,7 +3,7 @@ import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
 
 import { useState, useEffect } from "react";
-
+import { Card } from "@/components/ui/card";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import ConversionRateCard from "./ConversionRateCard";
@@ -142,7 +142,7 @@ export default function LeadsCountChart() {
 
       {/* Chart Section */}
       <div className="flex justify-between">
-        <div className="w-full  overflow-x-auto custom-scrollbar">
+        <div className="w-full  overflow-x-auto custom-scrollbar gap-2">
           <div className="-ml-5 min-w-[850px] xl:min-w-full pl-4">
             <ReactApexChart
               options={options}
@@ -152,19 +152,18 @@ export default function LeadsCountChart() {
             />
           </div>
         </div>
-        <div className="flex items-center justify-center border bg-gray-100 shadow-default rounded-2xl pb-2 dark:bg-gray-900 md:p-6 gap-2">
-          <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
-            <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
-          </div>
-          <div>
-            <p className="text-md text-gray-500 text-center dark:text-gray-400">
-              Total Leads
-            </p>
-            <p className="mt-2 font-bold text-gray-800 text-center text-title-sm dark:text-white/90">
-              {totalLeads}
-            </p>
-          </div>
-        </div>
+        <Card className="bg-muted p-4 rounded-lg shadow-sm flex flex-col items-center justify-center gap-3">
+					<div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-700">
+						<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
+					</div>
+					<div className="text-center">
+						<p className="text-md text-gray-500 dark:text-gray-400">Total Leads</p>
+						<p className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
+							{totalLeads}
+						</p>
+					</div>
+				</Card>
+
       </div>
 
       {/* Conversion Rates Section */}

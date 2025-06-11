@@ -1,6 +1,7 @@
 "use client";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
+import { Card } from "@/components/ui/card";
 
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
   ssr: false,
@@ -50,11 +51,11 @@ export default function ConversionRateCard({ from, to, rate }: ConversionRateCar
   };
 
   return (
-		<div className="px-1 pt-1 border bg-gray-100 shadow-default rounded-2xl pb-2 dark:bg-gray-900">
+		<Card className="bg-muted p-4 rounded-lg shadow-sm">
 			<ReactApexChart options={options} series={series} type="radialBar" height={150} />
 			<p className="mt-2 w-full max-w-[120px] text-center text-sm text-gray-500 sm:text-base">
 				{from} to {to}
 			</p>
-		</div>
+		</Card>
   );
 }
