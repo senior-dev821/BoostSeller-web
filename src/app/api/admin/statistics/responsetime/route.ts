@@ -59,17 +59,21 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const view = body.view as 'daily' | 'weekly' | 'monthly';
-		console.log("view = ", view);
+		
     if (!view || !['daily', 'weekly', 'monthly'].includes(view)) {
       return NextResponse.json({ error: "Invalid view type" }, { status: 400 });
     }
 
     // Constants for SLA - define your SLA time in seconds here
-    const SLA_SECONDS = 120; // e.g., 2 minutes
+		const setting = await prisma.setting.findFirst();
 
+    let SLA_SECONDS = 120; // e.g., 2 minutes
+		if(setting)
+		{
+			SLA_SECONDS = setting.slaTarget;
+		}
     // Get the date ranges based on view
     const ranges = getDateRanges(view);
-		console.log("ranges = ", ranges);
     // Prepare response arrays
     const categories: string[] = [];
     const avgResponseTimes: number[] = [];
@@ -163,11 +167,7 @@ export async function POST(req: NextRequest) {
       totalResponseCount > 0 ? Number((totalResponseTimeSum / totalResponseCount).toFixed(2)) : 0;
     const totalSlaCompliance =
       totalResponseCount > 0 ? Number(((totalSlaCompliantCount / totalResponseCount) * 100).toFixed(2)) : 0;
-		console.log("categories = ", categories);
-		console.log("avgResponseTimes = ", avgResponseTimes);
-		console.log("slaComplianceRates = ", slaComplianceRates);
-		console.log("totalAvgResponseTime = ", totalAvgResponseTime);
-		console.log("totalSlaCompliance = ", totalSlaCompliance);
+		
     return NextResponse.json({
       categories,
       avgResponseTimes,
