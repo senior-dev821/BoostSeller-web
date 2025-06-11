@@ -7,14 +7,6 @@ import NotificationFeed from "@/components/notifications/NotificationFeed";
 import { Metadata } from "next";
 import React from "react";
 
-interface Notification {
-    id: string;
-    title: string;
-    message: string;
-    createdAt: string;
-    read: boolean;
-    icon?: string; // optional icon or emoji
-}
 
 const JWT_SECRET = process.env.JWT_SECRET || 'BoostSellerSecret';
 
