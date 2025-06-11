@@ -13,6 +13,7 @@ export async function POST(req: Request) {
      data: {
       status: 'closed',
       acceptedBy: paresedPerformerId,
+      closedAt: new Date(),
      },
       
     });

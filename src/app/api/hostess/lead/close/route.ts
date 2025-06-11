@@ -14,6 +14,7 @@ export async function POST(req: Request) {
       status: 'closed',
       assignedTo: null,
       triedPerformerIds: [],
+      closedAt: new Date(),
      },
       
     });

@@ -77,6 +77,8 @@ model Lead {
   assignedAt        DateTime? @map("assigned_at")
   acceptedBy        Int?      @map("accepted_by")
   acceptedAt        DateTime? @map("accepted_at")
+  closedAt          DateTime?  @map("closed_at")
+  completedAt       DateTime?  @map("completed_at")
   stageId           Int       @map("stage_id")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
@@ -108,7 +110,7 @@ model lead_stage_mapping {
 model Interest {
   id          Int      @id @default(autoincrement())
   name        String   @unique @db.VarChar(100)
-  description String   @db.VarChar(255)
+  description String@db.VarChar(255)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
   leads       Lead[]
