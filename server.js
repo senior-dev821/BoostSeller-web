@@ -344,6 +344,20 @@ const server = createServer((req, res) => {
       }
     });
 
+    socket.on('user_register', async (data) => {
+      const notification = await prisma.notification.create({
+        data: {
+          receiveId: 0,
+          title: 'New User Registered',
+          message: `${data.userName} just signed with the email ${data.userEmail}. Awaiting verification.`,
+          isRead: false,
+        },
+      });
+
+      socket.broadcast.emit('user_register', notification);
+     
+    });
+
     socket.on('disconnect', () => {
       for (const [userId, s] of clients.entries()) {
         if (s.id === socket.id) clients.delete(userId);

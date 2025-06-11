@@ -21,6 +21,7 @@ import {
   UserCircleIcon,
 	SettingsIcon,
 	ShootingStarIcon,
+  MailIcon,
 } from "../icons/index";
 
 
@@ -61,6 +62,12 @@ const navItems: NavItem[] = [
     icon: <PageIcon />,
     path: "/sales-stage",
   },
+  {
+    name: "Notifications",
+    icon: <MailIcon />,
+    path: "/notifications",
+  },
+
 	
 	
 ];
