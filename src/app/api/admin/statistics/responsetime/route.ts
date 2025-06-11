@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const view = body.view as 'daily' | 'weekly' | 'monthly';
-		console.log("view = ", view);
+		
     if (!view || !['daily', 'weekly', 'monthly'].includes(view)) {
       return NextResponse.json({ error: "Invalid view type" }, { status: 400 });
     }
