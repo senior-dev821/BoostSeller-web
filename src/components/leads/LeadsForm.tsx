@@ -109,20 +109,20 @@ export default function LeadForm() {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  addedBy
+                  Added By
                 </TableCell>
                 <TableCell
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  assignedTo
+                  Assigned To
                 </TableCell>
 
                 <TableCell
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  acceptedBy
+                  Accepted By
                 </TableCell>
                 <TableCell
                   isHeader
