@@ -6,9 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { io, Socket } from 'socket.io-client';
-// import Alert from "@/components/ui/alert/Alert";
-import Alert from "@/components/utils/AlertToast";
-
+import Alert from "@/components/ui/alert/Alert";
 
 type Notification = {
   id: string,
@@ -45,7 +43,7 @@ export default function NotificationDropdown() {
       console.log("Received new notification:", data);
       setAlertTitle(data.title);
       setAlertMessage(data.message);
-      setAlertVariant('success');
+      setAlertVariant('info');
       setAlertVisible(true);
       setNotifications((prev) => [data, ...prev]);
       setNotifying(true);
@@ -78,7 +76,7 @@ export default function NotificationDropdown() {
     if (alertVisible) {
       const timer = setTimeout(() => {
         setAlertVisible(false);
-      }, 3000); // Close alert after 2 seconds
+      }, 5000); 
 
       return () => clearTimeout(timer); // Cleanup timer on unmount
     }
@@ -214,14 +212,22 @@ export default function NotificationDropdown() {
           View All Notifications
         </Link>
       </Dropdown>
-      <Alert
-        visible={alertVisible}
-        title={alertTitle}
-        message={alertMessage}
-        variant={alertVariant}
-        onClose={handleAlertClose}
-      />
+      {alertVisible && (
+        <div className="fixed bottom-4 right-4 z-[9999]">
+          <Alert
+            title={alertTitle}
+            message={alertMessage}
+            variant={alertVariant}
+            showLink={true}
+            linkHref="/notifications"
+            onClose={handleAlertClose}
+          />
+        </div>
+      )}
+
+
     </div>
+
 
   );
 }
