@@ -13,7 +13,7 @@ export async function POST(req: Request) {
     if (!user) {
       return new Response(JSON.stringify({error: true, message: "User not found" }), {});
     }
-
+    
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return new Response(JSON.stringify({ error: true, message: "Password is Invalid. Please enter correct password." }), {});
@@ -53,27 +53,6 @@ export async function POST(req: Request) {
       JWT_SECRET,
       { expiresIn: '7d' } // Optional: adjust token lifespan
     );
-
-    const isApproved = user.isApproved;
-    if(!isApproved) {
-      return new Response(JSON.stringify({ 
-        error: true, 
-        approve: false,
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          phone_number: user.phoneNumber,
-          is_verified: user.isVerified,
-          is_approved: user.isApproved,
-          avatar_path: user.avatarPath,
-          hostess: hostess,
-          performer: performer,
-        },
-        message: "Your account is pending admin approval." 
-      }), {});
-    }
 
     return new Response(JSON.stringify({
       error: false,

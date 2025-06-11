@@ -214,7 +214,7 @@ export default function PerformerTable() {
       <div className="max-w-full overflow-x-auto">
         <div className="min-w-[1102px]">
           <div className="  pt-4 mb-4 flex justify-end items-center gap-2 px-4">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Group:</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Group : </label>
             <select
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
