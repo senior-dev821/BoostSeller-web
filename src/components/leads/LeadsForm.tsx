@@ -11,6 +11,7 @@ import {
 
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
+import Pagination from "@/components/form/form-elements/Pagination";
 
 interface Lead {
   id: number;
@@ -49,6 +50,9 @@ export default function LeadForm() {
   const [leads, setLeads] = useState<Lead[]>([]);
   const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
+	const [currentPage, setCurrentPage] = useState(1);
+	const pageSize = 8;
+	
   useEffect(() => {
 		fetch("/api/admin/lead")
 			.then(async (res) => {
@@ -70,6 +74,11 @@ export default function LeadForm() {
     )?.value;
   }
 
+	const totalPages = Math.ceil(leads.length / pageSize);
+  const paginatedPerformers = leads.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -132,7 +141,7 @@ export default function LeadForm() {
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {leads.map((lead) => (
+							{paginatedPerformers.map((lead) => (
                 <TableRow key={lead.id}>
                   <TableCell className="px-5 py-4 sm:px-6 text-center">
                     {lead.name}
@@ -252,6 +261,16 @@ export default function LeadForm() {
 
         </div>
       </div>
+			{/* ✅ Pagination */}
+      {leads.length > pageSize && (
+        <div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+          />
+        </div>
+      )}
     </div>
   );
 }
