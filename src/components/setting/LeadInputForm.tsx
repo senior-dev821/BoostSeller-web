@@ -183,7 +183,7 @@ export default function LeadFormPage() {
               <div className="text-right">
                  <button
                   onClick={() => setFieldToDelete(field)}
-                  className="text-red-500 hover:text-red-700"
+                  className="text-gray-300 hover:text-gray-500"
                   title="Remove"
                 >
                   <Trash2Icon className="w-4 h-4" />

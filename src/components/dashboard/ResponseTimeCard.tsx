@@ -159,16 +159,16 @@ export default function ResponseTimeCard() {
 						size="md"
 						color={"primary"}
 					>
-						Total Avg Res Time : {totalAvgResponseTime} s
+						Avg Res Time : {totalAvgResponseTime} s
 					</Badge>
 					<Badge
 						size="md"
 						color={"info"}
 					>
-						Total SLA Compliance :{totalSlaCompliance} %
+						SLA Rate :{totalSlaCompliance} %
 					</Badge>
         </div>
-        <div className="flex items-start w-full gap-3 sm:justify-end">
+        <div className="flex items-start w-full gap-2 sm:justify-end">
           <ChartTab selected={view} onChange={setView} />
         </div>
       </div>

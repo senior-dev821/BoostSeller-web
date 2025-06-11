@@ -47,11 +47,11 @@ export default function SlaTargetCard() {
                     <h2 className="text-lg font-semibold">SLA Target</h2>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                    Set the maximum time (in seconds) allowed for a performer to respond to a new lead.
+                    Set the SLA time (in seconds) allowed for a performer to respond to a new lead.
                 </p>
 
                 <div className="space-y-2">
-                    <Label htmlFor="limit">Response Time Limit (seconds)</Label>
+                    <Label htmlFor="limit">SLA (seconds)</Label>
                     <Input
                         id="limit"
                         type="number"

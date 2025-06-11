@@ -100,8 +100,8 @@ export default function InterestsForm() {
         <Table>
           <TableHeader className="border-b border-gray-300 dark:border-white/[5]">
             <TableRow>
-              <TableCell isHeader>Interest</TableCell>
-              <TableCell isHeader>Actions</TableCell>
+              <TableCell isHeader  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Interest</TableCell>
+              <TableCell isHeader  className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">Actions</TableCell>
             </TableRow>
           </TableHeader>
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
