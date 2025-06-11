@@ -28,7 +28,7 @@ export default function LeadsCountChart() {
     },
   ];
 
-  const total = series[0].data.reduce((sum, value) => sum + value, 0);
+  // const total = series[0].data.reduce((sum, value) => sum + value, 0);
 
   const conversionRates = series[0].data.slice(0, -1).map((value, index) => {
     const next = series[0].data[index + 1];
