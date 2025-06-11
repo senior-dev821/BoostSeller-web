@@ -92,14 +92,10 @@ export default function LeadFormPage() {
 
   const handleSave = async () => {
 		try {
-			// const payload = customFields.map(({ uid: _uid, ...field }, index) => ({
-			// 	...field,
-			// 	sequence: index + 1,
-			// 	items: field.type === "dropdown" ? field.items || [] : [],
-			// }));
+			
 			const payload = customFields.map((field, index) => {
 				const { uid, ...rest } = field;
-				console.log(uid);
+				console.log("New added field's uid:",uid);
 				return {
 					...rest,
 					sequence: index + 1,

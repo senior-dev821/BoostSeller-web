@@ -28,7 +28,7 @@ interface Performer {
   avgResponseTime: number;
   createdAt: string;
   groupIds: number[];
-  groupName: string;
+  groupNames: string[];
   score: number;
   groupRank: number;
   user: {
@@ -65,7 +65,7 @@ export default function PerformerTable() {
   const [editPhoneNumber, setEditPhoneNumber] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editApproved, setEditApproved] = useState(false);
-  const [editGroupName, setEditGroupName] = useState("");
+  // const [editGroupName, setEditGroupName] = useState("");
   const [editAvailable, setEditAvailable] = useState(false);
   const [editGroupIds, setEditGroupIds] = useState<number[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string>("All");
@@ -105,7 +105,7 @@ export default function PerformerTable() {
     setEditApproved(performer.user.isApproved);
     setEditAvailable(performer.available);
     setEditGroupIds(performer.groupIds);
-    setEditGroupName(performer.groupName);
+    // setEditGroupName(performer.groupNames.join(', '));
     setShowEditModal(true);
   }
 
@@ -140,28 +140,34 @@ export default function PerformerTable() {
       });
 
       if (res.ok) {
-        // Update local state after successful save
-        setPerformers((prev) =>
-          prev.map((performer) =>
-            performer.id === editPerformer.id
-              ? {
-                ...performer,
-                available: editAvailable,
-                groupName: editGroupName,
-                groupIds: editGroupIds,
-                user: {
-                  ...performer.user,
-                  name: editName,
-                  phoneNumber: editPhoneNumber,
-                  email: editEmail,
-                  isApproved: editApproved,
-                },
-              }
-              : performer
-          )
-        );
-        setShowEditModal(false);
-      } else {
+				const updatedGroupNames = editGroupIds
+					.map(id => groups.find(group => group.id === id)?.name)
+					.filter((name): name is string => !!name); // Filter out undefineds
+			
+				// Update local state
+				setPerformers((prev) =>
+					prev.map((performer) =>
+						performer.id === editPerformer.id
+							? {
+									...performer,
+									available: editAvailable,
+									groupIds: editGroupIds,
+									groupNames: updatedGroupNames, // ✅ Set new group names
+									user: {
+										...performer.user,
+										name: editName,
+										phoneNumber: editPhoneNumber,
+										email: editEmail,
+										isApproved: editApproved,
+									},
+								}
+							: performer
+					)
+				);
+			
+				setShowEditModal(false);
+			}
+			 else {
         console.error("Failed to save hostess info");
       }
     } catch (error) {
@@ -313,7 +319,15 @@ export default function PerformerTable() {
                       </div>
                     </TableCell>
                     <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                      {performer.groupName !== undefined ? performer.groupName : "Not assigned Group"}
+											<div className="flex justify-center flex-wrap gap-1">
+												{performer.groupNames?.length > 0
+													? performer.groupNames.map((name, idx) => (
+															<Badge key={idx} size="sm" color="info">
+																{name}
+															</Badge>
+														))
+													: "Not assigned Group"}
+											</div>
                     </TableCell>
                     <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
                       {performer.user.phoneNumber}
@@ -414,7 +428,7 @@ export default function PerformerTable() {
                     }
                   }}
                 >
-                  Delete
+                  Confirm
                 </Button>
               </div>
             </div>
@@ -571,7 +585,6 @@ export default function PerformerTable() {
               </div>
             </div>
           </Modal>
-
           {/* Info Modal */}
           <Modal isOpen={showInfoModal} onClose={handleCloseInfo} className=" bg-gray-900 text-white rounded-xl max-w-[584px] p-5 lg:p-10">
             <div className="w-full">
@@ -592,9 +605,7 @@ export default function PerformerTable() {
                 </div>
                 <h3 className="text-2xl font-semibold">{selectedPerformer?.user.name}</h3>
               </div>
-
               {/* Info Cards */}
-
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
                   <Star className="text-blue-400 w-5 h-5" />
@@ -690,10 +701,7 @@ export default function PerformerTable() {
                     </Badge>
                   </div>
                 </div>
-
               </div>
-
-
             </div>
           </Modal>
         </div>

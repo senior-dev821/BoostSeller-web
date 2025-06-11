@@ -8,7 +8,7 @@ import type { Metadata } from "next";
 import React from "react";
 import MonthlySalesChart from "@/components/ecommerce/MonthlySalesChart";
 import StatisticsChart from "@/components/ecommerce/StatisticsChart";
-import RecentOrders from "@/components/ecommerce/RecentOrders";
+import RecentOrders from "@/components/ecommerce/RecentPerformers";
 import WorkloadHeatmap from "@/components/dashboard/WorkloadHeatmap";
 
 const JWT_SECRET = process.env.JWT_SECRET || 'BoostSellerSecret';
