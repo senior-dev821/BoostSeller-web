@@ -6,9 +6,9 @@ import { redirect } from 'next/navigation';
 import type { Metadata } from "next";
 // import { EcommerceMetrics } from "@/components/ecommerce/EcommerceMetrics";
 import React from "react";
-import LeadsCountChart from "@/components/ecommerce/LeadsCountChart";
-import StatisticsChart from "@/components/ecommerce/StatisticsChart";
-import RecentOrders from "@/components/ecommerce/RecentPerformers";
+import LeadsCountChart from "@/components/dashboard/LeadsCountChart";
+import ResponseTimeCard from "@/components/dashboard/ResponseTimeCard";
+import RecentOrders from "@/components/dashboard/RecentPerformers";
 import WorkloadHeatmap from "@/components/dashboard/WorkloadHeatmap";
 // import MonthlyTarget from "@/components/ecommerce/ConversionRateCard";
 const JWT_SECRET = process.env.JWT_SECRET || 'BoostSellerSecret';
@@ -40,16 +40,13 @@ export default async function Ecommerce() {
     <div className="grid grid-cols-12 gap-4 md:gap-6">
       <div className="col-span-12 space-y-6 xl:col-span-7">
         <LeadsCountChart />
-				{/* <EcommerceMetrics /> */}
-				<StatisticsChart />
+				<ResponseTimeCard />
       </div>
 
       <div className="col-span-12 space-y-6 xl:col-span-5">
 				<RecentOrders />
 				<WorkloadHeatmap />
-				{/* <MonthlyTarget /> */}
       </div>
-      
     </div>
   );
 }

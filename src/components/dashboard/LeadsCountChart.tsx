@@ -39,7 +39,7 @@ export default function LeadsCountChart() {
 
   const fetchLeadsData = async (start: Date, end: Date) => {
     try {
-      const res = await fetch("/api/admin/lead/analysis", {
+      const res = await fetch("/api/admin/statistics/leadcount", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -152,15 +152,15 @@ export default function LeadsCountChart() {
             />
           </div>
         </div>
-        <div className="flex items-center justify-center border bg-gray-100 shadow-default rounded-2xl pb-2 dark:bg-gray-900 md:p-6 gap-6">
+        <div className="flex items-center justify-center border bg-gray-100 shadow-default rounded-2xl pb-2 dark:bg-gray-900 md:p-6 gap-2">
           <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-800">
             <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
           </div>
           <div>
-            <p className="text-md text-gray-500 dark:text-gray-400">
+            <p className="text-md text-gray-500 text-center dark:text-gray-400">
               Total Leads
             </p>
-            <p className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
+            <p className="mt-2 font-bold text-gray-800 text-center text-title-sm dark:text-white/90">
               {totalLeads}
             </p>
           </div>
