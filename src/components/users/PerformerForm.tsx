@@ -617,7 +617,7 @@ export default function PerformerTable() {
                 <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
                   <BarChart className="text-yellow-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Group Rank</div>
+                    <div className="text-sm font-medium text-gray-400">Rank</div>
                     <div className="text-center">{selectedPerformer?.groupRank}</div>
                   </div>
                 </div>
