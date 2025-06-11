@@ -27,7 +27,7 @@ interface Performer {
   avgResponseTime: number;
   createdAt: string;
   groupIds: number[];
-  groupName: string;
+  groupNames: string[];
   score: number;
   groupRank: number;
   user: {
@@ -153,7 +153,15 @@ export default function RecentPerformers() {
 									</div>
                 </TableCell>
                 <TableCell className="py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-									{performer.groupName !== undefined ? performer.groupName : "Not assigned Group"}
+									<div className="flex justify-center flex-wrap gap-1">
+										{performer.groupNames?.length > 0
+											? performer.groupNames.map((name, idx) => (
+													<Badge key={idx} size="sm" color="info">
+														{name}
+													</Badge>
+												))
+											: "Not assigned Group"}
+									</div>
                 </TableCell>
                 <TableCell className="py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
 									{performer?.score?.toFixed(2) ?? "0.00"}
