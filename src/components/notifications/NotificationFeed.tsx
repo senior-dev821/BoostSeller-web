@@ -114,7 +114,8 @@ export default function NotificationFeed() {
     }
   };
 
-  const handleClick = (title: string) => {
+  const handleClick = (title: string, id: string) => {
+    markAsRead(id);
     if (title.includes('Hostess')) {
       router.push('/hostess');
     } else if (title.includes('Performer')) {
@@ -130,7 +131,7 @@ export default function NotificationFeed() {
         notifications.map(noti => (
           <div
             key={noti.id}
-            onClick={() => {handleClick(noti.title)}}
+            onClick={() => {handleClick(noti.title, noti.id)}}
             className={clsx(
               'flex justify-between gap-4 rounded-xl border p-4 shadow-sm transition hover:shadow-md',
               noti.isRead
