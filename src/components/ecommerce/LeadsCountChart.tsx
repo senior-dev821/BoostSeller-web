@@ -169,7 +169,6 @@ export default function LeadsCountChart() {
 
       {/* Conversion Rates Section */}
       <div className="grid gap-4 mt-6 mb-6 grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
-
         <ConversionRateCard
           key={`ntp-${newToProgressRate}`}
           from={"New"}
