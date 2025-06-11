@@ -10,7 +10,20 @@ import Button from "@/components/ui/button/Button"
 import { Download, AlertCircle, ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
 
-type GroupStatus = { name: string; hasAvailablePerformer: boolean }
+type HeatmapRow = {
+  date: string // e.g. "2025-06-11"
+  hours: number[] // 12 elements for each hour's count
+}
+
+type GroupStatus = {
+  name: string
+  hasAvailablePerformer: boolean
+}
+
+type RiskCounts = {
+  skipped: number
+  unresponsive: number
+}
 
 export default function WorkloadHeatmap() {
   const [fromDate, setFromDate] = useState<Date>(() => {
@@ -18,9 +31,9 @@ export default function WorkloadHeatmap() {
     return addDays(today, -7)
   })
   const [toDate, setToDate] = useState<Date>(() => new Date())
-  const [heatmapData, setHeatmapData] = useState<any[]>([])
-  const [groupStatus, setGroupStatus] = useState<GroupStatus[]>([])
-  const [riskCounts, setRiskCounts] = useState({ skipped: 0, unresponsive: 0 })
+  const [heatmapData, setHeatmapData] = useState<HeatmapRow[]>([])
+	const [groupStatus, setGroupStatus] = useState<GroupStatus[]>([])
+	const [riskCounts, setRiskCounts] = useState<RiskCounts>({ skipped: 0, unresponsive: 0 })
 
   const router = useRouter()
 

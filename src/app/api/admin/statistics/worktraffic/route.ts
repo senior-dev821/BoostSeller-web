@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
 
   const heatmap = days.map((day) => {
     const hours = new Array(12).fill(0)
-    for (let lead of leads) {
+    for (const lead of leads) {
       if (format(lead.createdAt, "yyyy-MM-dd") === format(day, "yyyy-MM-dd")) {
         const hour = getHours(lead.createdAt)
         if (hour >= 8 && hour <= 19) {
