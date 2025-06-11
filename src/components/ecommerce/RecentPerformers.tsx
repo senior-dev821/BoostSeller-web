@@ -41,10 +41,10 @@ interface Performer {
   };
 }
 
-interface Group {
-  id: number;
-  name: string;
-}
+// interface Group {
+//   id: number;
+//   name: string;
+// }
 
 export default function RecentPerformers() {
 	const [performers, setPerformers] = useState<Performer[]>([]);
