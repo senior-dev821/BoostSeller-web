@@ -345,10 +345,11 @@ const server = createServer((req, res) => {
     });
 
     socket.on('user_register', async (data) => {
+      const userRole = data.userRole.charAt(0).toUpperCase() + data.userRole.slice(1);
       const notification = await prisma.notification.create({
         data: {
           receiveId: 0,
-          title: 'New User Registered',
+          title: `New ${userRole} Registered!`,
           message: `${data.userName} just signed with the email ${data.userEmail}. Awaiting verification.`,
           isRead: false,
         },

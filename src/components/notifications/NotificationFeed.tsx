@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { CheckIcon, Trash2Icon } from 'lucide-react';
 import clsx from 'clsx';
 import { io, Socket } from 'socket.io-client';
+import { useRouter } from 'next/navigation';
 
 interface Notification {
   id: string;
@@ -17,6 +18,7 @@ interface Notification {
 export default function NotificationFeed() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
    const socketRef = useRef<Socket | null>(null);
+   const router = useRouter();
   useEffect(() => {
     async function fetchNotifications() {
       try {
@@ -69,8 +71,7 @@ export default function NotificationFeed() {
   }
 
 
-  // const markAsRead = (id: string) =>
-  //   setNotifications(n => n.map(noti => noti.id === id ? { ...noti, read: true } : noti));
+ 
   const markAsRead = async (id: string) => {
     try {
       const res = await fetch('/api/admin/notifications/read', {
@@ -113,7 +114,14 @@ export default function NotificationFeed() {
     }
   };
 
-
+  const handleClick = (title: string, id: string) => {
+    markAsRead(id);
+    if (title.includes('Hostess')) {
+      router.push('/hostess');
+    } else if (title.includes('Performer')) {
+      router.push('/performer');
+    }
+  }
 
   return (
     <div className="space-y-4 p-6 max-w-3xl mx-auto">
@@ -123,6 +131,7 @@ export default function NotificationFeed() {
         notifications.map(noti => (
           <div
             key={noti.id}
+            onClick={() => {handleClick(noti.title, noti.id)}}
             className={clsx(
               'flex justify-between gap-4 rounded-xl border p-4 shadow-sm transition hover:shadow-md',
               noti.isRead
