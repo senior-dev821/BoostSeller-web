@@ -65,7 +65,7 @@ export default function PerformerTable() {
   const [editPhoneNumber, setEditPhoneNumber] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editApproved, setEditApproved] = useState(false);
-  const [editGroupName, setEditGroupName] = useState("");
+  // const [editGroupName, setEditGroupName] = useState("");
   const [editAvailable, setEditAvailable] = useState(false);
   const [editGroupIds, setEditGroupIds] = useState<number[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string>("All");
@@ -105,7 +105,7 @@ export default function PerformerTable() {
     setEditApproved(performer.user.isApproved);
     setEditAvailable(performer.available);
     setEditGroupIds(performer.groupIds);
-    setEditGroupName(performer.groupNames.join(', '));
+    // setEditGroupName(performer.groupNames.join(', '));
     setShowEditModal(true);
   }
 
