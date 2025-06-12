@@ -11,7 +11,7 @@ import {
 
 import Badge from "../ui/badge/Badge";
 import {
-  User, Sparkles, DollarSign, CheckCircle, CircleDot, CheckCircle2, XCircle, Loader2, Clock, Workflow
+  User, Sparkles, DollarSign, CheckCircle, CircleDot, CheckCircle2, XCircle, CircleDashed, Clock, Workflow
 } from "lucide-react";
 import Image from "next/image";
 import Pagination from "@/components/form/form-elements/Pagination";
@@ -135,7 +135,7 @@ export default function LeadForm() {
   }, [selectedInterest, selectedStatus]);
 
   const getStageStatus = (index: number, currentStageIndex: number, isClosed: boolean, isLast: boolean) => {
-    if (isClosed && index >= currentStageIndex) return "closed";
+    if (isClosed && index === currentStageIndex) return "closed";
     if (isLast && index === currentStageIndex) return "completed";
     if (index < currentStageIndex) return "passed";
     if (index === currentStageIndex) return "progress";
@@ -147,7 +147,7 @@ export default function LeadForm() {
       case "passed":
         return <CheckCircle className="w-4 h-4" style={{ color: 'blue'}}/>;
       case "progress":
-        return <Loader2 className="w-4 h-4" style={{ color: 'indigo'}} />;
+        return <CircleDashed className="w-4 h-4" style={{ color: 'indigo'}} />;
       case "closed":
         return <XCircle className="w-4 h-4" style={{ color: 'red'}} />;
       case "completed":
