@@ -307,12 +307,10 @@ export default function HostessTable() {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    className="px-5 py-6 text-center text-gray-400 text-sm flex justify-center items-center"
-                  >
-                    No hostesses found.
-                  </TableCell>
-                </TableRow>
+                                    <td colSpan={7} className="text-center py-6 text-gray-500 dark:text-gray-400">
+                                      No hostesses found.
+                                    </td>
+                                  </TableRow>
               )
 
 

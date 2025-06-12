@@ -72,25 +72,25 @@ export default function PerformerTable() {
   const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   const socketRef = useRef<Socket | null>(null);
-  
-    useEffect(() => {
-      if (!socketRef.current) {
-        socketRef.current = io(); // Only initialize once
-      }
-  
-      socketRef.current.on("connect", () => {
-        console.log("Connected to WebSocket server");
-      });
-  
-      return () => {
-        socketRef.current?.disconnect();
-      };
-    }, []);
 
-  const handleApprovalToggle = (userId : number | undefined) => {
-     if (typeof userId !== "number") return;
+  useEffect(() => {
+    if (!socketRef.current) {
+      socketRef.current = io(); // Only initialize once
+    }
+
+    socketRef.current.on("connect", () => {
+      console.log("Connected to WebSocket server");
+    });
+
+    return () => {
+      socketRef.current?.disconnect();
+    };
+  }, []);
+
+  const handleApprovalToggle = (userId: number | undefined) => {
+    if (typeof userId !== "number") return;
     const newStatus = editApproved;
-    
+
     socketRef.current?.emit("user_approval_changed", {
       userId: userId,
       isApproved: !newStatus,
@@ -140,34 +140,34 @@ export default function PerformerTable() {
       });
 
       if (res.ok) {
-				const updatedGroupNames = editGroupIds
-					.map(id => groups.find(group => group.id === id)?.name)
-					.filter((name): name is string => !!name); // Filter out undefineds
-			
-				// Update local state
-				setPerformers((prev) =>
-					prev.map((performer) =>
-						performer.id === editPerformer.id
-							? {
-									...performer,
-									available: editAvailable,
-									groupIds: editGroupIds,
-									groupNames: updatedGroupNames, // ✅ Set new group names
-									user: {
-										...performer.user,
-										name: editName,
-										phoneNumber: editPhoneNumber,
-										email: editEmail,
-										isApproved: editApproved,
-									},
-								}
-							: performer
-					)
-				);
-			
-				setShowEditModal(false);
-			}
-			 else {
+        const updatedGroupNames = editGroupIds
+          .map(id => groups.find(group => group.id === id)?.name)
+          .filter((name): name is string => !!name); // Filter out undefineds
+
+        // Update local state
+        setPerformers((prev) =>
+          prev.map((performer) =>
+            performer.id === editPerformer.id
+              ? {
+                ...performer,
+                available: editAvailable,
+                groupIds: editGroupIds,
+                groupNames: updatedGroupNames, // ✅ Set new group names
+                user: {
+                  ...performer.user,
+                  name: editName,
+                  phoneNumber: editPhoneNumber,
+                  email: editEmail,
+                  isApproved: editApproved,
+                },
+              }
+              : performer
+          )
+        );
+
+        setShowEditModal(false);
+      }
+      else {
         console.error("Failed to save hostess info");
       }
     } catch (error) {
@@ -204,11 +204,23 @@ export default function PerformerTable() {
       .then((data) => setGroups(data));
   }, []);
 
-  const totalPages = Math.ceil(performers.length / pageSize);
-  const paginatedPerformers = performers.slice(
+  const filteredPerformers = performers.filter((performer) => {
+    if (selectedGroup === "All") return true;
+    if (selectedGroup === "None") return !performer.groupIds || performer.groupIds.length === 0;
+    return performer.groupIds?.includes(Number(selectedGroup));
+  });
+
+  const totalPages = Math.ceil(filteredPerformers.length / pageSize);
+  const paginatedPerformers = filteredPerformers.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedGroup]);
+
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
@@ -221,7 +233,7 @@ export default function PerformerTable() {
               className="px-3 py-1.5 border border-gray-300 rounded-md text-sm dark:bg-gray-800 dark:text-white"
             >
               <option value="All">All</option>
-              
+
               {groups.map((group) => (
                 <option key={group.id} value={group.id}>
                   {group.name}
@@ -286,105 +298,111 @@ export default function PerformerTable() {
 
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-              {paginatedPerformers
-                .filter((performer) => {
-                  if (selectedGroup === "All") return true;
-                  if (selectedGroup === "None") return !performer.groupIds || performer.groupIds.length === 0;
-                  return performer.groupIds?.includes(Number(selectedGroup));
-                })
-                .map((performer) => (
-                  <TableRow key={performer.id}>
-                    <TableCell className="px-5 py-4 sm:px-6 text-start">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 overflow-hidden rounded-full">
-                          <Image
-                            width={40}
-                            height={40}
-                            src={
-                              performer.user.avatarPath
-                                ? `${nextServerUrl}${performer.user.avatarPath}`
-                                : "/images/user/user-01.jpg"
-                            }
-                            alt={performer.user.name}
-                          />
-                        </div>
-                        <div>
-                          <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {performer.user.name}
-                          </span>
-                          <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                            {performer.user.role}
-                          </span>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-											<div className="flex justify-center flex-wrap gap-1">
-												{performer.groupNames?.length > 0
-													? performer.groupNames.map((name, idx) => (
-															<Badge key={idx} size="sm" color="info">
-																{name}
-															</Badge>
-														))
-													: "Not assigned Group"}
-											</div>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                      {performer.user.phoneNumber}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                      {performer.user.email}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                      <Badge
-                        size="sm"
-                        color={performer.user.isApproved ? "success" : "error"}
-                      >
-                        {performer.user.isApproved ? "Approved" : "Pending"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                      <Badge
-                        size="sm"
-                        color={performer.available ? "success" : "error"}
-                      >
-                        {performer.available ? "Available" : "Do Not Disturb"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                      {new Intl.DateTimeFormat("en-US", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      }).format(new Date(performer.createdAt))}
-                    </TableCell>
-                    <TableCell className="px-4 py-3 space-x-2 text-center">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleEditClick(performer)}
-                      >
-                        <PencilIcon className="fill-gray-500 dark:fill-gray-400" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleInfoClick(performer)}
-                      >
-                        <InfoIcon className="fill-gray-500 dark:fill-gray-400" />
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                          setSelectedPerformer(performer);
-                          setShowDeleteModal(true);
-                        }}
-                      >
-                        <TrashBinIcon className="fill-gray-500 dark:fill-gray-400" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+              {
+                paginatedPerformers.length > 0 ?
+                  (
+                    paginatedPerformers
+                      .map((performer) => (
+                        <TableRow key={performer.id}>
+                          <TableCell className="px-5 py-4 sm:px-6 text-start">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 overflow-hidden rounded-full">
+                                <Image
+                                  width={40}
+                                  height={40}
+                                  src={
+                                    performer.user.avatarPath
+                                      ? `${nextServerUrl}${performer.user.avatarPath}`
+                                      : "/images/user/user-01.jpg"
+                                  }
+                                  alt={performer.user.name}
+                                />
+                              </div>
+                              <div>
+                                <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                  {performer.user.name}
+                                </span>
+                                <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
+                                  {performer.user.role}
+                                </span>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                            <div className="flex justify-center flex-wrap gap-1">
+                              {performer.groupNames?.length > 0
+                                ? performer.groupNames.map((name, idx) => (
+                                  <Badge key={idx} size="sm" color="info">
+                                    {name}
+                                  </Badge>
+                                ))
+                                : "Not assigned Group"}
+                            </div>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                            {performer.user.phoneNumber}
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                            {performer.user.email}
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                            <Badge
+                              size="sm"
+                              color={performer.user.isApproved ? "success" : "error"}
+                            >
+                              {performer.user.isApproved ? "Approved" : "Pending"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                            <Badge
+                              size="sm"
+                              color={performer.available ? "success" : "error"}
+                            >
+                              {performer.available ? "Available" : "Do Not Disturb"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+                            {new Intl.DateTimeFormat("en-US", {
+                              dateStyle: "medium",
+                              timeStyle: "short",
+                            }).format(new Date(performer.createdAt))}
+                          </TableCell>
+                          <TableCell className="px-4 py-3 space-x-2 text-center">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleEditClick(performer)}
+                            >
+                              <PencilIcon className="fill-gray-500 dark:fill-gray-400" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleInfoClick(performer)}
+                            >
+                              <InfoIcon className="fill-gray-500 dark:fill-gray-400" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setSelectedPerformer(performer);
+                                setShowDeleteModal(true);
+                              }}
+                            >
+                              <TrashBinIcon className="fill-gray-500 dark:fill-gray-400" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))
+                  ) : (
+                    <TableRow>
+                      <td colSpan={8} className="text-center py-6 text-gray-500 dark:text-gray-400">
+                        No performers found.
+                      </td>
+                    </TableRow>
+                  )
+              }
             </TableBody>
           </Table>
 
