@@ -18,6 +18,7 @@ export async function GET() {
       },
     });
 
+
     const expandedLeads = await Promise.all(
       leads.map(async (lead) => {
         const assignedTo = lead.assignedTo ?? undefined;
@@ -27,6 +28,14 @@ export async function GET() {
         let assignedAvatarPath = '';
         let acceptedName = '';
         let acceptedAvatarPath = '';
+        const stages = await prisma.stage.findMany({
+          where: {
+            interestId: lead.interestId,
+          },
+          orderBy: {
+            sequence: 'asc',
+          }
+        });
 
         const assignedPerformer = assignedTo
           ? await prisma.performer.findUnique({
@@ -58,6 +67,7 @@ export async function GET() {
           assignedAvatarPath,
           acceptedName,
           acceptedAvatarPath,
+          stages,
         };
       })
     );
