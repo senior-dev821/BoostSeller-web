@@ -107,6 +107,9 @@ export default function LeadForm() {
     setSelectedLead(lead);
   }
 
+  const handleStageClick = (stageId: number) => {
+    window.open(`/sales-stage/${stageId}`, '_blank');
+  }
 
   const filteredLeads = leads.filter((lead) => {
     const interestMatch =
@@ -302,7 +305,10 @@ export default function LeadForm() {
                                   
 
                                   return (
-                                    <div key={stage.id} className="relative min-h-[60px]">
+                                    <div key={stage.id} 
+                                      className="relative min-h-[60px] group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                                      onClick={() => handleStageClick(stage.id)}
+                                      >
                                       {/* Vertical Line */}
                                       {!isLast && (
                                         <div className="absolute top-3.5 left-1/2 -translate-x-1/2 h-[60px] w-px bg-green-500 z-0" />

@@ -222,9 +222,17 @@ export default function StageForm() {
   const removeElement = (id: string) => {
     setSelectedStage((prev) => {
       if (!prev || !prev.elements) return prev;
+      const filteredElements = prev.elements.filter((el) => el.id !== id);
+
+      // Reassign sequence starting from 1
+      const reindexedElements = filteredElements.map((el, index) => ({
+        ...el,
+        sequence: index + 1,
+      }));
+
       return {
         ...prev,
-        elements: prev.elements.filter((el) => el.id !== id),
+        elements: reindexedElements,
       };
     });
   };
@@ -392,7 +400,7 @@ export default function StageForm() {
                       onChange={(e) => updateElement(el.id, 'required', e.target.checked)}
                     /> Required
                   </label>
-                  {(el.type === 'dropdown') && (
+                  {(el.type === 'dropdown' || el.type === 'checkbox group') && (
                     <Input
                       placeholder="Comma separated items"
                       defaultValue={(el.items ?? []).join(',') || ""}
