@@ -470,30 +470,6 @@ export default function LeadForm() {
                             <h6 className="text-sm text-white font-bold ">Stage Name</h6>
                             <p className="text-md text-gray-400 font-medium">{selectedStage?.name}</p>
                           </div>
-<<<<<<< Updated upstream
-=======
-                        )
-                        : selectedLead.status === 'pendding'
-                          ? (
-                            <div className="flex-1 text-center pr-2 text-sm mb-10 text-red-500 font-semibold">
-                              Lead is all skipped
-                            </div>
-                          ) : selectedLead.status === 'closed' && selectedLead.stageId === 0
-                            ? (
-                              <div className="flex-1 text-center pr-2 text-sm mb-10 text-red-500 font-semibold">
-                                Lead is all skipped and Closed
-                              </div>
-                            )
-                            : (
-                              <div className="relative pl-8">
-                                {selectedLead.stages.map((stage, index) => {
-                                  const isClosed = selectedLead.status === "closed";
-                                  const isLast = index === selectedLead.stages.length - 1;
-                                  const currentStageIndex = selectedLead.stages.findIndex(s => s.id === selectedLead.stageId);
-																	
-                                  const status = getStageStatus(index, currentStageIndex, isClosed, isLast);
-                                  
->>>>>>> Stashed changes
 
                           <div className="mb-6 p-4 bg-gray-900 border-gray-400 rounded-md">
                             <h6 className="text-sm text-white font-bold">Description</h6>
