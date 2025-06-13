@@ -14,24 +14,24 @@ const prisma = new PrismaClient();
 
 app.prepare().then(() => {
 
-const server = createServer((req, res) => {
-  const parsedUrl = url.parse(req.url, true);
-  const pathname = parsedUrl.pathname;
+  const server = createServer((req, res) => {
+    const parsedUrl = url.parse(req.url, true);
+    const pathname = parsedUrl.pathname;
 
-  // Serve files from /uploads
-  if (pathname.startsWith('/uploads')) {
-    const filePath = path.join(__dirname, pathname);
-      
-    fs.stat(filePath, (err, stat) => {
-      if (err || !stat.isFile()) {
-        res.statusCode = 404;
-        res.end('Not found');
-        return;
-      }
+    // Serve files from /uploads
+    if (pathname.startsWith('/uploads')) {
+      const filePath = path.join(__dirname, pathname);
 
-      const readStream = fs.createReadStream(filePath);
-      readStream.pipe(res);
-    });
+      fs.stat(filePath, (err, stat) => {
+        if (err || !stat.isFile()) {
+          res.statusCode = 404;
+          res.end('Not found');
+          return;
+        }
+
+        const readStream = fs.createReadStream(filePath);
+        readStream.pipe(res);
+      });
       return;
     }
 
@@ -39,7 +39,7 @@ const server = createServer((req, res) => {
     handle(req, res);
   });
 
-  
+
   const io = socketIo(server, {
     cors: {
       origin: '*',
@@ -48,7 +48,7 @@ const server = createServer((req, res) => {
   });
 
   const clients = new Map(); // Map userId => socket
-  
+
   io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
 
@@ -59,7 +59,7 @@ const server = createServer((req, res) => {
         clients.set(userId, socket);
         console.log(`Registered user ${userId} with socket ${socket.id}`);
       }
-      
+
     });
 
     socket.on('lead_added', async (data) => {
@@ -71,17 +71,17 @@ const server = createServer((req, res) => {
 
     async function assignLeadToPerformer(leadId) {
 
-      const lead = await prisma.lead.findUnique({ 
+      const lead = await prisma.lead.findUnique({
         where: { id: leadId },
         include: {
           interest: true,
-        } 
-      
+        }
+
       });
       const triedPerformerIds = lead.triedPerformerIds;
       const intersteId = lead.interest.id;
-      const assignedGroup= await prisma.group.findUnique({
-        where : {
+      const assignedGroup = await prisma.group.findUnique({
+        where: {
           interestId: intersteId,
         }
       });
@@ -99,10 +99,10 @@ const server = createServer((req, res) => {
             // notIn: Array.from(triedPerformerIds),
             notIn: triedPerformerIds ?? [],
           },
-          groupIds : {
+          groupIds: {
             has: assignedGroupId,
           },
-          
+
         },
       });
 
@@ -111,27 +111,27 @@ const server = createServer((req, res) => {
       );
 
       const rankedPerformers = filteredPerformers
-      .map(performer => {
-        const acceptedCount = performer.acceptedCount;
-        const completedCount = performer.completedCount;
-        const assignedCount = performer.assignedCount;
-        const avgResponseTime = performer.avgResponseTime;
-        const conversion = acceptedCount === 0 
-        ? 0
-        : completedCount / acceptedCount;
-        const responseSpeed = avgResponseTime === 0 
-        ? 0
-        : 1 - (avgResponseTime / assignPeriod);
-        const acceptanceRatio = assignedCount === 0 
-        ? 0
-        : acceptedCount / assignedCount;
-        const score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
-        return { ...performer, score };
-      })
-      .sort((a, b) => {
-        if (b.score !== a.score) return b.score - a.score;
-        return a.createdAt.getTime() - b.createdAt.getTime();
-      });
+        .map(performer => {
+          const acceptedCount = performer.acceptedCount;
+          const completedCount = performer.completedCount;
+          const assignedCount = performer.assignedCount;
+          const avgResponseTime = performer.avgResponseTime;
+          const conversion = acceptedCount === 0
+            ? 0
+            : completedCount / acceptedCount;
+          const responseSpeed = avgResponseTime === 0
+            ? 0
+            : 1 - (avgResponseTime / assignPeriod);
+          const acceptanceRatio = assignedCount === 0
+            ? 0
+            : acceptedCount / assignedCount;
+          const score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
+          return { ...performer, score };
+        })
+        .sort((a, b) => {
+          if (b.score !== a.score) return b.score - a.score;
+          return a.createdAt.getTime() - b.createdAt.getTime();
+        });
 
       const assignedPerformer = rankedPerformers[0];
       console.log(assignedPerformer);
@@ -139,10 +139,10 @@ const server = createServer((req, res) => {
         console.log('No more performers to assign');
         const penddingLead = await prisma.lead.update({
           where: { id: leadId },
-          data: { 
+          data: {
             status: 'pendding',
             triedPerformerIds: [],
-           },
+          },
           include: {
             interest: true,
           },
@@ -152,7 +152,7 @@ const server = createServer((req, res) => {
             id: penddingLead.addedBy,
           },
         });
-        
+
         const hostessSocket = clients.get(addedByHostess.userId.toString());
         const hostessNotification = await prisma.notification.create({
           data: {
@@ -163,21 +163,23 @@ const server = createServer((req, res) => {
           },
         });
         if (hostessSocket) {
-        hostessSocket.emit('lead_pendding', {
-          type: 'pendding',
-          lead: penddingLead,
-          message: `A new lead - ${penddingLead.name} is penddding.`,
-          hostessNotification,
-        });
-      } else {
-        const user = await prisma.user.findUnique({
-          where: { id: addedByHostess.userId },
-        });
-        sendPushNotification(user.fcmToken, '📢 New Lead is pendding', `A new lead - ${penddingLead.name} is penddding.`);
-      }
+          hostessSocket.emit('lead_pendding', {
+            type: 'pendding',
+            lead: penddingLead,
+            message: `A new lead - ${penddingLead.name} is penddding.`,
+            hostessNotification,
+          });
+        } else {
+          const user = await prisma.user.findUnique({
+            where: { id: addedByHostess.userId },
+          });
+          sendPushNotification(user.fcmToken, '📢 New Lead is pendding', `A new lead - ${penddingLead.name} is penddding.`);
+        }
 
         return;
       }
+
+      const assignmentCycleId = Date.now().toString();
 
       await prisma.lead.update({
         where: { id: leadId },
@@ -185,6 +187,7 @@ const server = createServer((req, res) => {
           triedPerformerIds: {
             push: assignedPerformer.id,
           },
+          assignmentCycleId: assignmentCycleId,
         },
       });
 
@@ -238,22 +241,22 @@ const server = createServer((req, res) => {
       }
 
       setTimeout(async () => {
-        const updatedLead = await prisma.lead.findUnique({ 
+        const updatedLead = await prisma.lead.findUnique({
           where: { id: leadId },
           include: {
             interest: true,
-          }, 
+          },
         });
-        if (updatedLead.status === 'assigned' &&  updatedLead.assignedTo === assignedPerformer.id ) {
+        if (updatedLead.status === 'assigned' && updatedLead.assignedTo === assignedPerformer.id && updatedLead.assignmentCycleId === assignmentCycleId) {
           const escalationNotification = await prisma.notification.create({
             data: {
-              receiveId: assignedPerformer.userId, 
+              receiveId: assignedPerformer.userId,
               title: 'Lead is escalated!',
               message: `You did not accept the lead in time. The lead - ${updatedLead.name} will be escalated.`,
               isRead: false,
             },
           });
-          
+
 
           const denyPerformerSocket = clients.get(assignedPerformer.userId.toString());
           if (denyPerformerSocket) {
@@ -272,12 +275,12 @@ const server = createServer((req, res) => {
             sendPushNotification(user.fcmToken, '📢 Lead is escalated!', `You did not accept the lead in time. The lead - ${updatedLead.name} will be escalated.`);
           }
           await assignLeadToPerformer(leadId);
-        } 
+        }
       }, assignPeriod * 1000);
     }
 
-  socket.on('lead_skip', async (data) => {
-      
+    socket.on('lead_skip', async (data) => {
+
       const userId = parseInt(data.userId);
       const performerId = parseInt(data.performerId);
       const lead = await prisma.lead.findUnique({
@@ -288,7 +291,7 @@ const server = createServer((req, res) => {
           interest: true,
         },
       });
-      
+
       if (!lead || lead.status !== 'assigned') return;
 
       const leadId = lead.id;
@@ -303,6 +306,16 @@ const server = createServer((req, res) => {
           }
         }
       });
+
+      await prisma.lead.update({
+        where: { id: leadId },
+        data: {
+          assignedTo: null,
+          status: 'pendding', // or your preferred in-between status
+          assignmentCycleId: null, // clear current cycle
+        },
+      });
+
       const skipSocket = clients.get(userId.toString());
       const escalationNotification = await prisma.notification.create({
         data: {
@@ -323,16 +336,16 @@ const server = createServer((req, res) => {
 
 
     socket.on('user_approval_changed', async ({ userId, isApproved }) => {
-  
+
       const targetSocket = clients.get(userId.toString());
-      
+
       const statusMessage = isApproved
         ? 'Your account is approved! You now have full access.'
         : 'Your account has been marked as pending approval.';
       const statusTitle = isApproved
         ? '📢 Your account is approved!'
         : '📢 Your account is blocked!.';
-      
+
       if (targetSocket) {
         targetSocket.emit('approval_status_changed', {
           approved: isApproved,
@@ -356,7 +369,7 @@ const server = createServer((req, res) => {
       });
 
       socket.broadcast.emit('user_register', notification);
-     
+
     });
 
     socket.on('disconnect', () => {
@@ -368,7 +381,7 @@ const server = createServer((req, res) => {
   });
 
 
-  
+
 
 
   const PORT = process.env.PORT || 3000;
@@ -376,7 +389,7 @@ const server = createServer((req, res) => {
   server.listen(PORT, '0.0.0.0', () => {
     console.log(`> Ready on http://0.0.0.0:${PORT}`);
   });
-  
+
 });
 
 
