@@ -4,8 +4,7 @@ import dynamic from "next/dynamic";
 
 import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "@/components/form/date-picker"; // 👈 Your custom component
 import ConversionRateCard from "./ConversionRateCard";
 import { GroupIcon } from "@/icons";
 
@@ -16,7 +15,7 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 export default function LeadsCountChart() {
   const stageLabels = ["New", "In-Progress", "Processed", "Lost", "Converted"];
 
-  // Date range state
+// Date range state
   const [startDate, setStartDate] = useState<Date | null>(new Date());
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [newToProgressRate, setNewToProgressRate] = useState(0);
@@ -52,15 +51,8 @@ export default function LeadsCountChart() {
 
       const data = await res.json();
 
-      setSeries([
-        {
-          name: "Leads",
-          data: data.leadAnalysis,
-        },
-      ]);
-
+      setSeries([{ name: "Leads", data: data.leadAnalysis }]);
       setTotalLeads(data.total);
-      console.log(data);
       setNewToProgressRate(data.newToProgressRate);
       setProgressToProcessedRate(data.progressToProcessedRate);
       setProcessedToConvertedRate(data.processedToConvertedRate);
@@ -113,34 +105,29 @@ export default function LeadsCountChart() {
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white/90">
           Leads
         </h3>
-        {/* Date Picker */}
+				{/* Date Picker */}
         <div className="flex items-center gap-3 mb-4">
           <DatePicker
-            selected={startDate}
-            onChange={(date) => setStartDate(date)}
-            selectsStart
-            startDate={startDate}
-            endDate={endDate}
-            dateFormat="MMM dd, yyyy"
-            className="border rounded px-2 py-1 text-sm dark:bg-gray-800 dark:text-white"
-            placeholderText="Start Date"
+            id="start-date"
+            label=""
+            mode="single"
+            defaultDate={startDate ?? undefined}
+            onChange={([date]) => setStartDate(date as Date)}
+            placeholder="Start Date"
           />
           <span className="text-gray-500">to</span>
           <DatePicker
-            selected={endDate}
-            onChange={(date) => setEndDate(date)}
-            selectsEnd
-            startDate={startDate}
-            endDate={endDate}
-            minDate={startDate ?? undefined}
-            dateFormat="MMM dd, yyyy"
-            className="border rounded px-2 py-1 text-sm dark:bg-gray-800 dark:text-white"
-            placeholderText="End Date"
+            id="end-date"
+            label=""
+            mode="single"
+            defaultDate={endDate ?? undefined}
+            onChange={([date]) => setEndDate(date as Date)}
+            placeholder="End Date"
           />
         </div>
       </div>
 
-      {/* Chart Section */}
+{/* Chart Section */}
       <div className="flex justify-between">
         <div className="w-full  overflow-x-auto custom-scrollbar gap-2">
           <div className="-ml-5 min-w-[850px] xl:min-w-full pl-4">
@@ -153,41 +140,25 @@ export default function LeadsCountChart() {
           </div>
         </div>
         <Card className="bg-muted p-4 rounded-lg shadow-sm flex flex-col items-center justify-center gap-3">
-					<div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-700">
-						<GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
-					</div>
-					<div className="text-center">
-						<p className="text-md text-gray-500 dark:text-gray-400">Total Leads</p>
-						<p className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
-							{totalLeads}
-						</p>
-					</div>
-				</Card>
-
+          <div className="flex items-center justify-center w-12 h-12 bg-gray-100 rounded-xl dark:bg-gray-700">
+            <GroupIcon className="text-gray-800 size-6 dark:text-white/90" />
+          </div>
+          <div className="text-center">
+            <p className="text-md text-gray-500 dark:text-gray-400">
+              Total Leads
+            </p>
+            <p className="mt-2 font-bold text-gray-800 text-title-sm dark:text-white/90">
+              {totalLeads}
+            </p>
+          </div>
+        </Card>
       </div>
 
-      {/* Conversion Rates Section */}
       <div className="grid gap-4 mt-6 mb-6 grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
-        <ConversionRateCard
-          key={`ntp-${newToProgressRate}`}
-          from={"New"}
-          to={"In-Progress"}
-          rate={newToProgressRate} />
-        <ConversionRateCard
-          key={`ptp-${progressToProcessedRate}`}
-          from={"In-Progress"}
-          to={"Processed"}
-          rate={progressToProcessedRate} />
-        <ConversionRateCard
-          key={`ptc-${processedToConvertedRate}`}
-          from={"Processed"}
-          to={"Converted"}
-          rate={processedToConvertedRate} />
-        <ConversionRateCard
-          key={`ptl-${processedToLostRate}`}
-          from={"Processed"}
-          to={"Lost"}
-          rate={processedToLostRate} />
+        <ConversionRateCard from="New" to="In-Progress" rate={newToProgressRate} />
+        <ConversionRateCard from="In-Progress" to="Processed" rate={progressToProcessedRate} />
+        <ConversionRateCard from="Processed" to="Converted" rate={processedToConvertedRate} />
+        <ConversionRateCard from="Processed" to="Lost" rate={processedToLostRate} />
       </div>
     </div>
   );
