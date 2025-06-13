@@ -345,6 +345,21 @@ export default function LeadForm() {
                       {selectedLead.hostess.user.name}
                     </InfoCard>
 
+                    {/* AssignedTo */}
+                    <InfoCard icon={<User className="text-blue-400 w-5 h-5" />} title="AssignedTo">
+                      {selectedLead.assignedName || "Not assigned"}
+                    </InfoCard>
+
+                    {/* AcceptedBy */}
+                    <InfoCard icon={<User className="text-blue-400 w-5 h-5" />} title="AcceptedBy">
+                      {selectedLead.acceptedName || "Not accepted"}
+                    </InfoCard>
+
+                    {/* Interest */}
+                    <InfoCard icon={<Sparkles className="text-blue-400 w-5 h-5" />} title="Interest">
+                      {selectedLead.interest.name}
+                    </InfoCard>
+
                     {/* Status */}
                     <InfoCard icon={<CheckCircle className="text-yellow-400 w-5 h-5" />} title="Status">
                       <div className="space-x-1">
@@ -370,27 +385,12 @@ export default function LeadForm() {
                       </div>
                     </InfoCard>
 
-                    {/* AssignedTo */}
-                    <InfoCard icon={<User className="text-blue-400 w-5 h-5" />} title="AssignedTo">
-                      {selectedLead.assignedName || "Not assigned"}
-                    </InfoCard>
-
-                    {/* Interest */}
-                    <InfoCard icon={<Sparkles className="text-blue-400 w-5 h-5" />} title="Interest">
-                      {selectedLead.interest.name}
-                    </InfoCard>
-
-                    {/* AcceptedBy */}
-                    <InfoCard icon={<User className="text-blue-400 w-5 h-5" />} title="AcceptedBy">
-                      {selectedLead.acceptedName || "Not accepted"}
-                    </InfoCard>
-
                     {/* Budget */}
                     <InfoCard icon={<DollarSign className="text-green-400 w-5 h-5" />} title="Budget">
                       {getBudgetFromLead(selectedLead)}
                     </InfoCard>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full">
                     {/* Sales Timeline */}
                     <div className="p-4 rounded-lg bg-gray-800 shadow border border-gray-700 mt-4">
                       <div className="flex items-center gap-3 mb-6">
