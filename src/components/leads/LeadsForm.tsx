@@ -415,7 +415,7 @@ export default function LeadForm() {
                             return (
                               <div
                                 key={stage.id}
-                                className="relative min-h-[60px] group cursor-pointer hover:bg-gray-700 p-2"
+                                className="relative min-h-[60px] group cursor-pointer  hover:bg-gray-50 dark:hover:bg-gray-700 p-2"
                                 onClick={() => handleStageClick(stage, status)}
                               >
                                 <div className="flex items-center justify-between gap-2">
@@ -628,7 +628,7 @@ export default function LeadForm() {
                     .map((lead) => (
                       <TableRow
                         key={lead.id}
-                        className="cursor-pointer hover:bg-gray-50"
+                        className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
                         onClick={() => handleRowClick(lead)}
                       >
                         <TableCell className="px-5 py-4 sm:px-6 text-center">
