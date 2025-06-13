@@ -627,7 +627,7 @@ export default function PerformerTable() {
               <div>
 								<div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto mb-4">
 									<Boxes className="text-blue-400 w-5 h-5" />
-									<div className="text-sm font-medium text-gray-400">Groups</div>
+									<div className="text-sm font-medium  text-gray-700 dark:text-gray-300">Groups</div>
 									{selectedPerformer && selectedPerformer.groupNames?.length > 0 ? (
 										<div className="flex flex-wrap gap-2 mt-2">
 											{selectedPerformer.groupNames.map((group, i) => (
@@ -638,48 +638,48 @@ export default function PerformerTable() {
 										</div>
 									) : (
 										<div className="flex flex-wrap gap-2 mt-2">
-											<span className="text-sm text-gray-500">No group assigned</span>
+											<span className="text-sm  text-gray-700 dark:text-gray-300">No group assigned</span>
 										</div>
 									)}
 								</div>					
 								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">	
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<Star className="text-blue-400 w-5 h-5" />
 											<span>Score</span>
 										</div>
-										<div className="text-center">{selectedPerformer?.score?.toFixed(2) ?? "0.00"}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.score?.toFixed(2) ?? "0.00"}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<BarChart className="text-yellow-400 w-5 h-5" />
 											<span>Rank</span>
 										</div>
-										<div className="text-center">{selectedPerformer?.groupRank}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.groupRank}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<User className="text-blue-400 w-5 h-5" />
 											<span>Role</span>
 										</div>
-										<div>{selectedPerformer?.user.role}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.user.role}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<Phone className="text-green-400 w-5 h-5" />
 											<span>Phone Number</span>
 										</div>
-										<div>{selectedPerformer?.user.phoneNumber}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.user.phoneNumber}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<Mail className="text-purple-400 w-5 h-5" />
 											<span>Email</span>
 										</div>
-										<div>{selectedPerformer?.user.email}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.user.email}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<ShieldCheck className="text-yellow-400 w-5 h-5" />
 											<span>Status</span>
 										</div>
@@ -691,42 +691,42 @@ export default function PerformerTable() {
 										</Badge>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<Inbox className="text-purple-400 w-5 h-5" />
 											<span>Assigned Leads</span>
 										</div>
-										<div className="text-center">{selectedPerformer?.assignedCount ?? 0}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.assignedCount ?? 0}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<CheckCircle className="text-purple-400 w-5 h-5" />
 											<span>Accepted Leads</span>
 										</div>
-										<div className="text-center">{selectedPerformer?.acceptedCount ?? 0}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.acceptedCount ?? 0}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<BadgeCheck className="text-purple-400 w-5 h-5" />
 											<span>Completed Leads</span>
 										</div>
-										<div className="text-center">{selectedPerformer?.completedCount ?? 0}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.completedCount ?? 0}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<Archive className="text-purple-400 w-5 h-5" />
 											<span>Closed Leads</span>
 										</div>
-										<div className="text-center">{selectedPerformer?.closedCount ?? 0}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.closedCount ?? 0}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<Timer className="text-purple-400 w-5 h-5" />
 											<span>Average Response Time</span>
 										</div>
-										<div className="text-center">{selectedPerformer?.avgResponseTime.toFixed(2)}s</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.avgResponseTime.toFixed(2)}s</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<CheckCircle className="text-purple-400 w-5 h-5" />
 											<span>Available</span>
 										</div>
