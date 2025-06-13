@@ -148,8 +148,8 @@ export default function LeadForm() {
     <div className="flex items-center gap-3 p-4 rounded-lg  bg-gray-200 dark:bg-gray-800 shadow">
       {icon}
       <div>
-        <div className="text-sm font-medium text-gray-400">{title}</div>
-        <div>{children}</div>
+        <div className="text-ms font-medium ">{title}</div>
+        <div className="text-gray-600 dark:text-gray-400">{children}</div>
       </div>
     </div>
   );
@@ -161,7 +161,7 @@ export default function LeadForm() {
       case 'currency':
       case 'comment':
       case 'date':
-        return <p className="text-sm text-gray-400 bg-gray-300 dark:bg-gray-700 px-3 py-2 rounded-md">{value || ''}</p>;
+        return <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-300 dark:bg-gray-700 px-3 py-2 rounded-md">{value || ''}</p>;
 
       case 'toggle':
         return (
@@ -173,7 +173,7 @@ export default function LeadForm() {
         );
 
       case 'dropdown':
-        return <p className="text-sm text-gray-400">{value || ''}</p>;
+        return <p className="text-sm text-gray-600 dark:text-gray-400">{value || ''}</p>;
 
       case 'checkbox group': {
         const selectedValues: string[] = Array.isArray(value)
@@ -186,7 +186,7 @@ export default function LeadForm() {
             {(field.items || []).map((item) => {
               const isChecked = selectedValues.includes(item);
               return (
-                <label key={item} className="flex items-center gap-2 text-sm text-gray-400">
+                <label key={item} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
                   <input
                     type="checkbox"
                     checked={isChecked}
@@ -211,7 +211,7 @@ export default function LeadForm() {
               readOnly
               className="form-checkbox h-5 w-5 text-green-500 bg-gray-800 border-gray-600 rounded"
             />
-            <label className="text-sm text-gray-400">{field.label}</label>
+            <label className="text-sm text-gray-600 dark:text-gray-400">{field.label}</label>
           </div>
         );
       }
@@ -237,7 +237,7 @@ export default function LeadForm() {
         );
 
       default:
-        return <p className="text-sm text-gray-400 italic">Unsupported field type</p>;
+        return <p className="text-sm text-gray-600 dark:text-gray-400 italic">Unsupported field type</p>;
     }
   };
 
@@ -392,10 +392,10 @@ export default function LeadForm() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full">
                     {/* Sales Timeline */}
-                    <div className="p-4 rounded-lg bg-gray-200 dark:bg-gray-800 shadow border border-gray-700 mt-4">
+                    <div className="p-4 rounded-lg bg-gray-200 dark:bg-gray-800 shadow mt-4">
                       <div className="flex items-center gap-3 mb-6">
                         <Workflow className="text-green-400 w-5 h-5" />
-                        <h5 className="text-md font-semibold text-gray-400 dark:text-white">Sales Stage Timeline</h5>
+                        <h5 className="text-md font-semibold dark:text-white">Sales Stage Timeline</h5>
                       </div>
 
                       {selectedLead.stages.length === 0 ? (
@@ -419,7 +419,7 @@ export default function LeadForm() {
                                 onClick={() => handleStageClick(stage, status)}
                               >
                                 <div className="flex items-center justify-between gap-2">
-                                  <div className="flex-1 text-right pr-2 text-sm text-gray-400">{stage.name}</div>
+                                  <div className="flex-1 text-right pr-2 text-sm text-gray-800 dark:text-gray-400">{stage.name}</div>
                                   <div className="w-6 h-6 flex items-center justify-center">
                                     {getStageIcon(status)}
                                   </div>
@@ -451,15 +451,15 @@ export default function LeadForm() {
                       )}
                     </div>
 
-                    <div className="p-4 rounded-lg bg-gray-200 dark:bg-gray-800 shadow border border-gray-700 mt-4">
+                    <div className="p-4 rounded-lg bg-gray-200 dark:bg-gray-800 shadow border mt-4">
                       <div className="flex items-center gap-3 mb-6">
                         <Eye className="text-green-400 w-5 h-5" />
-                        <h5 className="text-md font-semibold text-gray-400 dark:text-white">Sales Stage Detail</h5>
+                        <h5 className="text-md font-semibold dark:text-white">Sales Stage Detail</h5>
                       </div>
 
                       {/* Exception Case: All Skipped */}
                       {selectedLead.stageId === 0 ? (
-                        <div className="p-4 bg-gray-300 dark:bg-gray-900 border rounded-md text-gray-400 text-sm">
+                        <div className="p-4 bg-gray-300 dark:bg-gray-900 border rounded-md text-gray-600 dark:text-gray-25 text-md">
                           <strong>Skipped:</strong> This lead has been marked as skipped. No sales stage information is available.
                         </div>
 
@@ -467,40 +467,40 @@ export default function LeadForm() {
                         <>
 
                           <div className="mb-4 p-4 bg-gray-300 dark:bg-gray-900 rounded-md">
-                            <h6 className="text-sm text-white font-bold ">Stage Name</h6>
-                            <p className="text-md text-gray-400 font-medium">{selectedStage?.name}</p>
+                            <h6 className="mb-4 text-md text-gray-800 dark:text-white font-bold">Stage Name</h6>
+                            <p className="text-sm text-gray-600 dark:text-gray-25 font-medium">{selectedStage?.name}</p>
                           </div>
 
                           <div className="mb-6 p-4 bg-gray-300 dark:bg-gray-900 border-gray-400 rounded-md">
-                            <h6 className="text-sm text-white font-bold">Description</h6>
-                            <p className="text-sm text-gray-400 font-medium">{selectedStage?.description}</p>
+                            <h6 className="mb-4 text-md text-gray-800 dark:text-white font-bold">Description</h6>
+                            <p className="text-sm text-gray-600 dark:text-gray-25 font-medium">{selectedStage?.description}</p>
                           </div>
 
 
                           {
                             selectedStageStatus === 'closed'
                               ? (
-                                <div className="p-4 bg-gary-300 dark:bg-gray-900 border-gray-400 rounded-md text-gray-400 text-sm">
+                                <div className="p-4 bg-gray-300 dark:bg-gray-900  rounded-md text-gray-600 dark:text-gray-25 text-md">
                                   <strong>Closed:</strong> This lead is closed.
                                 </div>
                               )
                               : selectedStageStatus === 'upcoming'
                                 ?
                                 (
-                                  <div className="p-4 bg-gary-300 dark:bg-gray-900 border border-gray-400 rounded-md text-gray-400 text-sm">
+                                  <div className="p-4 bg-gary-300 dark:bg-gray-900 border border-gray-400 rounded-md text-gray-600 dark:text-gray-25 text-md">
                                     <strong>Upcoming:</strong> This stage is upcoming. Please complete the current stage before accessing details.
                                   </div>
                                 )
                                 : selectedStageStatus === 'progress'
                                   ? (
-                                    <div className="p-4 bg-gary-300 dark:bg-gray-900 border border-gray-400 rounded-md text-gray-400 text-sm">
+                                    <div className="p-4 bg-gary-300 dark:bg-gray-900 border border-gray-400 rounded-md text-gray-600 dark:text-gray-25 text-md">
                                       <strong>Progress:</strong> You are currently working on this stage. Please ensure all required details are completed to move forward.
                                     </div>
                                   )
                                   : (selectedStage?.requiredFields?.map((field) => (
-                                    <div key={field.label} className="mb-5 p-5 bg-gray-300 dark:bg-gray-900 border border-gray-400 rounded-md">
+                                    <div key={field.label} className="mb-4 p-4 bg-gray-300 dark:bg-gray-900 border rounded-md">
                                       {field.type !== 'checkbox' && (
-                                        <label className="block text-sm font-semibold text-white mb-1">{field.label}</label>
+                                        <label className="block text-md font-semibold text-gray-800 dark:text-white mb-1">{field.label}</label>
                                       )}
                                       {renderFieldValue(field, selectedStage?.curValues?.[field.label] ?? '')}
                                     </div>

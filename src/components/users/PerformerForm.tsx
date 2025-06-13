@@ -243,7 +243,7 @@ export default function PerformerTable() {
               <option value="None">Not Assigned</option>
             </select>
           </div>
-
+          
           <Table>
             {/* Table Header */}
             <TableHeader className="border-b border-gray-300 dark:border-white/[5]">

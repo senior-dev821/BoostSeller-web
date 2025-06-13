@@ -129,7 +129,7 @@ export default function LeadFormPage() {
           <div className="grid gap-4 md:grid-cols-2">
             <Input disabled placeholder="Name (fixed)" />
             <Input disabled placeholder="Phone (fixed)" />
-            <Select options={[{ value: "", label: "" }]} onChange={() => {}} placeholder="Interest (fixed)" />
+            <Input disabled placeholder="Interest (fixed)" />
 						<Input disabled placeholder="ID" />
           </div>
         </div>
