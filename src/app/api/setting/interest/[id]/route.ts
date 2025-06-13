@@ -46,12 +46,19 @@ export async function DELETE(req: NextRequest) {
     }
 
     const interestId = Number(id);
+    
+    await prisma.interest.delete({
+      where: {
+        id: interestId
+      }
+    });
 
-    // Delete the related Group first
-    await prisma.group.delete({ where: { interestId } });
-
-    // Then delete the Interest
-    await prisma.interest.delete({ where: { id: interestId } });
+    await prisma.group.delete({
+      where: {
+        interestId: interestId,
+      },
+    });
+    
 
     return NextResponse.json({ success: true });
   } catch (error) {
@@ -62,4 +69,5 @@ export async function DELETE(req: NextRequest) {
     );
   }
 }
+
 

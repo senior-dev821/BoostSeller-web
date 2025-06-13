@@ -121,9 +121,9 @@ export default function InterestsForm() {
 											<Button size="sm" variant="outline" onClick={() => handleEdit(interest)}>
 												<PencilIcon />
 											</Button>
-											<Button size="sm" variant="outline" onClick={() => handleDelete(interest.id)}>
+											{/* <Button size="sm" variant="outline" onClick={() => handleDelete(interest.id)}>
 												<TrashBinIcon />
-											</Button>
+											</Button> */}
 										</TableCell>
 									</TableRow>
 								);
