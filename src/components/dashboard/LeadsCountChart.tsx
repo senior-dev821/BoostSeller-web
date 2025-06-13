@@ -109,16 +109,16 @@ export default function LeadsCountChart() {
         <div className="flex items-center gap-3 mb-4">
           <DatePicker
             id="start-date"
-            label=""
+            label="From"
             mode="single"
             defaultDate={startDate ?? undefined}
             onChange={([date]) => setStartDate(date as Date)}
             placeholder="Start Date"
           />
-          <span className="text-gray-500">to</span>
+
           <DatePicker
             id="end-date"
-            label=""
+            label="To"
             mode="single"
             defaultDate={endDate ?? undefined}
             onChange={([date]) => setEndDate(date as Date)}
@@ -127,7 +127,7 @@ export default function LeadsCountChart() {
         </div>
       </div>
 
-{/* Chart Section */}
+			{/* Heatmap Section */}
       <div className="flex justify-between">
         <div className="w-full  overflow-x-auto custom-scrollbar gap-2">
           <div className="-ml-5 min-w-[850px] xl:min-w-full pl-4">

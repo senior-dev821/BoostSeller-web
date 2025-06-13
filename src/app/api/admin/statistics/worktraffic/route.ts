@@ -27,13 +27,11 @@ export async function GET(req: NextRequest) {
 	const days = eachDayOfInterval({ start: from, end: to })
 
 	const heatmap = days.map((day) => {
-		const hours = new Array(12).fill(0)
+		const hours = new Array(24).fill(0) // 24-hour heatmap
 		for (const lead of leads) {
 			if (format(lead.createdAt, "yyyy-MM-dd") === format(day, "yyyy-MM-dd")) {
 				const hour = getHours(lead.createdAt)
-				if (hour >= 8 && hour <= 19) {
-					hours[hour - 8]++
-				}
+				hours[hour]++ // 0 to 23
 			}
 		}
 		return {
@@ -41,6 +39,7 @@ export async function GET(req: NextRequest) {
 			hours,
 		}
 	})
+	
 
 
   // 2. Group Status (availability)
