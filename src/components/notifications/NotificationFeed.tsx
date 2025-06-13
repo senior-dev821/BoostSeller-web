@@ -124,7 +124,7 @@ export default function NotificationFeed() {
   }
 
   return (
-    <div className="space-y-4 p-6 max-w-3xl mx-auto">
+    <div className="space-y-4 p-6 max-w-2xl w-full mx-auto">
       {notifications.length === 0 ? (
         <p className="text-gray-500 text-center">No notifications found.</p>
       ) : (
@@ -133,7 +133,7 @@ export default function NotificationFeed() {
             key={noti.id}
             onClick={() => {handleClick(noti.title, noti.id)}}
             className={clsx(
-              'w-[90%] flex justify-between gap-4 rounded-xl border p-4 shadow-sm transition hover:shadow-md',
+              'w-full flex justify-between gap-4 rounded-xl border p-4 shadow-sm transition hover:shadow-md',
               noti.isRead
                 ? 'bg-white dark:bg-gray-800'
                 : 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-500'
@@ -155,7 +155,10 @@ export default function NotificationFeed() {
               <div className="flex gap-2">
                 {!noti.isRead && (
                   <button
-                    onClick={() => markAsRead(noti.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      markAsRead(noti.id);
+                    }}
                     className="text-green-600 hover:text-green-800"
                     title="Mark as read"
                   >
@@ -163,7 +166,10 @@ export default function NotificationFeed() {
                   </button>
                 )}
                 <button
-                  onClick={() => deleteNotification(noti.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteNotification(noti.id);
+                  }}
                   className="text-red-500 hover:text-red-700"
                   title="Delete"
                 >
