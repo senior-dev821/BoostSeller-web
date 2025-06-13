@@ -50,7 +50,7 @@ export default function LeadsCountChart() {
       });
 
       const data = await res.json();
-
+      console.log(data);
       setSeries([{ name: "Leads", data: data.leadAnalysis }]);
       setTotalLeads(data.total);
       setNewToProgressRate(data.newToProgressRate);
@@ -155,10 +155,10 @@ export default function LeadsCountChart() {
       </div>
 
       <div className="grid gap-4 mt-6 mb-6 grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4">
-        <ConversionRateCard from="New" to="In-Progress" rate={newToProgressRate} />
-        <ConversionRateCard from="In-Progress" to="Processed" rate={progressToProcessedRate} />
-        <ConversionRateCard from="Processed" to="Converted" rate={processedToConvertedRate} />
-        <ConversionRateCard from="Processed" to="Lost" rate={processedToLostRate} />
+        <ConversionRateCard key={`npr-${newToProgressRate}`} from="New" to="In-Progress" rate={newToProgressRate} />
+        <ConversionRateCard key={`ipr-${progressToProcessedRate}`} from="In-Progress" to="Processed" rate={progressToProcessedRate} />
+        <ConversionRateCard key={`pcr-${processedToConvertedRate}`} from="Processed" to="Converted" rate={processedToConvertedRate} />
+        <ConversionRateCard key={`plr-${processedToLostRate}`} from="Processed" to="Lost" rate={processedToLostRate} />
       </div>
     </div>
   );
