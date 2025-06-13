@@ -49,7 +49,6 @@ interface Stage {
   id: number;
   name: string;
   description: string;
-  sequence: number;
   requiredFields?: requiredField[];
   curValues?: Record<string, any>;
 }
@@ -58,7 +57,6 @@ interface requiredField {
   id: string,
   label: string,
   type: string,
-  sequence: number,
   items?: string[],
 }
 
