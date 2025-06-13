@@ -15,7 +15,7 @@ import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 import { Modal } from "@/components/ui/modal";
-import { User, Phone, Mail, ShieldCheck, Inbox, CheckCircle, BadgeCheck, Archive, Star, BarChart, Timer } from "lucide-react";
+import { User, Phone, Mail, ShieldCheck, Inbox, CheckCircle, BadgeCheck, Archive, Star, BarChart, Timer, Boxes } from "lucide-react";
 import Pagination from "@/components/form/form-elements/Pagination";
 
 interface Performer {
@@ -624,102 +624,121 @@ export default function PerformerTable() {
                 <h3 className="text-2xl font-semibold text-gray-700 dark:text-gray-300">{selectedPerformer?.user.name}</h3>
               </div>
               {/* Info Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
-                  <Star className="text-blue-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Score</div>
-                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.score?.toFixed(2) ?? "0.00"}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
-                  <BarChart className="text-yellow-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Rank</div>
-                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.groupRank}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-                  <User className="text-blue-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Role</div>
-                    <div className="text-gray-700 dark:text-gray-300">{selectedPerformer?.user.role}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-                  <Phone className="text-green-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</div>
-                    <div className="text-gray-700 dark:text-gray-300">{selectedPerformer?.user.phoneNumber}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-                  <Mail className="text-purple-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</div>
-                    <div className="text-gray-700 dark:text-gray-300">{selectedPerformer?.user.email}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-                  <ShieldCheck className="text-yellow-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</div>
-                    <Badge
-                      size="sm"
-                      color={selectedPerformer?.user.isApproved ? "success" : "error"}
-                    >
-                      {selectedPerformer?.user.isApproved ? "Approved" : "Pending"}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
-                  <Inbox className="text-purple-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-400">Assigned Leads</div>
-                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.assignedCount ?? 0}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-                  <CheckCircle className="text-purple-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Accepted Leads</div>
-                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.acceptedCount ?? 0}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
-                  <BadgeCheck className="text-purple-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Completed Leads</div>
-                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.completedCount ?? 0}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
-                  <Archive className="text-purple-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Closed Leads</div>
-                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.closedCount ?? 0}</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
-                  <Timer className="text-purple-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Average Response Time</div>
-                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.avgResponseTime.toFixed(2)}s</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
-                  <CheckCircle className="text-purple-400 w-5 h-5" />
-                  <div>
-                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Available</div>
-                    <Badge
-                      size="sm"
-                      color={selectedPerformer?.available ? "success" : "error"}
-                    >
-                      {selectedPerformer?.user.isApproved ? "Available" : "Do Not Disturb"}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
+              <div>
+								<div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto mb-4">
+									<Boxes className="text-blue-400 w-5 h-5" />
+									<div className="text-sm font-medium text-gray-400">Groups</div>
+									{selectedPerformer && selectedPerformer.groupNames?.length > 0 ? (
+										<div className="flex flex-wrap gap-2 mt-2">
+											{selectedPerformer.groupNames.map((group, i) => (
+												<Badge key={i} size="sm" color="info">
+													{group}
+												</Badge>
+											))}
+										</div>
+									) : (
+										<div className="flex flex-wrap gap-2 mt-2">
+											<span className="text-sm text-gray-500">No group assigned</span>
+										</div>
+									)}
+								</div>					
+								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">	
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<Star className="text-blue-400 w-5 h-5" />
+											<span>Score</span>
+										</div>
+										<div className="text-center">{selectedPerformer?.score?.toFixed(2) ?? "0.00"}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<BarChart className="text-yellow-400 w-5 h-5" />
+											<span>Rank</span>
+										</div>
+										<div className="text-center">{selectedPerformer?.groupRank}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<User className="text-blue-400 w-5 h-5" />
+											<span>Role</span>
+										</div>
+										<div>{selectedPerformer?.user.role}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<Phone className="text-green-400 w-5 h-5" />
+											<span>Phone Number</span>
+										</div>
+										<div>{selectedPerformer?.user.phoneNumber}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<Mail className="text-purple-400 w-5 h-5" />
+											<span>Email</span>
+										</div>
+										<div>{selectedPerformer?.user.email}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<ShieldCheck className="text-yellow-400 w-5 h-5" />
+											<span>Status</span>
+										</div>
+										<Badge
+											size="sm"
+											color={selectedPerformer?.user.isApproved ? "success" : "error"}
+										>
+											{selectedPerformer?.user.isApproved ? "Approved" : "Pending"}
+										</Badge>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<Inbox className="text-purple-400 w-5 h-5" />
+											<span>Assigned Leads</span>
+										</div>
+										<div className="text-center">{selectedPerformer?.assignedCount ?? 0}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<CheckCircle className="text-purple-400 w-5 h-5" />
+											<span>Accepted Leads</span>
+										</div>
+										<div className="text-center">{selectedPerformer?.acceptedCount ?? 0}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<BadgeCheck className="text-purple-400 w-5 h-5" />
+											<span>Completed Leads</span>
+										</div>
+										<div className="text-center">{selectedPerformer?.completedCount ?? 0}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<Archive className="text-purple-400 w-5 h-5" />
+											<span>Closed Leads</span>
+										</div>
+										<div className="text-center">{selectedPerformer?.closedCount ?? 0}</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<Timer className="text-purple-400 w-5 h-5" />
+											<span>Average Response Time</span>
+										</div>
+										<div className="text-center">{selectedPerformer?.avgResponseTime.toFixed(2)}s</div>
+									</div>
+									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
+										<div className="flex items-center gap-2 text-sm font-medium text-gray-400">
+											<CheckCircle className="text-purple-400 w-5 h-5" />
+											<span>Available</span>
+										</div>
+										<Badge
+											size="sm"
+											color={selectedPerformer?.available ? "success" : "error"}
+										>
+											{selectedPerformer?.available ? "Available" : "Do Not Disturb"}
+										</Badge>
+									</div>
+								</div>
+							</div>
             </div>
           </Modal>
         </div>
