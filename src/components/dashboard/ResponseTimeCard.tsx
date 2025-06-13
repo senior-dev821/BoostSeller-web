@@ -165,7 +165,7 @@ export default function ResponseTimeCard() {
 						size="md"
 						color={"info"}
 					>
-						SLA Rate :{totalSlaCompliance} %
+						SLA Rates :{totalSlaCompliance} %
 					</Badge>
         </div>
         <div className="flex items-start w-full gap-2 sm:justify-end">
