@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, ReactNode } from "react";
 import {
   Table,
   TableBody,
@@ -11,7 +11,7 @@ import {
 
 import Badge from "../ui/badge/Badge";
 import {
-  User, Sparkles, DollarSign, CheckCircle, CircleDot, CheckCircle2, XCircle, CircleDashed, Clock, Workflow
+  User, Sparkles, DollarSign, CheckCircle, CircleDot, CheckCircle2, XCircle, CircleDashed, Clock, Workflow, Eye, DownloadCloud, Briefcase, Info
 } from "lucide-react";
 import Image from "next/image";
 import Pagination from "@/components/form/form-elements/Pagination";
@@ -50,6 +50,16 @@ interface Stage {
   name: string;
   description: string;
   sequence: number;
+  requiredFields?: requiredField[];
+  curValues?: Record<string, any>;
+}
+
+interface requiredField {
+  id: string,
+  label: string,
+  type: string,
+  sequence: number,
+  items?: string[],
 }
 
 interface additionalInfo {
@@ -63,6 +73,11 @@ interface Interest {
   name: string;
 }
 
+type InfoCardProps = {
+  icon: ReactNode;
+  title: string;
+  children: ReactNode;
+};
 
 export default function LeadForm() {
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -73,6 +88,9 @@ export default function LeadForm() {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [selectedStatus, setSelectedStatus] = useState<string>("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedStage, setSelectedStage] = useState<Stage | null>(null);
+  const [selectedStageStatus, setSelectedStageStatus] = useState<string>("");
+
   const pageSize = 8;
 
   useEffect(() => {
@@ -103,13 +121,125 @@ export default function LeadForm() {
   }
 
   const handleRowClick = (lead: Lead) => {
+    console.log(lead);
     setShowInfoDrawer(true);
     setSelectedLead(lead);
+    const curStage = lead.stages.find(stage => String(stage.id) === String(lead.stageId));
+    setSelectedStage(curStage ?? null);
+
+    let curStageStatus: string = '';
+
+    if (lead.status === 'closed') {
+      curStageStatus = 'closed';
+    } else if (lead.status !== 'completed' && lead.stageId !== 0) {
+      curStageStatus = 'progress';
+    }
+    setSelectedStageStatus(curStageStatus);
   }
 
-  const handleStageClick = (stageId: number) => {
-    window.open(`/sales-stage/${stageId}`, '_blank');
+  const handleStageClick = (stage: Stage, status: string) => {
+    setSelectedStage(stage);
+    setSelectedStageStatus(status);
+    console.log(stage);
+
   }
+
+  const InfoCard = ({ icon, title, children }: InfoCardProps) => (
+    <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+      {icon}
+      <div>
+        <div className="text-sm font-medium text-gray-400">{title}</div>
+        <div>{children}</div>
+      </div>
+    </div>
+  );
+
+  const renderFieldValue = (field: requiredField, value: any) => {
+    switch (field.type) {
+      case 'text':
+      case 'number':
+      case 'currency':
+      case 'comment':
+      case 'date':
+        return <p className="text-sm text-gray-400 bg-gray-700 px-3 py-2 rounded-md">{value || ''}</p>;
+
+      case 'toggle':
+        return (
+          <span
+            className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${value ? 'bg-green-600 text-gray-400' : 'bg-red-600 text-gray-400'}`}
+          >
+            {value ? 'Yes' : 'No'}
+          </span>
+        );
+
+      case 'dropdown':
+        return <p className="text-sm text-gray-400">{value || ''}</p>;
+
+      case 'checkbox group': {
+        const selectedValues = Array.isArray(value)
+          ? value
+          : typeof value === 'string'
+            ? value.split(',').map(v => v.trim())
+            : [];
+        return (
+          <div className="grid grid-cols-2 gap-3">
+            {(field.items || []).map((item) => {
+              const isChecked = selectedValues.includes(item);
+              return (
+                <label key={item} className="flex items-center gap-2 text-sm text-gray-400">
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    readOnly
+                    className="form-checkbox h-5 w-5 text-green-500 bg-gray-800 border-gray-600 rounded"
+                  />
+                  {item}
+                </label>
+              );
+            })}
+          </div>
+        );
+      }
+
+      case 'checkbox': {
+        const isChecked = value === true || value === 'true';
+        return (
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={isChecked}
+              readOnly
+              className="form-checkbox h-5 w-5 text-green-500 bg-gray-800 border-gray-600 rounded"
+            />
+            <label className="text-sm text-gray-400">{field.label}</label>
+          </div>
+        );
+      }
+
+
+      case 'file':
+      case 'photo':
+      case 'camera':
+        return (
+          <div className="flex flex-wrap gap-3">
+            {value && (
+              <a
+                href={`${nextServerUrl}${value}`}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-blue-400 hover:underline"
+              >
+                <DownloadCloud className="w-4 h-4" />  {field.label}
+              </a>
+            )}
+          </div>
+        );
+
+      default:
+        return <p className="text-sm text-gray-400 italic">Unsupported field type</p>;
+    }
+  };
 
   const filteredLeads = leads.filter((lead) => {
     const interestMatch =
@@ -148,15 +278,15 @@ export default function LeadForm() {
   const getStageIcon = (status: string) => {
     switch (status) {
       case "passed":
-        return <CheckCircle className="w-4 h-4" style={{ color: 'blue'}}/>;
+        return <CheckCircle className="w-4 h-4" style={{ color: 'blue' }} />;
       case "progress":
-        return <CircleDashed className="w-4 h-4" style={{ color: 'indigo'}} />;
+        return <CircleDashed className="w-4 h-4" style={{ color: 'indigo' }} />;
       case "closed":
-        return <XCircle className="w-4 h-4" style={{ color: 'red'}} />;
+        return <XCircle className="w-4 h-4" style={{ color: 'red' }} />;
       case "completed":
-        return <CheckCircle2 className="w-4 h-4" style={{ color: 'green'}} />;
+        return <CheckCircle2 className="w-4 h-4" style={{ color: 'green' }} />;
       case "upcoming":
-        return <Clock className="w-5 h-5" style={{ color: 'purple'}} />;
+        return <Clock className="w-5 h-5" style={{ color: 'purple' }} />;
       default:
         return <CircleDot className="text-gray-400 w-4 h-4" />;
     }
@@ -166,61 +296,60 @@ export default function LeadForm() {
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
         <div className="min-w-[1102px]">
-          {showInfoDrawer && (
-            <div
-              className="fixed inset-0 z-40"
-              onClick={() => setShowInfoDrawer(false)}
-            />
-          )}
-          {showInfoDrawer && selectedLead && (
-            <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-white dark:bg-gray-900 shadow-xl border-l border-gray-200 dark:border-gray-700 flex flex-col">
-              <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800 shrink-0">
-                <h4 className="text-lg font-semibold text-gray-800 dark:text-white">
-                  Lead Details
-                </h4>
-                <button
-                  onClick={() => setShowInfoDrawer(false)}
-                  className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white text-2xl"
-                >
-                  &times;
-                </button>
-              </div>
-              <div className="p-4 space-y-2 overflow-y-auto h-full max-h-screen">
-                <div className="flex items-center gap-3">
-                  <div className="w-16 h-16 overflow-hidden rounded-full">
-                    <Image
-                      width={64}
-                      height={64}
-                      src="/images/user/user-01.jpg"
-                      alt={selectedLead.name}
-                    />
 
-                  </div>
-                  <div>
-                    <h5 className="text-lg font-semibold text-gray-800 dark:text-white">
-                      {selectedLead.name}
-                    </h5>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">{selectedLead.phoneNumber}</p>
-                  </div>
+          {showInfoDrawer && selectedLead && (
+
+            <div className="fixed inset-0 bg-gray-700 bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-gray-900 rounded-lg w-[800px] max-h-[90vh] overflow-hidden relative flex flex-col">
+
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 border-b border-gray-700">
+                  <h4 className="text-lg font-semibold text-white">Lead Details</h4>
+                  <button
+                    onClick={() => {
+                      setShowInfoDrawer(false);
+                      setSelectedStage(null);
+                      setSelectedLead(null);
+                      setSelectedStageStatus('');
+                    }}
+                    className="text-gray-400 hover:text-white text-2xl"
+                  >
+                    &times;
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                  <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
-                    <Sparkles className="text-blue-400 w-5 h-5" />
+                {/* Scrollable Body */}
+                <div className="p-6 space-y-4 overflow-y-auto">
+
+                  {/* Lead Avatar and Info */}
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 overflow-hidden rounded-full">
+                      <Image
+                        width={64}
+                        height={64}
+                        src="/images/user/user-01.jpg"
+                        alt={selectedLead.name}
+                      />
+                    </div>
                     <div>
-                      <div className="text-sm font-medium text-gray-400">Interest</div>
-                      <div className="text-center">{selectedLead.interest.name}</div>
+                      <h5 className="text-lg font-semibold text-white">{selectedLead.name}</h5>
+                      <p className="text-sm text-gray-400">{selectedLead.phoneNumber}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
-                    <CheckCircle className="text-yellow-400 w-5 h-5" />
-                    <div>
-                      <div className="text-sm font-medium text-gray-400">Status</div>
-                      <div className="text-center">
+
+                  {/* Info Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+
+                    {/* AddedBy */}
+                    <InfoCard icon={<User className="text-blue-400 w-5 h-5" />} title="AddedBy">
+                      {selectedLead.hostess.user.name}
+                    </InfoCard>
+
+                    {/* Status */}
+                    <InfoCard icon={<CheckCircle className="text-yellow-400 w-5 h-5" />} title="Status">
+                      <div className="space-x-1">
                         {selectedLead.isReturn && (
-                          <Badge size="sm" color="warning">
-                            retrun
-                          </Badge>
+                          <Badge size="sm" color="warning">return</Badge>
                         )}
                         <Badge
                           size="sm"
@@ -239,129 +368,158 @@ export default function LeadForm() {
                           {selectedLead.status}
                         </Badge>
                       </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
-                    <User className="text-blue-400 w-5 h-5" />
-                    <div>
-                      <div className="text-sm font-medium text-gray-400">AddedBy</div>
-                      <div>{selectedLead.hostess.user.name}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
-                    <User className="text-blue-400 w-5 h-5" />
-                    <div>
-                      <div className="text-sm font-medium text-gray-400">AssignedTo</div>
-                      <div>{selectedLead.assignedName !== "" ? selectedLead.assignedName : "Not assigned"}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
-                    <User className="text-blue-400 w-5 h-5" />
-                    <div>
-                      <div className="text-sm font-medium text-gray-400">AcceptedBy</div>
-                      <div>{selectedLead.acceptedName !== "" ? selectedLead.acceptedName : "Not accepted"}</div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
-                    <DollarSign className="text-green-400 w-5 h-5" />
-                    <div>
-                      <div className="text-sm font-medium text-gray-400">Budget</div>
-                      <div>{getBudgetFromLead(selectedLead)}</div>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-span-full mt-4">
-                  <div className="p-4 rounded-lg bg-gray-800 shadow border border-gray-700">
-                    <div className="flex items-center gap-3 mb-6">
-                      <Workflow className="text-green-400 w-5 h-5" />
-                      <h5 className="text-md font-semibold text-white">Sales Stage Timeline</h5>
+                    </InfoCard>
 
+                    {/* AssignedTo */}
+                    <InfoCard icon={<User className="text-blue-400 w-5 h-5" />} title="AssignedTo">
+                      {selectedLead.assignedName || "Not assigned"}
+                    </InfoCard>
+
+                    {/* Interest */}
+                    <InfoCard icon={<Sparkles className="text-blue-400 w-5 h-5" />} title="Interest">
+                      {selectedLead.interest.name}
+                    </InfoCard>
+
+                    {/* AcceptedBy */}
+                    <InfoCard icon={<User className="text-blue-400 w-5 h-5" />} title="AcceptedBy">
+                      {selectedLead.acceptedName || "Not accepted"}
+                    </InfoCard>
+
+                    {/* Budget */}
+                    <InfoCard icon={<DollarSign className="text-green-400 w-5 h-5" />} title="Budget">
+                      {getBudgetFromLead(selectedLead)}
+                    </InfoCard>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                    {/* Sales Timeline */}
+                    <div className="p-4 rounded-lg bg-gray-800 shadow border border-gray-700 mt-4">
+                      <div className="flex items-center gap-3 mb-6">
+                        <Workflow className="text-green-400 w-5 h-5" />
+                        <h5 className="text-md font-semibold text-white">Sales Stage Timeline</h5>
+                      </div>
+
+                      {selectedLead.stages.length === 0 ? (
+                        <p className="text-center text-red-500 font-semibold">There are no sales stages for the interest</p>
+                      ) : selectedLead.status === 'pendding' ? (
+                        <p className="text-center text-red-500 font-semibold">Lead is all skipped</p>
+                      ) : selectedLead.status === 'closed' && selectedLead.stageId === 0 ? (
+                        <p className="text-center text-red-500 font-semibold">Lead is all skipped and Closed</p>
+                      ) : (
+                        <div className="relative pl-8">
+                          {selectedLead.stages.map((stage, index) => {
+                            const isClosed = selectedLead.status === "closed";
+                            const isLast = index === selectedLead.stages.length - 1;
+                            const currentStageIndex = selectedLead.stages.findIndex(s => s.id === selectedLead.stageId);
+                            const status = getStageStatus(index, currentStageIndex, isClosed, isLast);
+
+                            return (
+                              <div
+                                key={stage.id}
+                                className="relative min-h-[60px] group cursor-pointer hover:bg-gray-700 p-2"
+                                onClick={() => handleStageClick(stage, status)}
+                              >
+                                {!isLast && (
+                                  <div className="absolute top-3.5 left-1/2 -translate-x-1/2 h-[60px] w-px bg-green-500 z-0" />
+                                )}
+                                <div className="flex items-center justify-between gap-2">
+                                  <div className="flex-1 text-right pr-2 text-sm text-gray-400">{stage.name}</div>
+                                  <div className="w-6 h-6 flex items-center justify-center">
+                                    {getStageIcon(status)}
+                                  </div>
+                                  <div className="flex-1 pl-2 text-left">
+                                    <Badge
+                                      size="sm"
+                                      color={
+                                        status === "passed"
+                                          ? "info"
+                                          : status === "progress"
+                                            ? "primary"
+                                            : status === "closed"
+                                              ? "error"
+                                              : status === "completed"
+                                                ? "success"
+                                                : status === "upcoming"
+                                                  ? "warning"
+                                                  : "light"
+                                      }
+                                    >
+                                      {status}
+                                    </Badge>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
                     </div>
-                    {
-                      selectedLead.stages.length === 0
-                        ? (
-                          <div className="flex-1 text-center pr-2 text-sm mb-10 text-red-500 font-semibold">
-                            There are no sales stages for the interest
+
+                    <div className="p-4 rounded-lg bg-gray-800 shadow border border-gray-700 mt-4">
+                      <div className="flex items-center gap-3 mb-6">
+                        <Eye className="text-green-400 w-5 h-5" />
+                        <h5 className="text-md font-semibold text-white">Sales Stage Detail</h5>
+                      </div>
+
+                      {/* Exception Case: All Skipped */}
+                      {selectedLead.stageId === 0 ? (
+                        <div className="p-4 bg-gray-900 border rounded-md text-gray-400 text-sm">
+                          <strong>Skipped:</strong> This lead has been marked as skipped. No sales stage information is available.
+                        </div>
+
+                      ) : (
+                        <>
+
+                          <div className="mb-4 p-4 bg-gray-900 rounded-md">
+                            <h6 className="text-sm text-white font-bold ">Stage Name</h6>
+                            <p className="text-md text-gray-400 font-medium">{selectedStage?.name}</p>
                           </div>
-                        )
-                        : selectedLead.status === 'pendding'
-                          ? (
-                            <div className="flex-1 text-center pr-2 text-sm mb-10 text-red-500 font-semibold">
-                              Lead is all skipped
-                            </div>
-                          ) : selectedLead.status === 'closed' && selectedLead.stageId === 0
-                            ? (
-                              <div className="flex-1 text-center pr-2 text-sm mb-10 text-red-500 font-semibold">
-                                Lead is all skipped and Closed
-                              </div>
-                            )
-                            : (
-                              <div className="relative pl-8">
-                                {selectedLead.stages.map((stage, index) => {
-                                  const isClosed = selectedLead.status === "closed";
-                                  const isLast = index === selectedLead.stages.length - 1;
-                                  const currentStageIndex = selectedLead.stages.findIndex(s => s.id === selectedLead.stageId);
-                                  const status = getStageStatus(index, currentStageIndex, isClosed, isLast);
-                                  
 
-                                  return (
-                                    <div key={stage.id} 
-                                      className="relative min-h-[60px] group cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
-                                      onClick={() => handleStageClick(stage.id)}
-                                      >
-                                      {/* Vertical Line */}
-                                      {!isLast && (
-                                        <div className="absolute top-3.5 left-1/2 -translate-x-1/2 h-[60px] w-px bg-green-500 z-0" />
-                                      )}
+                          <div className="mb-6 p-4 bg-gray-900 border-gray-400 rounded-md">
+                            <h6 className="text-sm text-white font-bold">Description</h6>
+                            <p className="text-sm text-gray-400 font-medium">{selectedStage?.description}</p>
+                          </div>
+                          
 
-                                      {/* Row: name - icon - status */}
-                                      <div className="flex items-center justify-between gap-2 mb-6">
-                                        {/* Name */}
-                                        <div className="flex-1 text-right pr-2 text-sm text-gray-400">
-                                          {stage.name}
-                                        </div>
-
-                                        {/* Circle Icon */}
-                                        <div className="w-6 h-6 flex items-center justify-center">
-                                          {getStageIcon(status)}
-                                        </div>
-
-                                        {/* Status */}
-                                        <div className="flex-1 pl-2 text-left">
-                                          <Badge
-                                            size="sm"
-                                            color={
-                                              status === "passed"
-                                                ? "info"
-                                                : status === "progress"
-                                                  ? "primary"
-                                                  : status === "closed"
-                                                    ? "error"
-                                                      : status === "completed"
-                                                      ? "success"
-                                                        : status === "upcoming"
-                                                        ? "warning"
-                                                        : "light"
-                                            }
-                                          >
-                                            {status}
-                                          </Badge>
-                                        </div>
-
-                                      </div>
+                          {
+                            selectedStageStatus === 'closed'
+                              ? (
+                                <div className="p-4 bg-gray-900 border-gray-400 rounded-md text-gray-400 text-sm">
+                                  <strong>Closed:</strong> This lead is closed.
+                                </div>
+                              )
+                              : selectedStageStatus === 'upcoming'
+                                ?
+                                (
+                                  <div className="p-4 bg-gray-900 border border-gray-400 rounded-md text-gray-400 text-sm">
+                                    <strong>Upcoming:</strong> This stage is upcoming. Please complete the current stage before accessing details.
+                                  </div>
+                                )
+                                : selectedStageStatus === 'progress'
+                                  ? (
+                                    <div className="p-4 bg-gray-900 border border-gray-400 rounded-md text-gray-400 text-sm">
+                                      <strong>Progress:</strong> You're currently working on this stage. Please ensure all required details are completed to move forward.
                                     </div>
-                                  );
-                                })}
-                              </div>
-                            )
-                    }
+                                  )
+                                  : (selectedStage?.requiredFields?.map((field) => (
+                                    <div key={field.label} className="mb-5 p-5 bg-gray-900 border border-gray-400 rounded-md">
+                                      {field.type !== 'checkbox' && (
+                                        <label className="block text-sm font-semibold text-white mb-1">{field.label}</label>
+                                      )}
+                                      {renderFieldValue(field, selectedStage?.curValues?.[field.label])}
+                                    </div>
+                                  )))
+                          }
+                        </>
+                      )}
+                    </div>
+
 
                   </div>
+
                 </div>
-
-
               </div>
             </div>
+
           )}
 
           <div className="pt-4 mb-4 px-4 flex justify-end">
@@ -610,15 +768,17 @@ export default function LeadForm() {
         </div>
       </div>
       {/* ✅ Pagination */}
-      {leads.length > pageSize && (
-        <div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={setCurrentPage}
-          />
-        </div>
-      )}
-    </div>
+      {
+        leads.length > pageSize && (
+          <div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        )
+      }
+    </div >
   );
 }

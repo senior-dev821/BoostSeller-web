@@ -37,18 +37,33 @@ export async function GET() {
           }
         });
 
+        const enrichedStages = await Promise.all(
+          stages.map(async (stage) => {
+            const stageHistory = await prisma.lead_stage_mapping.findFirst({
+              where: {
+                stageId: stage.id,
+                leadId: lead.id,
+              },
+            });
+            return {
+              ...stage,
+              curValues: stageHistory?.currentValue,
+            };
+          })
+        );
+
         const assignedPerformer = assignedTo
           ? await prisma.performer.findUnique({
-              where: { id: assignedTo },
-              include: { user: true },
-            })
+            where: { id: assignedTo },
+            include: { user: true },
+          })
           : null;
 
         const acceptedPerformer = acceptedBy
           ? await prisma.performer.findUnique({
-              where: { id: acceptedBy },
-              include: { user: true },
-            })
+            where: { id: acceptedBy },
+            include: { user: true },
+          })
           : null;
 
         if (assignedPerformer?.user) {
@@ -67,7 +82,7 @@ export async function GET() {
           assignedAvatarPath,
           acceptedName,
           acceptedAvatarPath,
-          stages,
+          stages: enrichedStages,
         };
       })
     );

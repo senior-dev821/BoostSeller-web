@@ -195,14 +195,6 @@ export default function StageForm() {
     setIsModalOpen(true);
   };
 
-  // const updateElement = <K extends keyof Element>(id: string, key: K, value: Element[K]) => {
-  //   setSelectedStage((prev) =>
-  //     prev ? {
-  //       ...prev,
-  //       elements: prev.elements.map((el) => (el.id === id ? { ...el, [key]: value } : el)),
-  //     } : null
-  //   );
-  // };
   const updateElement = <K extends keyof Element>(id: string, key: K, value: Element[K]) => {
   setSelectedStage((prev) =>
     prev ? {
@@ -399,11 +391,6 @@ export default function StageForm() {
                     defaultValue={el.type}
                     onChange={(val) => updateElement(el.id, "type", val)}
                   />
-                  {/* <Input
-                    type="number"
-                    defaultValue={el.sequence}
-                    onChange={(e) => updateElement(el.id, 'sequence', parseInt(e.target.value))}
-                  /> */}
                   <Input
                     type="number"
                     value={el.sequence}
