@@ -45,12 +45,14 @@ interface Lead {
 
 }
 
+type FieldValue = string | string[] | null ;
+
 interface Stage {
   id: number;
   name: string;
   description: string;
   requiredFields?: requiredField[];
-  curValues?: Record<string, any>;
+  curValues?: Record<string, FieldValue>;
 }
 
 interface requiredField {
@@ -152,7 +154,7 @@ export default function LeadForm() {
     </div>
   );
 
-  const renderFieldValue = (field: requiredField, value: any) => {
+  const renderFieldValue = (field: requiredField, value: FieldValue) => {
     switch (field.type) {
       case 'text':
       case 'number':
@@ -174,7 +176,7 @@ export default function LeadForm() {
         return <p className="text-sm text-gray-400">{value || ''}</p>;
 
       case 'checkbox group': {
-        const selectedValues = Array.isArray(value)
+        const selectedValues : string[] = Array.isArray(value)
           ? value
           : typeof value === 'string'
             ? value.split(',').map(v => v.trim())
@@ -200,7 +202,7 @@ export default function LeadForm() {
       }
 
       case 'checkbox': {
-        const isChecked = value === true || value === 'true';
+        const isChecked = value === 'true';
         return (
           <div className="flex items-center gap-2">
             <input
@@ -495,7 +497,7 @@ export default function LeadForm() {
                                 : selectedStageStatus === 'progress'
                                   ? (
                                     <div className="p-4 bg-gray-900 border border-gray-400 rounded-md text-gray-400 text-sm">
-                                      <strong>Progress:</strong> You're currently working on this stage. Please ensure all required details are completed to move forward.
+                                      <strong>Progress:</strong> You are currently working on this stage. Please ensure all required details are completed to move forward.
                                     </div>
                                   )
                                   : (selectedStage?.requiredFields?.map((field) => (
@@ -503,7 +505,7 @@ export default function LeadForm() {
                                       {field.type !== 'checkbox' && (
                                         <label className="block text-sm font-semibold text-white mb-1">{field.label}</label>
                                       )}
-                                      {renderFieldValue(field, selectedStage?.curValues?.[field.label])}
+                                      {renderFieldValue(field, selectedStage?.curValues?.[field.label] ?? '')}
                                     </div>
                                   )))
                           }
