@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { PencilIcon, TrashBinIcon, PlusIcon } from '@/icons';
+import { PencilIcon, PlusIcon } from '@/icons';
 import Button from '@/components/ui/button/Button';
 import Input from '@/components/form/input/InputField';
 import Label from '@/components/form/Label';
@@ -52,10 +52,10 @@ export default function InterestsForm() {
     setModalOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
-    await fetch(`/api/setting/interest/${id}`, { method: 'DELETE' });
-    setInterests(prev => prev.filter(i => i.id !== id));
-  };
+  // const handleDelete = async (id: number) => {
+  //   await fetch(`/api/setting/interest/${id}`, { method: 'DELETE' });
+  //   setInterests(prev => prev.filter(i => i.id !== id));
+  // };
 
 	const handleSave = async () => {
 		if (!editingInterest?.name.trim()) return;
