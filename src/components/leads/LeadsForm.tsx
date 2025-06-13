@@ -418,9 +418,6 @@ export default function LeadForm() {
                                 className="relative min-h-[60px] group cursor-pointer hover:bg-gray-700 p-2"
                                 onClick={() => handleStageClick(stage, status)}
                               >
-                                {!isLast && (
-                                  <div className="absolute top-3.5 left-1/2 -translate-x-1/2 h-[60px] w-px bg-green-500 z-0" />
-                                )}
                                 <div className="flex items-center justify-between gap-2">
                                   <div className="flex-1 text-right pr-2 text-sm text-gray-400">{stage.name}</div>
                                   <div className="w-6 h-6 flex items-center justify-center">
