@@ -628,7 +628,7 @@ export default function LeadForm() {
                     .map((lead) => (
                       <TableRow
                         key={lead.id}
-                        className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800"
+                        className="cursor-pointer hover:bg-gray-50"
                         onClick={() => handleRowClick(lead)}
                       >
                         <TableCell className="px-5 py-4 sm:px-6 text-center">
