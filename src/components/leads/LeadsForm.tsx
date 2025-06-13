@@ -392,7 +392,7 @@ export default function LeadForm() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 w-full">
                     {/* Sales Timeline */}
-                    {/* <div className="p-4 rounded-lg bg-gray-800 shadow border border-gray-700 mt-4">
+                    <div className="p-4 rounded-lg bg-gray-800 shadow border border-gray-700 mt-4">
                       <div className="flex items-center gap-3 mb-6">
                         <Workflow className="text-green-400 w-5 h-5" />
                         <h5 className="text-md font-semibold text-white">Sales Stage Timeline</h5>
@@ -449,71 +449,7 @@ export default function LeadForm() {
                           })}
                         </div>
                       )}
-                    </div> */}
-
-                    <div className="p-4 rounded-lg bg-gray-800 shadow border border-gray-700 mt-4">
-                      <div className="flex items-center gap-3 mb-6">
-                        <Workflow className="text-green-400 w-5 h-5" />
-                        <h5 className="text-md font-semibold text-white">Sales Stage Timeline</h5>
-                      </div>
-
-                      {selectedLead.stages.length === 0 ? (
-                        <p className="text-center text-red-500 font-semibold">There are no sales stages for the interest</p>
-                      ) : selectedLead.status === 'pendding' ? (
-                        <p className="text-center text-red-500 font-semibold">Lead is all skipped</p>
-                      ) : selectedLead.status === 'closed' && selectedLead.stageId === 0 ? (
-                        <p className="text-center text-red-500 font-semibold">Lead is all skipped and Closed</p>
-                      ) : (
-                        <div className="relative">
-                          {selectedLead.stages.map((stage, index) => {
-                            const isClosed = selectedLead.status === "closed";
-                            const isLast = index === selectedLead.stages.length - 1;
-                            const currentStageIndex = selectedLead.stages.findIndex(s => s.id === selectedLead.stageId);
-                            const status = getStageStatus(index, currentStageIndex, isClosed, isLast);
-
-                            return (
-                              <div key={stage.id} className="relative min-h-[60px] flex justify-center">
-                                <div
-                                  className="group cursor-pointer hover:bg-gray-700 px-6 py-2 rounded-md flex items-center gap-4 transition"
-                                  onClick={() => handleStageClick(stage, status)}
-                                >
-                                  {/* Stage Name */}
-                                  <div className="text-sm text-gray-400 text-right">{stage.name}</div>
-
-                                  {/* Icon */}
-                                  <div className="w-6 h-6 flex items-center justify-center">
-                                    {getStageIcon(status)}
-                                  </div>
-
-                                  {/* Badge */}
-                                  <div className="text-left">
-                                    <Badge
-                                      size="sm"
-                                      color={
-                                        status === "passed"
-                                          ? "info"
-                                          : status === "progress"
-                                            ? "primary"
-                                            : status === "closed"
-                                              ? "error"
-                                              : status === "completed"
-                                                ? "success"
-                                                : status === "upcoming"
-                                                  ? "warning"
-                                                  : "light"
-                                      }
-                                    >
-                                      {status}
-                                    </Badge>
-                                  </div>
-                                </div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
                     </div>
-
 
                     <div className="p-4 rounded-lg bg-gray-800 shadow border border-gray-700 mt-4">
                       <div className="flex items-center gap-3 mb-6">
