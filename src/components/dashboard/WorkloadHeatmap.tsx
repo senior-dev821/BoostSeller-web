@@ -118,7 +118,7 @@ export default function WorkloadHeatmap() {
             {heatmapData.map((row, i) => (
               <tr key={i}>
                 <td className="text-sm font-medium pr-2">
-                  {format(new Date(row.date), "MM:dd")}
+                  {format(new Date(row.date), "dd/MM")}
                 </td>
                 {row.hours.map((val: number, idx: number) => (
                   <td key={idx} className="w-6 h-6">

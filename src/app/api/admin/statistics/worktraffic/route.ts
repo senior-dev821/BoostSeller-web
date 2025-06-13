@@ -10,38 +10,38 @@ export async function GET(req: NextRequest) {
   const from = new Date(searchParams.get("from") || "")
   const to = new Date(searchParams.get("to") || "")
 
-  // 1. Heatmap Data (Mon–Sat, working hours 8–19)
-  const leads = await prisma.lead.findMany({
-    where: {
-      createdAt: {
-        gte: from,
-        lte: to,
-      },
-    },
-    select: {
-      createdAt: true,
-    },
-  })
+  // 1. Heatmap Data (Sun–Sat, working hours 8–19)
+	const leads = await prisma.lead.findMany({
+		where: {
+			createdAt: {
+				gte: from,
+				lte: to,
+			},
+		},
+		select: {
+			createdAt: true,
+		},
+	})
 
-  const days = eachDayOfInterval({ start: from, end: to }).filter(
-    (d) => d.getDay() !== 0 // skip Sunday
-  )
+	// Include all days (Sunday to Saturday) — no filter
+	const days = eachDayOfInterval({ start: from, end: to })
 
-  const heatmap = days.map((day) => {
-    const hours = new Array(12).fill(0)
-    for (const lead of leads) {
-      if (format(lead.createdAt, "yyyy-MM-dd") === format(day, "yyyy-MM-dd")) {
-        const hour = getHours(lead.createdAt)
-        if (hour >= 8 && hour <= 19) {
-          hours[hour - 8]++
-        }
-      }
-    }
-    return {
-      date: day.toISOString(),
-      hours,
-    }
-  })
+	const heatmap = days.map((day) => {
+		const hours = new Array(12).fill(0)
+		for (const lead of leads) {
+			if (format(lead.createdAt, "yyyy-MM-dd") === format(day, "yyyy-MM-dd")) {
+				const hour = getHours(lead.createdAt)
+				if (hour >= 8 && hour <= 19) {
+					hours[hour - 8]++
+				}
+			}
+		}
+		return {
+			date: day.toISOString(),
+			hours,
+		}
+	})
+
 
   // 2. Group Status (availability)
   const performers = await prisma.performer.findMany()
