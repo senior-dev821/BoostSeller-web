@@ -141,7 +141,7 @@ export default function LeadFormPage() {
           </div>
 
           {customFields.map((field) => (
-            <div key={field.uid} className="bg-gray-800 border rounded-lg p-4 space-y-2 shadow-theme-xs">
+            <div key={field.uid} className="bg-gray-100 dark:bg-gray-800 border rounded-lg p-4 space-y-2 shadow-theme-xs">
               <div className="grid md:grid-cols-4 gap-4">
                 <Input
                   placeholder="Label"
@@ -222,7 +222,7 @@ export default function LeadFormPage() {
       {/* Preview */}
       <div className="w-[320px] shrink-0 ml-20 mr-10">
         <h2 className="text-xl font-semibold mb-2 text-gray-300">Preview</h2>
-        <div className="border rounded-2xl shadow-lg p-4 bg-gray-800 space-y-4">
+        <div className="border rounded-2xl shadow-lg p-4 bg-gray-100 dark:bg-gray-800 space-y-4">
           <form className="space-y-4">
             <div>
               <Label className="block mb-1">Name <span className="text-red-500">*</span></Label>

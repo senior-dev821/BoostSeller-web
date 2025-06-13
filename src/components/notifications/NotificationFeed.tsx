@@ -133,7 +133,7 @@ export default function NotificationFeed() {
             key={noti.id}
             onClick={() => {handleClick(noti.title, noti.id)}}
             className={clsx(
-              'w-[90%] mx-auto flex justify-between gap-4 rounded-xl border p-4 shadow-sm transition hover:shadow-md',
+              'w-[90%] flex justify-between gap-4 rounded-xl border p-4 shadow-sm transition hover:shadow-md',
               noti.isRead
                 ? 'bg-white dark:bg-gray-800'
                 : 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-500'

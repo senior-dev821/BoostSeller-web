@@ -117,7 +117,7 @@ export default function StageForm() {
       <div
         ref={setNodeRef}
         style={style}
-        className="bg-gray-800 border border-gray-700 text-gray-200 rounded-xl shadow p-4 h-20 flex-shrink-0 hover:shadow-md mx-2 flex justify-between items-center"
+        className="bg-gray-100 dark:bg-gray-800 border border-gray-700 text-gray-200 rounded-xl shadow p-4 h-20 flex-shrink-0 hover:shadow-md mx-2 flex justify-between items-center"
       >
         <div className="cursor-grab" {...attributes} {...listeners}>
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -126,7 +126,7 @@ export default function StageForm() {
         </div>
 
         <div className="flex-1 flex flex-col">
-          <span className="font-semibold">{item.name}</span>
+          <span className="font-semibold text-gray-700 dark:text-white">{item.name}</span>
           <span className="text-sm text-gray-400">{item.description || 'No description'}</span>
         </div>
 
@@ -346,9 +346,9 @@ export default function StageForm() {
       </Modal>
 
       {isModalOpen && selectedStage && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-40 flex items-center justify-center">
-          <div className="bg-gray-800 rounded p-6 w-[800px] max-h-[90vh] overflow-y-auto relative">
-            <h2 className="text-xl text-gray-200 font-bold mb-4">Edit Stage</h2>
+        <div className="fixed inset-0 bg-gray-100 dark:bg-gray-900 bg-opacity-40 flex items-center justify-center">
+          <div className="bg-gray-200 dark:bg-gray-800 rounded p-6 w-[800px] max-h-[90vh] overflow-y-auto relative">
+            <h2 className="text-xl dark:text-gray-200 text-gray-700 font-bold mb-4">Edit Stage</h2>
             <Input
               defaultValue={selectedStage.name}
               onChange={(e) => setSelectedStage({ ...selectedStage, name: e.target.value })}

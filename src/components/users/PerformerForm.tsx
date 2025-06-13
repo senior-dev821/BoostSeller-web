@@ -489,7 +489,7 @@ export default function PerformerTable() {
                   <select
                     defaultValue="default"
                     onChange={handleSelectChange}
-                    className="w-full rounded border border-gray-700 px-3 py-2 bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full rounded border border-gray-700 px-3 py-2 bg-gray-100 dark:bg-gray-900  text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="default" disabled>-- Select Group --</option>
                     {groups.map((group) => (
@@ -604,7 +604,7 @@ export default function PerformerTable() {
             </div>
           </Modal>
           {/* Info Modal */}
-          <Modal isOpen={showInfoModal} onClose={handleCloseInfo} className=" bg-gray-900 text-white rounded-xl max-w-[584px] p-5 lg:p-10">
+          <Modal isOpen={showInfoModal} onClose={handleCloseInfo} className="bg-gray-100 dark:bg-gray-900 text-white rounded-xl max-w-[584px] p-5 lg:p-10">
             <div className="w-full">
               {/* Avatar & Name */}
               <div className="flex flex-col items-center mb-6">
@@ -621,49 +621,49 @@ export default function PerformerTable() {
                     className="object-cover"
                   />
                 </div>
-                <h3 className="text-2xl font-semibold">{selectedPerformer?.user.name}</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 dark:text-gray-300">{selectedPerformer?.user.name}</h3>
               </div>
               {/* Info Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
                   <Star className="text-blue-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Score</div>
-                    <div className="text-center">{selectedPerformer?.score?.toFixed(2) ?? "0.00"}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Score</div>
+                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.score?.toFixed(2) ?? "0.00"}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
                   <BarChart className="text-yellow-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Rank</div>
-                    <div className="text-center">{selectedPerformer?.groupRank}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Rank</div>
+                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.groupRank}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <User className="text-blue-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Role</div>
-                    <div>{selectedPerformer?.user.role}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Role</div>
+                    <div className="text-gray-700 dark:text-gray-300">{selectedPerformer?.user.role}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <Phone className="text-green-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Phone Number</div>
-                    <div>{selectedPerformer?.user.phoneNumber}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</div>
+                    <div className="text-gray-700 dark:text-gray-300">{selectedPerformer?.user.phoneNumber}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <Mail className="text-purple-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Email</div>
-                    <div>{selectedPerformer?.user.email}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</div>
+                    <div className="text-gray-700 dark:text-gray-300">{selectedPerformer?.user.email}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <ShieldCheck className="text-yellow-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Status</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</div>
                     <Badge
                       size="sm"
                       color={selectedPerformer?.user.isApproved ? "success" : "error"}
@@ -672,45 +672,45 @@ export default function PerformerTable() {
                     </Badge>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
                   <Inbox className="text-purple-400 w-5 h-5" />
                   <div>
                     <div className="text-sm font-medium text-gray-400">Assigned Leads</div>
-                    <div className="text-center">{selectedPerformer?.assignedCount ?? 0}</div>
+                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.assignedCount ?? 0}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <CheckCircle className="text-purple-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Accepted Leads</div>
-                    <div className="text-center">{selectedPerformer?.acceptedCount ?? 0}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Accepted Leads</div>
+                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.acceptedCount ?? 0}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
                   <BadgeCheck className="text-purple-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Completed Leads</div>
-                    <div className="text-center">{selectedPerformer?.completedCount ?? 0}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Completed Leads</div>
+                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.completedCount ?? 0}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
                   <Archive className="text-purple-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Closed Leads</div>
-                    <div className="text-center">{selectedPerformer?.closedCount ?? 0}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Closed Leads</div>
+                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.closedCount ?? 0}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
                   <Timer className="text-purple-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Average Response Time</div>
-                    <div className="text-center">{selectedPerformer?.avgResponseTime.toFixed(2)}s</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Average Response Time</div>
+                    <div className="text-center text-gray-700 dark:text-gray-300">{selectedPerformer?.avgResponseTime.toFixed(2)}s</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800  shadow">
                   <CheckCircle className="text-purple-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Available</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Available</div>
                     <Badge
                       size="sm"
                       color={selectedPerformer?.available ? "success" : "error"}

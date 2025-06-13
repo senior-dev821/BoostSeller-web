@@ -79,8 +79,8 @@ export default function HostessTable() {
     };
   }, []);
 
-  
- 
+
+
   useEffect(() => {
     fetch("/api/admin/user/hostess")
       .then((res) => res.json())
@@ -88,10 +88,10 @@ export default function HostessTable() {
   }, []);
 
 
-  const handleApprovalToggle = (userId : number | undefined) => {
-     if (typeof userId !== "number") return;
+  const handleApprovalToggle = (userId: number | undefined) => {
+    if (typeof userId !== "number") return;
     const newStatus = editApproved;
-    
+
     socketRef.current?.emit("user_approval_changed", {
       userId: userId,
       isApproved: !newStatus,
@@ -307,10 +307,10 @@ export default function HostessTable() {
                 ))
               ) : (
                 <TableRow>
-                                    <td colSpan={7} className="text-center py-6 text-gray-500 dark:text-gray-400">
-                                      No hostesses found.
-                                    </td>
-                                  </TableRow>
+                  <td colSpan={7} className="text-center py-6 text-gray-500 dark:text-gray-400">
+                    No hostesses found.
+                  </td>
+                </TableRow>
               )
 
 
@@ -383,8 +383,8 @@ export default function HostessTable() {
                     height={96}
                     src={
                       editHostess?.user.avatarPath
-                                ? `${nextServerUrl}${editHostess?.user.avatarPath}`
-                                : "/images/user/user-04.jpg"  
+                        ? `${nextServerUrl}${editHostess?.user.avatarPath}`
+                        : "/images/user/user-04.jpg"
                     }
                     alt={editName}
                     className="object-cover"
@@ -461,7 +461,7 @@ export default function HostessTable() {
           </Modal>
 
           {/* Info Modal */}
-          <Modal isOpen={showInfoModal} onClose={handleCloseInfo} className=" bg-gray-900 text-white rounded-xl p-6 max-w-[584px] lg:p-10">
+          <Modal isOpen={showInfoModal} onClose={handleCloseInfo} className=" bg-gray-100 dark:bg-gray-800 text-white rounded-xl p-6 max-w-[584px] lg:p-10">
             <div className="w-full">
               {/* Avatar & Name */}
               <div className="flex flex-col items-center mb-6">
@@ -471,43 +471,43 @@ export default function HostessTable() {
                     height={96}
                     src={
                       selectedHostess?.user.avatarPath
-                                ? `${nextServerUrl}${selectedHostess?.user.avatarPath}`
-                                : "/images/user/user-04.jpg"
+                        ? `${nextServerUrl}${selectedHostess?.user.avatarPath}`
+                        : "/images/user/user-04.jpg"
                     }
                     alt={selectedHostess?.user.name ?? ""}
                     className="object-cover"
                   />
                 </div>
-                <h3 className="text-2xl font-semibold">{selectedHostess?.user.name}</h3>
+                <h3 className="text-2xl font-semibold text-gray-600 dark:text-gray-400">{selectedHostess?.user.name}</h3>
               </div>
 
               {/* Info Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <User className="text-blue-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Role</div>
-                    <div>{selectedHostess?.user.role}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Role</div>
+                    <div className="text-gray-600 dark:text-gray-400">{selectedHostess?.user.role}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <Phone className="text-green-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Phone Number</div>
-                    <div>{selectedHostess?.user.phoneNumber}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Phone Number</div>
+                    <div className="text-gray-600 dark:text-gray-400">{selectedHostess?.user.phoneNumber}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <Mail className="text-purple-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Email</div>
-                    <div>{selectedHostess?.user.email}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Email</div>
+                    <div className="text-gray-600 dark:text-gray-400">{selectedHostess?.user.email}</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
                   <ShieldCheck className="text-yellow-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Status</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Status</div>
                     <Badge
                       size="sm"
                       color={selectedHostess?.user.isApproved ? "success" : "error"}
@@ -519,27 +519,27 @@ export default function HostessTable() {
               </div>
 
               <div className="flex flex-col sm:flex-row justify-between gap-4 mb-8">
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
                   <Layers className="text-blue-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Total Leads</div>
-                    <div className="text-center">{selectedHostess?.totalCount ?? 0}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Total Leads</div>
+                    <div className="text-center text-gray-600 dark:text-gray-400">{selectedHostess?.totalCount ?? 0}</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
                   <CheckCircle className="text-green-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Accepted Leads</div>
-                    <div className="text-center">{selectedHostess?.acceptedCount ?? 0}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Accepted Leads</div>
+                    <div className="text-center text-gray-600 dark:text-gray-400">{selectedHostess?.acceptedCount ?? 0}</div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-800 shadow w-full sm:w-auto">
+                <div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
                   <ClipboardCheck className="text-yellow-400 w-5 h-5" />
                   <div>
-                    <div className="text-sm font-medium text-gray-400">Completed Leads</div>
-                    <div className="text-center">{selectedHostess?.completedCount ?? 0}</div>
+                    <div className="text-sm font-medium text-gray-700 dark:text-gray-300">Completed Leads</div>
+                    <div className="text-center text-gray-600 dark:text-gray-400">{selectedHostess?.completedCount ?? 0}</div>
                   </div>
                 </div>
               </div>
