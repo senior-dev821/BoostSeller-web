@@ -11,7 +11,7 @@ import {
 
 import Badge from "../ui/badge/Badge";
 import {
-  User, Sparkles, DollarSign, CheckCircle, CircleDot, CheckCircle2, XCircle, CircleDashed, Clock, Workflow, Eye, DownloadCloud, Briefcase, Info
+  User, Sparkles, DollarSign, CheckCircle, CircleDot, CheckCircle2, XCircle, CircleDashed, Clock, Workflow, Eye, DownloadCloud,
 } from "lucide-react";
 import Image from "next/image";
 import Pagination from "@/components/form/form-elements/Pagination";
