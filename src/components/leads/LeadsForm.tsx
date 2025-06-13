@@ -327,7 +327,7 @@ export default function LeadForm() {
                       <Image
                         width={64}
                         height={64}
-                        src="/images/user/user-01.jpg"
+                        src="/images/user/user-10.jpg"
                         alt={selectedLead.name}
                       />
                     </div>
