@@ -67,7 +67,7 @@ model Lead {
   name              String    @db.VarChar(100)
   registerId        String    @unique @map("register_id")
   idStr             String    @map("id_str")
-  phoneNumber       String    @map("phone_number") @db.VarChar(15)
+  phoneNumber       String?    @map("phone_number") @db.VarChar(15)
   interestId        Int       @map("interest_id")
   isReturn          Boolean   @default(false) @map("is_return")
   additionalInfo    Json?     @map("additional_info") @db.JsonB

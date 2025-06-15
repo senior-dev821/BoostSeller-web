@@ -65,7 +65,7 @@ export async function GET(req: NextRequest) {
   const now = new Date()
   const skipped = await prisma.lead.count({
     where: {
-      status: "pending",
+      status: "pendding",
     },
   })
 
