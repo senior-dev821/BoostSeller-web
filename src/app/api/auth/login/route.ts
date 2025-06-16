@@ -11,12 +11,12 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
-      return new Response(JSON.stringify({error: true, message: "User not found" }), {});
+      return new Response(JSON.stringify({error: true, message: "user-not-found" }), {});
     }
     
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return new Response(JSON.stringify({ error: true, message: "Password is Invalid. Please enter correct password." }), {});
+      return new Response(JSON.stringify({ error: true, message: "password-mismatch" }), {});
     }
 
     await prisma.user.update(
