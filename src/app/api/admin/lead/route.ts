@@ -39,7 +39,7 @@ export async function GET() {
 
         const enrichedStages = await Promise.all(
           stages.map(async (stage) => {
-            const stageHistory = await prisma.lead_stage_mapping.findFirst({
+            const stageHistory = await prisma.lead_stage_history.findFirst({
               where: {
                 stageId: stage.id,
                 leadId: lead.id,

@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       });
     }
     if (acceptedLead === null) return;
-    await prisma.lead_stage_mapping.create({
+    await prisma.lead_stage_history.create({
       data: {
         leadId: acceptedLead.id,
         stageId: parseInt(stageId),

@@ -99,7 +99,7 @@ model Stage {
   updatedAt      DateTime @default(now()) @updatedAt @map("updated_at")
 }
 
-model lead_stage_mapping {
+model lead_stage_history {
   id           Int      @id @default(autoincrement())
   leadId       Int      @map("lead_id")
   stageId      Int      @map("stage_id")
@@ -123,24 +123,6 @@ model Group {
   interestId Int      @unique @map("interest_id")
   createdAt  DateTime @default(now()) @map("created_at")
   updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
-}
-
-model InterestGroupMapping {
-  id         Int      @id @default(autoincrement())
-  interestId Int      @map("interest_id")
-  groupId    Int      @map("group_id")
-  createdAt  DateTime @default(now()) @map("created_at")
-
-  @@unique([interestId, groupId])
-}
-
-model PerformerGroupMapping {
-  id          Int      @id @default(autoincrement())
-  performerId Int      @map("performer_id")
-  groupId     Int      @map("group_id")
-  createdAt   DateTime @default(now()) @map("created_at")
-
-  @@unique([performerId, groupId])
 }
 
 model Setting {
