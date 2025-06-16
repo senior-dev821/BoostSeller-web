@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       // Check for existing user
       const existingUser = await prisma.user.findUnique({ where: { email: address } });
       if (!existingUser) {
-        return new Response(JSON.stringify({ error: true, message: 'User not found.' }), {
+        return new Response(JSON.stringify({ error: true, message: 'user-not-found'}), {
         });
       }
   
@@ -26,7 +26,7 @@ export async function POST(req: Request) {
       });
     } catch (err) {
       console.log(err);
-      return new Response(JSON.stringify({ error: true, message: "Failed to changed password. Please try again. " }));
+      return new Response(JSON.stringify({ error: true, message: "change-password-error"}));
       
     }
   } else {

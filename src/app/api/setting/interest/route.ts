@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const interests = await prisma.interest.findMany();
     if(interests.length == 0) {
-        return new NextResponse(JSON.stringify({ error: true, message: "Not found Interests." }), {
+        return new NextResponse(JSON.stringify({ error: true, empty: true, message: "Not found Interests." }), {
           
         });
     }
@@ -22,7 +22,7 @@ export async function GET() {
    
   } catch (error) {
     console.error("fetching error:", error);
-    return new NextResponse(JSON.stringify({error: true, message: "Failed to fetch interests. \n Please try again." }), {
+    return new NextResponse(JSON.stringify({error: true,  message: "Failed to fetch interests. \n Please try again." }), {
       
     });
   }

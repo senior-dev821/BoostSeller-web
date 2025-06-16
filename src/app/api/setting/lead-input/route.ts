@@ -97,7 +97,7 @@ export async function GET() {
         },
     });
     if(fields.length == 0) {
-        return new Response(JSON.stringify({ error: true, message: "Not found LeadAdditional Fields." }), {
+        return new Response(JSON.stringify({ error: true, empty: true, message: "Not found LeadAdditional Fields." }), {
           
         });
     }
