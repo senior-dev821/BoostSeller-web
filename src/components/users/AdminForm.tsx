@@ -457,7 +457,7 @@ export default function AdminTable() {
                   </label>
 									<DatePicker
 										id="to-date"
-										label="To"
+										label=""
 										placeholder="Select end date"
 										defaultDate={editEndDate}
 										onChange={(selectedDates) => {
