@@ -38,7 +38,7 @@ export async function GET() {
         return {
           ...performer,
           score,
-          groupNames, // ⬅️ This is new
+          groupNames, 
         };
       })
       .sort((a, b) => {

@@ -20,7 +20,7 @@ export async function POST(req: Request) {
           interest: true,
         },
         orderBy: {
-          createdAt:'desc',
+          updatedAt: 'desc',
         },
       });
     return new Response(JSON.stringify({
