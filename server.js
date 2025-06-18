@@ -12,6 +12,8 @@ const { sendPushNotification } = require('./firebase');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+const activeLeadTimers = new Map();
+
 app.prepare().then(() => {
 
   const server = createServer((req, res) => {
@@ -64,7 +66,6 @@ app.prepare().then(() => {
 
     socket.on('lead_added', async (data) => {
 
-      console.log(data);
       await assignLeadToPerformer(parseInt(data.id));
 
     });
@@ -76,8 +77,8 @@ app.prepare().then(() => {
         include: {
           interest: true,
         }
-
       });
+
       const triedPerformerIds = lead.triedPerformerIds;
       const intersteId = lead.interest.id;
       const assignedGroup = await prisma.group.findUnique({
@@ -240,7 +241,11 @@ app.prepare().then(() => {
         sendPushNotification(user.fcmToken, '📢 New Lead Assigned', `A new lead - ${assignedLead.name} has been assigned to you.`);
       }
 
-      setTimeout(async () => {
+      if (activeLeadTimers.has(leadId)) {
+        clearTimeout(activeLeadTimers.get(leadId));
+      }
+
+      const timer = setTimeout(async () => {
         const updatedLead = await prisma.lead.findUnique({
           where: { id: leadId },
           include: {
@@ -276,7 +281,9 @@ app.prepare().then(() => {
           }
           await assignLeadToPerformer(leadId);
         }
+        activeLeadTimers.delete(leadId);
       }, assignPeriod * 1000);
+      activeLeadTimers.set(leadId, timer);
     }
 
     socket.on('lead_skip', async (data) => {
@@ -295,6 +302,10 @@ app.prepare().then(() => {
       if (!lead || lead.status !== 'assigned') return;
 
       const leadId = lead.id;
+      if (activeLeadTimers.has(leadId)) {
+        clearTimeout(activeLeadTimers.get(leadId));
+        activeLeadTimers.delete(leadId);
+      }
 
       await prisma.performer.update({
         where: {
