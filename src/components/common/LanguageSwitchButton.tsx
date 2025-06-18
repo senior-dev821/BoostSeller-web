@@ -39,13 +39,14 @@ export default function LanguageSwitchButton() {
       }
     }
 
-    if (global.__GOOGLE_TRANSLATION_CONFIG__ && !langValue) {
-      langValue = global.__GOOGLE_TRANSLATION_CONFIG__.defaultLanguage;
+    const config = window.__GOOGLE_TRANSLATION_CONFIG__;
+    if (config && !langValue) {
+      langValue = config.defaultLanguage;
     }
 
     if (langValue) setCurrentLanguage(langValue);
-    if (global.__GOOGLE_TRANSLATION_CONFIG__) {
-      setLanguageConfig(global.__GOOGLE_TRANSLATION_CONFIG__);
+    if (config) {
+      setLanguageConfig(config);
     }
   }, []);
 
