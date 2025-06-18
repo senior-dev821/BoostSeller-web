@@ -54,15 +54,25 @@ export default function LanguageSwitcher() {
   if (!currentLanguage || !languageConfig) return null;
 
   const switchLanguage = () => {
-    const langs = languageConfig.languages;
-    const currentIndex = langs.findIndex((l) => l.name === currentLanguage);
-    const nextIndex = (currentIndex + 1) % langs.length;
-    const nextLang = langs[nextIndex].name;
-
-    setCookie(null, COOKIE_NAME, "/auto/" + nextLang);
-    window.location.reload();
-  };
-
+		const langs = languageConfig.languages;
+		const currentIndex = langs.findIndex((l) => l.name === currentLanguage);
+		const nextIndex = (currentIndex + 1) % langs.length;
+		const nextLang = langs[nextIndex].name;
+	
+		// Set cookie
+		setCookie(null, COOKIE_NAME, `/auto/${nextLang}`, { path: "/" });
+	
+		// Trigger Google Translate change if available
+		const selectEl = document.querySelector<HTMLSelectElement>(".goog-te-combo");
+		if (selectEl) {
+			selectEl.value = nextLang;
+			selectEl.dispatchEvent(new Event("change"));
+		}
+	
+		// Update local state
+		setCurrentLanguage(nextLang);
+	};
+	
   return (
     <button
       onClick={switchLanguage}
