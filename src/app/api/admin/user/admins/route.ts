@@ -23,18 +23,23 @@ export async function GET() {
         const diffInDays = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
         let status = 'success';
-
-        if (endDate < now && isApproved) {
-          // Expired and still approved — update DB
-          await prisma.user.update({
-            where: { id: admin.userId },
-            data: { isApproved: false },
-          });
-          status = 'error';
-          admin.user.isApproved = false; // reflect change in returned data
-        } else if (diffInDays < 5) {
-          status = 'warning';
-        }
+				if(isApproved){
+					if (endDate < now) {
+						// Expired and still approved — update DB
+						await prisma.user.update({
+							where: { id: admin.userId },
+							data: { isApproved: false },
+						});
+						status = 'error';
+						admin.user.isApproved = false; // reflect change in returned data
+					} else if (diffInDays < 5) {
+						status = 'warning';
+					}
+				}
+				else{
+					status = 'error';
+				}
+        
 
         return {
           ...admin,

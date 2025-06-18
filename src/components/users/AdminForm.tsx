@@ -60,7 +60,7 @@ export default function AdminTable() {
   const [editEmail, setEditEmail] = useState("");
   const [editApproved, setEditApproved] = useState(false);
   const [editEndDate, setEditEndDate] = useState("");
-
+	const [status] = useState("");
 
   const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
