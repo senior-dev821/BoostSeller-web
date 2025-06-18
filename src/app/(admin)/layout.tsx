@@ -19,7 +19,7 @@ export default  async function AdminLayout({
       const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
       userRole = decoded.role || 'user';
     } catch (err) {
-      console.error('Invalid JWT token');
+      console.error('Invalid JWT token', err);
     }
   }
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { parseCookies, setCookie } from "nookies";
-import { Globe } from "lucide-react";  // <-- import the global icon here
+import { Globe } from "lucide-react";
 
 const COOKIE_NAME = "googtrans";
 
@@ -11,9 +11,10 @@ interface LanguageDescriptor {
   title: string;
 }
 
+// Declare global interface safely
 declare global {
-  namespace globalThis {
-    var __GOOGLE_TRANSLATION_CONFIG__: {
+  interface Window {
+    __GOOGLE_TRANSLATION_CONFIG__?: {
       languages: LanguageDescriptor[];
       defaultLanguage: string;
     };
@@ -39,19 +40,19 @@ export default function LanguageSwitcher() {
       }
     }
 
-    if (global.__GOOGLE_TRANSLATION_CONFIG__ && !langValue) {
-      langValue = global.__GOOGLE_TRANSLATION_CONFIG__.defaultLanguage;
+    const config = window.__GOOGLE_TRANSLATION_CONFIG__;
+    if (config && !langValue) {
+      langValue = config.defaultLanguage;
     }
 
     if (langValue) setCurrentLanguage(langValue);
-    if (global.__GOOGLE_TRANSLATION_CONFIG__) {
-      setLanguageConfig(global.__GOOGLE_TRANSLATION_CONFIG__);
+    if (config) {
+      setLanguageConfig(config);
     }
   }, []);
 
   if (!currentLanguage || !languageConfig) return null;
 
-  // Cycle to next language
   const switchLanguage = () => {
     const langs = languageConfig.languages;
     const currentIndex = langs.findIndex((l) => l.name === currentLanguage);

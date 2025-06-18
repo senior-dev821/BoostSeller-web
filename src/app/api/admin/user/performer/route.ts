@@ -13,7 +13,7 @@ export async function GET() {
     });
 
     const setting = await prisma.setting.findFirst();
-    const assignPeriod = setting!.assignPeriod;
+    // const assignPeriod = setting!.assignPeriod;
 
     // Fetch all groups once
     const allGroups = await prisma.group.findMany();
