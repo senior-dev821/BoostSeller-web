@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const { registerId, performerId } = await req.json();
+    const { registerId, stageId, performerId, reason, comment } = await req.json();
     const paresedPerformerId = parseInt(performerId);
     const lead = await prisma.lead.update({
       where: {
@@ -29,6 +29,19 @@ export async function POST(req: Request) {
         },
       }
 
+    });
+
+    const curValues = {
+      reason: reason,
+      comment: comment,
+    };
+
+    await prisma.lead_stage_history.create({
+      data: {
+        leadId: lead.id,
+        stageId: parseInt(stageId),
+        currentValue: curValues,
+      },
     });
 
     return new Response(JSON.stringify({

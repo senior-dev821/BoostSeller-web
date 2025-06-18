@@ -6,7 +6,7 @@ export async function POST(req: Request) {
   try {
     const { registerId } = await req.json();
 
-    await prisma.lead.update({
+    const lead = await prisma.lead.update({
       where: {
         registerId: registerId,
       },
@@ -17,6 +17,18 @@ export async function POST(req: Request) {
       closedAt: new Date(),
      },
       
+    });
+
+    const curValues = {
+      reason: "all skipped",
+    }
+
+    await prisma.lead_stage_history.create({
+      data: {
+        leadId: lead.id,
+        stageId: 0,
+        currentValue: curValues,
+      },
     });
 
     return new Response(JSON.stringify({
