@@ -690,7 +690,7 @@ export default function LeadForm() {
                                 </div>
                               </div>
                             )
-                            : ("Not Yet.")
+                            : ("-")
                           }
                         </TableCell>
                         <TableCell className="px-5 py-4 sm:px-6 text-center">
@@ -715,7 +715,7 @@ export default function LeadForm() {
                                 </div>
                               </div>
                             )
-                            : ("Not Yet.")
+                            : ("-")
                           }
 
                         </TableCell>

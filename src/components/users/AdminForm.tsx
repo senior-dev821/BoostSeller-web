@@ -15,24 +15,15 @@ import { PencilIcon, InfoIcon, TrashBinIcon } from "@/icons";
 import Badge from "../ui/badge/Badge";
 import Image from "next/image";
 import { Modal } from "@/components/ui/modal";
-import { User, Phone, Mail, ShieldCheck, Inbox, CheckCircle, BadgeCheck, Archive, Star, BarChart, Timer, Boxes } from "lucide-react";
+import { User, Phone, Mail, ShieldCheck, ClockAlert } from "lucide-react";
 import Pagination from "@/components/form/form-elements/Pagination";
 
-interface Performer {
+interface Admin {
   id: number;
-  available: boolean;
-  assignedCount: number;
-  acceptedCount: number;
-  completedCount: number;
-  closedCount: number;
-  avgResponseTime: number;
-  createdAt: string;
-  groupIds: number[];
-  groupNames: string[];
-  score: number;
-  groupRank: number;
+	endDate: string;
+	createdAt: string;
   user: {
-    id: number,
+    id: number;
     avatarPath?: string;
     name: string;
     role: string;
@@ -43,32 +34,24 @@ interface Performer {
 
 }
 
-interface Group {
-  id: number;
-  name: string;
-}
-
-
-export default function PerformerTable() {
-  const [performers, setPerformers] = useState<Performer[]>([]);
+export default function AdminTable() {
+  const [admins, setAdmins] = useState<Admin[]>([]);
 
   const [currentPage, setCurrentPage] = useState(1); //
   const pageSize = 10;
 
-  const [groups, setGroups] = useState<Group[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedPerformer, setSelectedPerformer] = useState<Performer | null>(null);
-  const [editPerformer, setEditPerformer] = useState<Performer | null>(null);
+  const [selectedAdmin, setSelectedAdmin] = useState<Admin | null>(null);
+  const [editAdmin, setEditAdmin] = useState<Admin | null>(null);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [editName, setEditName] = useState("");
   const [editPhoneNumber, setEditPhoneNumber] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editApproved, setEditApproved] = useState(false);
-  // const [editGroupName, setEditGroupName] = useState("");
-  const [editAvailable, setEditAvailable] = useState(false);
-  const [editGroupIds, setEditGroupIds] = useState<number[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<string>("All");
+  const [editEndDate, setEditEndDate] = useState("");
+
+
   const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
   const socketRef = useRef<Socket | null>(null);
@@ -97,71 +80,63 @@ export default function PerformerTable() {
     });
   };
 
-  const handleEditClick = (performer: Performer) => {
-    setEditPerformer(performer);
-    setEditName(performer.user.name);
-    setEditPhoneNumber(performer.user.phoneNumber);
-    setEditEmail(performer.user.email);
-    setEditApproved(performer.user.isApproved);
-    setEditAvailable(performer.available);
-    setEditGroupIds(performer.groupIds);
-    // setEditGroupName(performer.groupNames.join(', '));
+  const handleEditClick = (admin: Admin) => {
+    setEditAdmin(admin);
+    setEditName(admin.user.name);
+    setEditPhoneNumber(admin.user.phoneNumber);
+    setEditEmail(admin.user.email);
+		setEditEndDate(admin.endDate);
+    setEditApproved(admin.user.isApproved);
+
     setShowEditModal(true);
   }
 
-  const handleInfoClick = (performer: Performer) => {
-    setSelectedPerformer(performer);
+  const handleInfoClick = (performer: Admin) => {
+    setSelectedAdmin(performer);
     setShowInfoModal(true);
   }
 
   const handleCancelEdit = () => {
     setShowEditModal(false);
-    setEditPerformer(null);
+    setEditAdmin(null);
   };
 
   const handleSaveChanges = async () => {
-    if (!editPerformer) return;
+    if (!editAdmin) return;
 
     try {
-      const res = await fetch('/api/admin/user/performer/edit', {
+      const res = await fetch('/api/admin/user/admins/edit', {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          id: editPerformer.id,
+          id: editAdmin.id,
           name: editName,
           phoneNumber: editPhoneNumber,
           email: editEmail,
           isApproved: editApproved,
-          isAvailable: editAvailable,
-          groupIds: editGroupIds,
+          endDate: editEndDate,
         }),
       });
 
       if (res.ok) {
-        const updatedGroupNames = editGroupIds
-          .map(id => groups.find(group => group.id === id)?.name)
-          .filter((name): name is string => !!name); // Filter out undefineds
-
         // Update local state
-        setPerformers((prev) =>
-          prev.map((performer) =>
-            performer.id === editPerformer.id
+        	setAdmins((prev) =>
+          prev.map((admin) =>
+					admin.id === editAdmin.id
               ? {
-                ...performer,
-                available: editAvailable,
-                groupIds: editGroupIds,
-                groupNames: updatedGroupNames, // ✅ Set new group names
+                ...admin,
+                endDate: editEndDate,
                 user: {
-                  ...performer.user,
+                  ...admin.user,
                   name: editName,
                   phoneNumber: editPhoneNumber,
                   email: editEmail,
                   isApproved: editApproved,
                 },
               }
-              : performer
+              : admin
           )
         );
 
@@ -177,72 +152,30 @@ export default function PerformerTable() {
 
   const handleCloseInfo = () => {
     setShowInfoModal(false);
-    setSelectedPerformer(null);
+    setSelectedAdmin(null);
   };
-
-  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = Number(e.target.value);
-    if (!editGroupIds.includes(value)) {
-      setEditGroupIds([...editGroupIds, value]);
-    }
-  };
-
-  const removeGroup = (idToRemove: number) => {
-    setEditGroupIds((ids) => ids.filter((id) => id !== idToRemove));
-  };
-
 
   useEffect(() => {
-    fetch("/api/admin/user/performer")
+    fetch("/api/admin/user/admins")
       .then((res) => res.json())
-      .then((data) => setPerformers(data));
+      .then((data) => setAdmins(data));
   }, []);
 
-  useEffect(() => {
-    fetch("/api/admin/setting/group")
-      .then((res) => res.json())
-      .then((data) => setGroups(data));
-  }, []);
-
-  const filteredPerformers = performers.filter((performer) => {
-    if (selectedGroup === "All") return true;
-    if (selectedGroup === "None") return !performer.groupIds || performer.groupIds.length === 0;
-    return performer.groupIds?.includes(Number(selectedGroup));
-  });
-
-  const totalPages = Math.ceil(filteredPerformers.length / pageSize);
-  const paginatedPerformers = filteredPerformers.slice(
+  const totalPages = Math.ceil(admins.length / pageSize);
+  const paginatedadmins = admins.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
   );
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedGroup]);
+  }, []);
 
 
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
       <div className="max-w-full overflow-x-auto">
         <div className="min-w-[1102px]">
-          <div className="  pt-4 mb-4 flex justify-end items-center gap-2 px-4">
-            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Filter by Group : </label>
-            <select
-              value={selectedGroup}
-              onChange={(e) => setSelectedGroup(e.target.value)}
-              className="px-3 py-1.5 border border-gray-300 rounded-md text-sm dark:bg-gray-800 dark:text-white"
-            >
-              <option value="All">All</option>
-
-              {groups.map((group) => (
-                <option key={group.id} value={group.id}>
-                  {group.name}
-                </option>
-              ))}
-
-              <option value="None">Not Assigned</option>
-            </select>
-          </div>
           
           <Table>
             {/* Table Header */}
@@ -258,12 +191,6 @@ export default function PerformerTable() {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  Group
-                </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
-                >
                   Phone Number
                 </TableCell>
                 <TableCell
@@ -271,6 +198,12 @@ export default function PerformerTable() {
                   className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
                   Email Address
+                </TableCell>
+								<TableCell
+                  isHeader
+                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
+                >
+                  Register Date
                 </TableCell>
                 <TableCell
                   isHeader
@@ -282,14 +215,9 @@ export default function PerformerTable() {
                   isHeader
                   className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
                 >
-                  Available
+                  End Date
                 </TableCell>
-                <TableCell
-                  isHeader
-                  className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400"
-                >
-                  Register Date
-                </TableCell>
+                
                 <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
                   Actions
                 </TableCell>
@@ -299,11 +227,11 @@ export default function PerformerTable() {
             {/* Table Body */}
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
               {
-                paginatedPerformers.length > 0 ?
+                paginatedadmins.length > 0 ?
                   (
-                    paginatedPerformers
-                      .map((performer) => (
-                        <TableRow key={performer.id}>
+                    paginatedadmins
+                      .map((admin) => (
+                        <TableRow key={admin.id}>
                           <TableCell className="px-5 py-4 sm:px-6 text-start">
                             <div className="flex items-center gap-3">
                               <div className="w-10 h-10 overflow-hidden rounded-full">
@@ -311,74 +239,60 @@ export default function PerformerTable() {
                                   width={40}
                                   height={40}
                                   src={
-                                    performer.user.avatarPath
-                                      ? `${nextServerUrl}${performer.user.avatarPath}`
+                                    admin.user.avatarPath
+                                      ? `${nextServerUrl}${admin.user.avatarPath}`
                                       : "/images/user/user-01.jpg"
                                   }
-                                  alt={performer.user.name}
+                                  alt={admin.user.name}
                                 />
                               </div>
                               <div>
                                 <span className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                  {performer.user.name}
+                                  {admin.user.name}
                                 </span>
                                 <span className="block text-gray-500 text-theme-xs dark:text-gray-400">
-                                  {performer.user.role}
+                                  {admin.user.role}
                                 </span>
                               </div>
                             </div>
                           </TableCell>
                           <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                            <div className="flex justify-center flex-wrap gap-1">
-                              {performer.groupNames?.length > 0
-                                ? performer.groupNames.map((name, idx) => (
-                                  <Badge key={idx} size="sm" color="info">
-                                    {name}
-                                  </Badge>
-                                ))
-                                : "Not assigned Group"}
-                            </div>
+                            {admin.user.phoneNumber}
                           </TableCell>
                           <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                            {performer.user.phoneNumber}
+                            {admin.user.email}
                           </TableCell>
                           <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                            {performer.user.email}
-                          </TableCell>
-                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+														{new Intl.DateTimeFormat("en-US", {
+															dateStyle: "medium", // 
+														}).format(new Date(admin.createdAt))}
+													</TableCell>
+													<TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
                             <Badge
                               size="sm"
-                              color={performer.user.isApproved ? "success" : "error"}
+                              color={admin.user.isApproved ? "success" : "error"}
                             >
-                              {performer.user.isApproved ? "Approved" : "Pending"}
+                              {admin.user.isApproved ? "Approved" : "Pending"}
                             </Badge>
                           </TableCell>
-                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                            <Badge
-                              size="sm"
-                              color={performer.available ? "success" : "error"}
-                            >
-                              {performer.available ? "Available" : "Do Not Disturb"}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                            {new Intl.DateTimeFormat("en-US", {
-                              dateStyle: "medium",
-                              // timeStyle: "short",
-                            }).format(new Date(performer.createdAt))}
-                          </TableCell>
+													<TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
+														{new Intl.DateTimeFormat("en-US", {
+															dateStyle: "medium", // This gives you something like: "Jun 18, 2025"
+														}).format(new Date(admin.createdAt))}
+													</TableCell>
+
                           <TableCell className="px-4 py-3 space-x-2 text-center">
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleEditClick(performer)}
+                              onClick={() => handleEditClick(admin)}
                             >
                               <PencilIcon className="fill-gray-500 dark:fill-gray-400" />
                             </Button>
                             <Button
                               size="sm"
                               variant="outline"
-                              onClick={() => handleInfoClick(performer)}
+                              onClick={() => handleInfoClick(admin)}
                             >
                               <InfoIcon className="fill-gray-500 dark:fill-gray-400" />
                             </Button>
@@ -386,7 +300,7 @@ export default function PerformerTable() {
                               size="sm"
                               variant="outline"
                               onClick={() => {
-                                setSelectedPerformer(performer);
+                                setSelectedAdmin(admin);
                                 setShowDeleteModal(true);
                               }}
                             >
@@ -398,14 +312,13 @@ export default function PerformerTable() {
                   ) : (
                     <TableRow>
                       <td colSpan={8} className="text-center py-6 text-gray-500 dark:text-gray-400">
-                        No performers found.
+                        No Admins Found.
                       </td>
                     </TableRow>
                   )
               }
             </TableBody>
           </Table>
-
           <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} className="max-w-[584px] p-5 lg:p-10">
             <div className="p-4 w-120">
               <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white text-center">
@@ -413,7 +326,7 @@ export default function PerformerTable() {
               </h2>
               <p className="text-gray-700 dark:text-gray-300 mb-6 text-center">
                 Are you sure you want to delete{" "}
-                <strong>{selectedPerformer?.user.name}</strong>?
+                <strong>{selectedAdmin?.user.name}</strong>?
               </p>
               <div className="flex justify-end gap-3">
                 <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
@@ -421,21 +334,21 @@ export default function PerformerTable() {
                 </Button>
                 <Button
                   onClick={async () => {
-                    if (!selectedPerformer) return;
+                    if (!selectedAdmin) return;
                     try {
-                      const res = await fetch('/api/admin/user/performer/delete', {
+                      const res = await fetch('/api/admin/user/admins/delete', {
                         method: "POST",
                         headers: {
                           "Content-Type": "application/json",
                         },
                         body: JSON.stringify({
-                          id: selectedPerformer.id,
+                          id: selectedAdmin.id,
                         }),
                       });
 
                       if (res.ok) {
-                        setPerformers(prev =>
-                          prev.filter(p => p.id !== selectedPerformer.id)
+                        setAdmins(prev =>
+                          prev.filter(p => p.id !== selectedAdmin.id)
                         );
                         setShowDeleteModal(false);
                       } else {
@@ -451,7 +364,6 @@ export default function PerformerTable() {
               </div>
             </div>
           </Modal>
-
           {/* Edit Modal */}
           <Modal
             isOpen={showEditModal}
@@ -466,8 +378,8 @@ export default function PerformerTable() {
                     width={96}
                     height={96}
                     src={
-                      editPerformer?.user.avatarPath
-                        ? `${nextServerUrl}${editPerformer?.user.avatarPath}`
+                      editAdmin?.user.avatarPath
+                        ? `${nextServerUrl}${editAdmin?.user.avatarPath}`
                         : "/images/user/user-01.jpg"
                     }
                     alt={editName}
@@ -476,55 +388,8 @@ export default function PerformerTable() {
                 </div>
                 <h3 className="text-xl font-semibold">{editName}</h3>
               </div>
-
               {/* Editable fields */}
               <div className="space-y-4">
-                <div>
-                  <p className="mt-2 text-sm text-white-600 bg-blue-500 border border-blue-300 px-3 py-2 rounded-md">
-                    This performer must belong to a group in order to participate in lead distribution.
-                  </p>
-                  <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
-                    Assigned Group
-                  </label>
-                  <select
-                    defaultValue="default"
-                    onChange={handleSelectChange}
-                    className="w-full rounded border border-gray-700 px-3 py-2 bg-gray-100 dark:bg-gray-900  text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="default" disabled>-- Select Group --</option>
-                    {groups.map((group) => (
-                      <option key={group.id} value={group.id}>
-                        {group.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  {editGroupIds.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {editGroupIds.map((id) => {
-                        const group = groups.find((g) => g.id === id);
-                        if (!group) return null;
-                        return (
-                          <div
-                            key={id}
-                            className="flex items-center gap-2 px-3 py-1 text-sm bg-gray-200 dark:bg-gray-700 rounded-full"
-                          >
-                            <span>{group.name}</span>
-                            <button
-                              type="button"
-                              onClick={() => removeGroup(id)}
-                              className="text-red-500 hover:text-red-700 font-bold"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-
-                </div>
-
                 <div>
                   <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
                     Name
@@ -565,7 +430,7 @@ export default function PerformerTable() {
                       checked={editApproved}
                       onChange={() => {
                         setEditApproved(prev => !prev)
-                        handleApprovalToggle(editPerformer?.user.id);
+                        handleApprovalToggle(editAdmin?.user.id);
                       }}
                       className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
                     />
@@ -575,31 +440,25 @@ export default function PerformerTable() {
                     {editApproved ? "Approved" : "Pending"}
                   </Badge>
                 </div>
-                <div className="flex items-center justify-between">
-                  <label className="inline-flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={editAvailable}
-                      onChange={() => setEditAvailable(prev => !prev)}
-                      className="h-5 w-5 rounded border-gray-300 text-green-600 focus:ring-green-500"
-                    />
-                    Available
+                <div>
+                  <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
+                    End Date
                   </label>
-                  <Badge size="sm" color={editAvailable ? "success" : "error"}>
-                    {editAvailable ? "Available" : "Do Not Disturb"}
-                  </Badge>
+                  <input
+                    type="enddate"
+                    className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={editEndDate}
+                    onChange={(e) => setEditEndDate(e.target.value)}
+                  />
                 </div>
-
               </div>
 
               {/* Buttons */}
               <div className="mt-6 flex justify-end gap-3">
-
                 <Button onClick={handleSaveChanges}>Save Changes</Button>
                 <Button variant="outline" onClick={handleCancelEdit}>
                   Cancel
                 </Button>
-
               </div>
             </div>
           </Modal>
@@ -613,70 +472,39 @@ export default function PerformerTable() {
                     width={96}
                     height={96}
                     src={
-                      selectedPerformer?.user.avatarPath
-                        ? `${nextServerUrl}${selectedPerformer?.user.avatarPath}`
+                      selectedAdmin?.user.avatarPath
+                        ? `${nextServerUrl}${selectedAdmin?.user.avatarPath}`
                         : "/images/user/user-01.jpg"
                     }
-                    alt={selectedPerformer?.user.name ?? ""}
+                    alt={selectedAdmin?.user.name ?? ""}
                     className="object-cover"
                   />
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-700 dark:text-gray-300">{selectedPerformer?.user.name}</h3>
+                <h3 className="text-2xl font-semibold text-gray-700 dark:text-gray-300">{selectedAdmin?.user.name}</h3>
               </div>
               {/* Info Cards */}
-              <div>
-								<div className="flex items-center gap-3 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto mb-4">
-									<Boxes className="text-blue-400 w-5 h-5" />
-									<div className="text-sm font-medium  text-gray-700 dark:text-gray-300">Groups</div>
-									{selectedPerformer && selectedPerformer.groupNames?.length > 0 ? (
-										<div className="flex flex-wrap gap-2 mt-2">
-											{selectedPerformer.groupNames.map((group, i) => (
-												<Badge key={i} size="sm" color="info">
-													{group}
-												</Badge>
-											))}
-										</div>
-									) : (
-										<div className="flex flex-wrap gap-2 mt-2">
-											<span className="text-sm  text-gray-700 dark:text-gray-300">-</span>
-										</div>
-									)}
-								</div>					
+              <div>					
 								<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">	
-									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
-										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
-											<Star className="text-blue-400 w-5 h-5" />
-											<span>Score</span>
-										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.score?.toFixed(2) ?? "0.00"}</div>
-									</div>
-									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow w-full sm:w-auto">
-										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
-											<BarChart className="text-yellow-400 w-5 h-5" />
-											<span>Rank</span>
-										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.groupRank}</div>
-									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
 										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<User className="text-blue-400 w-5 h-5" />
 											<span>Role</span>
 										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.user.role}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedAdmin?.user.role}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
 										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<Phone className="text-green-400 w-5 h-5" />
 											<span>Phone Number</span>
 										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.user.phoneNumber}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedAdmin?.user.phoneNumber}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
 										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
 											<Mail className="text-purple-400 w-5 h-5" />
 											<span>Email</span>
 										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.user.email}</div>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedAdmin?.user.email}</div>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
 										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
@@ -685,57 +513,17 @@ export default function PerformerTable() {
 										</div>
 										<Badge
 											size="sm"
-											color={selectedPerformer?.user.isApproved ? "success" : "error"}
+											color={selectedAdmin?.user.isApproved ? "success" : "error"}
 										>
-											{selectedPerformer?.user.isApproved ? "Approved" : "Pending"}
+											{selectedAdmin?.user.isApproved ? "Approved" : "Pending"}
 										</Badge>
 									</div>
 									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
 										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
-											<Inbox className="text-purple-400 w-5 h-5" />
-											<span>Assigned Leads</span>
+											<ClockAlert className="text-red-400 w-5 h-5" />
+											<span>End Date</span>
 										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.assignedCount ?? 0}</div>
-									</div>
-									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
-											<CheckCircle className="text-purple-400 w-5 h-5" />
-											<span>Accepted Leads</span>
-										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.acceptedCount ?? 0}</div>
-									</div>
-									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
-											<BadgeCheck className="text-purple-400 w-5 h-5" />
-											<span>Completed Leads</span>
-										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.completedCount ?? 0}</div>
-									</div>
-									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
-											<Archive className="text-purple-400 w-5 h-5" />
-											<span>Closed Leads</span>
-										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.closedCount ?? 0}</div>
-									</div>
-									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
-											<Timer className="text-purple-400 w-5 h-5" />
-											<span>Average Response Time</span>
-										</div>
-										<div className="text-center text-gray-800 dark:text-gray-200">{selectedPerformer?.avgResponseTime.toFixed(2)}s</div>
-									</div>
-									<div className="flex flex-col gap-1 p-4 rounded-lg bg-gray-100 dark:bg-gray-800 shadow">
-										<div className="flex items-center gap-2 text-sm font-medium  text-gray-700 dark:text-gray-300">
-											<CheckCircle className="text-purple-400 w-5 h-5" />
-											<span>Available</span>
-										</div>
-										<Badge
-											size="sm"
-											color={selectedPerformer?.available ? "success" : "error"}
-										>
-											{selectedPerformer?.available ? "Available" : "Do Not Disturb"}
-										</Badge>
+										<div className="text-center text-gray-800 dark:text-gray-200">{selectedAdmin?.endDate}</div>
 									</div>
 								</div>
 							</div>
@@ -744,7 +532,7 @@ export default function PerformerTable() {
         </div>
       </div>
       {/* ✅ Pagination */}
-      {performers.length > pageSize && (
+      {admins.length > pageSize && (
         <div className="p-4 border-t border-gray-100 dark:border-white/[0.05] flex justify-end">
           <Pagination
             currentPage={currentPage}

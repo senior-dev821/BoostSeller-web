@@ -28,9 +28,18 @@ model User {
   fcmToken    String?  @db.VarChar(255)
 
   // relation
-
+  admin     Admin?
   hostess   Hostess?
   performer Performer?
+}
+
+model Admin {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique @map("user_id")
+  endDate   DateTime @default(now()) @map("approve_end_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model Hostess {
@@ -67,7 +76,7 @@ model Lead {
   name              String    @db.VarChar(100)
   registerId        String    @unique @map("register_id")
   idStr             String    @map("id_str")
-  phoneNumber       String?    @map("phone_number") @db.VarChar(15)
+  phoneNumber       String?   @map("phone_number") @db.VarChar(15)
   interestId        Int       @map("interest_id")
   isReturn          Boolean   @default(false) @map("is_return")
   additionalInfo    Json?     @map("additional_info") @db.JsonB
@@ -77,15 +86,15 @@ model Lead {
   assignedAt        DateTime? @map("assigned_at")
   acceptedBy        Int?      @map("accepted_by")
   acceptedAt        DateTime? @map("accepted_at")
-  closedAt          DateTime?  @map("closed_at")
-  completedAt       DateTime?  @map("completed_at")
+  closedAt          DateTime? @map("closed_at")
+  completedAt       DateTime? @map("completed_at")
   stageId           Int       @map("stage_id")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @default(now()) @updatedAt @map("updated_at")
   triedPerformerIds Int[]     @map("tired_performer_ids")
   assignmentCycleId String?   @map("assignment_cycle_id")
   interest          Interest  @relation(fields: [interestId], references: [id])
-  hostess           Hostess?  @relation(fields: [addedBy], references: [id])
+  hostess           Hostess?  @relation(fields: [addedBy], references: [id])
 }
 
 model Stage {
@@ -111,7 +120,7 @@ model lead_stage_history {
 model Interest {
   id          Int      @id @default(autoincrement())
   name        String   @unique @db.VarChar(100)
-  description String@db.VarChar(255)
+  description String   @db.VarChar(255)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
   leads       Lead[]
@@ -129,7 +138,7 @@ model Setting {
   id           Int      @id @default(autoincrement())
   assignPeriod Int      @default(0) @map("assign_period")
   performLimit Int      @default(0) @map("perform_limit")
-  slaTarget		 Int			@default(0) @map("sla_target")
+  slaTarget    Int      @default(0) @map("sla_target")
   createdAt    DateTime @default(now()) @map("created_at")
   updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
 }

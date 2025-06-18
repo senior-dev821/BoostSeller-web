@@ -48,6 +48,13 @@ export async function POST(req: Request) {
 				} 
 			});
     }
+		else if (role === 'admin') {
+      await prisma.admin.create({ 
+				data: { 
+					userId: user.id 
+				} 
+			});
+    }
 		    
     return new Response(
       JSON.stringify({

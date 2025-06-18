@@ -129,7 +129,7 @@ export default function RecentPerformers() {
 										</Badge>
 									))
 								) : (
-									<span className="text-sm text-gray-500">No group assigned</span>
+									<span className="text-sm text-gray-500">-</span>
 								)}
 							</div>
 						</div>
