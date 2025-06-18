@@ -28,7 +28,7 @@ export async function GET() {
         const avgResponseTime = performer.avgResponseTime;
 
         const conversion = acceptedCount === 0 ? 0 : completedCount / acceptedCount;
-        const responseSpeed = avgResponseTime === 0 ? 0 : 1 - (avgResponseTime / assignPeriod);
+        const responseSpeed = avgResponseTime === 0 ? 0 : 1/avgResponseTime;
         const acceptanceRatio = assignedCount === 0 ? 0 : acceptedCount / assignedCount;
         const score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
 
