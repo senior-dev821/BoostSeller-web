@@ -4,12 +4,13 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
     try {
         const { id, name, phoneNumber, email, isApproved, endDate } = await req.json();
+				const end_Date = new Date(endDate || "")
         const updateAdmin = await prisma.admin.update({
             where: {
                 id: id,
             },
             data: {
-              endDate: endDate,
+              endDate: end_Date,
             },
         });
  
