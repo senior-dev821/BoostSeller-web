@@ -17,11 +17,14 @@ import Image from "next/image";
 import { Modal } from "@/components/ui/modal";
 import { User, Phone, Mail, ShieldCheck, ClockAlert } from "lucide-react";
 import Pagination from "@/components/form/form-elements/Pagination";
+import DatePicker from "@/components/form/date-picker"
+
 
 interface Admin {
   id: number;
 	endDate: string;
 	createdAt: string;
+	status: string;
   user: {
     id: number;
     avatarPath?: string;
@@ -31,8 +34,15 @@ interface Admin {
     email: string;
     isApproved: boolean;
   };
-
 }
+type BadgeColor =
+  | "primary"
+  | "success"
+  | "error"
+  | "warning"
+  | "info"
+  | "light"
+  | "dark";
 
 export default function AdminTable() {
   const [admins, setAdmins] = useState<Admin[]>([]);
@@ -50,7 +60,7 @@ export default function AdminTable() {
   const [editEmail, setEditEmail] = useState("");
   const [editApproved, setEditApproved] = useState(false);
   const [editEndDate, setEditEndDate] = useState("");
-
+	const [status] = useState("");
 
   const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
@@ -128,6 +138,7 @@ export default function AdminTable() {
               ? {
                 ...admin,
                 endDate: editEndDate,
+								status: status,
                 user: {
                   ...admin.user,
                   name: editName,
@@ -270,7 +281,7 @@ export default function AdminTable() {
 													<TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
                             <Badge
                               size="sm"
-                              color={admin.user.isApproved ? "success" : "error"}
+                              color={admin.status as BadgeColor}
                             >
                               {admin.user.isApproved ? "Approved" : "Pending"}
                             </Badge>
@@ -278,7 +289,7 @@ export default function AdminTable() {
 													<TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
 														{new Intl.DateTimeFormat("en-US", {
 															dateStyle: "medium", // This gives you something like: "Jun 18, 2025"
-														}).format(new Date(admin.createdAt))}
+														}).format(new Date(admin.endDate))}
 													</TableCell>
 
                           <TableCell className="px-4 py-3 space-x-2 text-center">
@@ -444,12 +455,16 @@ export default function AdminTable() {
                   <label className="block mb-1 font-medium text-gray-700 dark:text-gray-300">
                     End Date
                   </label>
-                  <input
-                    type="enddate"
-                    className="w-full rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={editEndDate}
-                    onChange={(e) => setEditEndDate(e.target.value)}
-                  />
+									<DatePicker
+										id="to-date"
+										label="To"
+										placeholder="Select end date"
+										defaultDate={editEndDate}
+										onChange={(selectedDates) => {
+											const d = selectedDates[0] as Date
+											if (d) setEditEndDate(d.toISOString())
+										}}
+									/>
                 </div>
               </div>
 

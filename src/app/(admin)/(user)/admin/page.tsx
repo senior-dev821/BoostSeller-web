@@ -41,7 +41,7 @@ export default async function AdminTables() {
     <div>
       {/* <PageBreadcrumb pageTitle="Hostess" /> */}
       <div className="space-y-6">
-        <ComponentCard title="Hostess">
+        <ComponentCard title="Admin">
           <AdminForm />
         </ComponentCard>
       </div>

@@ -29,6 +29,7 @@ type NavItem = {
 interface AppSidebarProps {
   userRole: string;
 }
+
 const SUPER_ROLES = ["super"];
 
 const navItems: NavItem[] = [
@@ -68,7 +69,7 @@ const navItems: NavItem[] = [
   },
 ];
 
-const superItems: NavItem[] = [
+const settingItems: NavItem[] = [
   {
     icon: <SettingsIcon />,
     name: "Settings",
@@ -76,14 +77,12 @@ const superItems: NavItem[] = [
       { name: "General", path: "/general", super: false },
       { name: "Lead Input Fields", path: "/leadinputform", super: false },
     ],
-    super: true,
+    super: false,
   },
 ];
 
-
 const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
   const isSuper = SUPER_ROLES.includes(userRole);
- console.log("Role = ", userRole, " isSuper", isSuper);
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
 
@@ -91,9 +90,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
     type: "main" | "others";
     index: number;
   } | null>(null);
-  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>(
-    {}
-  );
+  const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
   const isActive = useCallback((path: string) => path === pathname, [pathname]);
@@ -101,7 +98,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
   useEffect(() => {
     let submenuMatched = false;
     ["main", "others"].forEach((menuType) => {
-      const items = menuType === "main" ? navItems : superItems;
+      const items = menuType === "main" ? navItems : settingItems;
       items.forEach((nav, index) => {
         nav.subItems?.forEach((subItem) => {
           if (isActive(subItem.path)) {
@@ -142,64 +139,24 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
       }))
       .filter((nav) => (!nav.super || isSuper) && (nav.subItems?.length || nav.path));
 
-	
   const renderMenuItems = (items: NavItem[], menuType: "main" | "others") => (
     <ul className="flex flex-col gap-4">
-      {filterNavItems(items).map((nav, index) => (
-        <li key={nav.name}>
-          {nav.subItems && nav.subItems.length > 0 ? (
-            <button
-              onClick={() => handleSubmenuToggle(index, menuType)}
-              className={`menu-item group ${
-                openSubmenu?.type === menuType && openSubmenu?.index === index
-                  ? "menu-item-active"
-                  : "menu-item-inactive"
-              }`}
-            >
-              <span
-                className={`${
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? "menu-item-icon-active"
-                    : "menu-item-icon-inactive"
-                }`}
-              >
-                {nav.icon}
-              </span>
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <span className={`menu-item-text`} style={{ display: 'flex', alignItems: 'center' }}>{nav.name}
-								{nav.subItems.some(subItem => subItem.super) && (
-									<span className={` ${
-										nav.subItems
-											? "menu-dropdown-badge-active"
-											: "menu-dropdown-badge-inactive"
-									} menu-dropdown-badge`} style={{ marginLeft: '12px' }}>
-										super
-									</span>
-								)}
-								</span>
-              )}
-              {(isExpanded || isHovered || isMobileOpen) && (
-                <ChevronDownIcon
-                  className={`ml-auto w-5 h-5 transition-transform duration-200 ${
-                    openSubmenu?.type === menuType &&
-                    openSubmenu?.index === index
-                      ? "rotate-180 text-brand-500"
-                      : ""
-                  }`}
-                />
-              )}
-            </button>
-          ) : (
-            nav.path && (
-              <Link
-                href={nav.path}
+      {filterNavItems(items).map((nav, index) => {
+        const hasSuperBadge = nav.super || nav.subItems?.some((subItem) => subItem.super);
+        return (
+          <li key={nav.name}>
+            {nav.subItems && nav.subItems.length > 0 ? (
+              <button
+                onClick={() => handleSubmenuToggle(index, menuType)}
                 className={`menu-item group ${
-                  isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                  openSubmenu?.type === menuType && openSubmenu?.index === index
+                    ? "menu-item-active"
+                    : "menu-item-inactive"
                 }`}
               >
                 <span
                   className={`${
-                    isActive(nav.path)
+                    openSubmenu?.type === menuType && openSubmenu?.index === index
                       ? "menu-item-icon-active"
                       : "menu-item-icon-inactive"
                   }`}
@@ -207,87 +164,131 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
                   {nav.icon}
                 </span>
                 {(isExpanded || isHovered || isMobileOpen) && (
-                  <span className={`menu-item-text`} style={{ display: 'flex', alignItems: 'center' }}>{nav.name}
-										{nav.super && (
-											<span
-												className={` ${
-													isActive(nav.path)
-														? "menu-dropdown-badge-active"
-														: "menu-dropdown-badge-inactive"
-												} menu-dropdown-badge`}
-												style={{ marginLeft: '12px' }}
-											>
-												super
-											</span>
-										)}
-										</span>
-                )}
-              </Link>
-            )
-          )}
-          {nav.subItems && nav.subItems.length > 0 && (isExpanded || isHovered || isMobileOpen) && (
-            <div
-              ref={(el) => {
-                subMenuRefs.current[`${menuType}-${index}`] = el;
-              }}
-              className="overflow-hidden transition-all duration-300"
-              style={{
-                height:
-                  openSubmenu?.type === menuType && openSubmenu?.index === index
-                    ? `${subMenuHeight[`${menuType}-${index}`]}px`
-                    : "0px",
-              }}
-            >
-              <ul className="mt-2 space-y-1 ml-9">
-                {nav.subItems.map((subItem) => (
-                  <li key={subItem.name}>
-                    <Link
-                      href={subItem.path}
-                      className={`menu-dropdown-item ${
-                        isActive(subItem.path)
-                          ? "menu-dropdown-item-active"
-                          : "menu-dropdown-item-inactive"
-                      }`}
-                    >
-                      {subItem.name}
-											<span className="flex items-center gap-1 ml-auto">
-                        {subItem.new && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge `}
-                          >
-                            new
-                          </span>
-                        )}
-                        {subItem.super && (
-                          <span
-                            className={`ml-auto ${
-                              isActive(subItem.path)
-                                ? "menu-dropdown-badge-active"
-                                : "menu-dropdown-badge-inactive"
-                            } menu-dropdown-badge `}
-                          >
-                            super
-                          </span>
-                        )}
+                  <span className="menu-item-text flex items-center">
+                    {nav.name}
+                    {hasSuperBadge && (
+                      <span
+                        className={`${
+                          nav.subItems
+                            ? "menu-dropdown-badge-active"
+                            : "menu-dropdown-badge-inactive"
+                        } menu-dropdown-badge ml-3`}
+                      >
+                        super
                       </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </li>
-      ))}
+                    )}
+                  </span>
+                )}
+                {(isExpanded || isHovered || isMobileOpen) && (
+                  <ChevronDownIcon
+                    className={`ml-auto w-5 h-5 transition-transform duration-200 ${
+                      openSubmenu?.type === menuType && openSubmenu?.index === index
+                        ? "rotate-180 text-brand-500"
+                        : ""
+                    }`}
+                  />
+                )}
+              </button>
+            ) : (
+              nav.path && (
+                <Link
+                  href={nav.path}
+                  className={`menu-item group ${
+                    isActive(nav.path) ? "menu-item-active" : "menu-item-inactive"
+                  }`}
+                >
+                  <span
+                    className={`${
+                      isActive(nav.path)
+                        ? "menu-item-icon-active"
+                        : "menu-item-icon-inactive"
+                    }`}
+                  >
+                    {nav.icon}
+                  </span>
+                  {(isExpanded || isHovered || isMobileOpen) && (
+                    <span className="menu-item-text flex items-center">
+                      {nav.name}
+                      {hasSuperBadge && (
+                        <span
+                          className={`${
+                            isActive(nav.path)
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
+                          } menu-dropdown-badge ml-3`}
+                        >
+                          super
+                        </span>
+                      )}
+                    </span>
+                  )}
+                </Link>
+              )
+            )}
+            {nav.subItems && nav.subItems.length > 0 && (isExpanded || isHovered || isMobileOpen) && (
+              <div
+                ref={(el) => {
+                  subMenuRefs.current[`${menuType}-${index}`] = el;
+                }}
+                className="overflow-hidden transition-all duration-300"
+                style={{
+                  height:
+                    openSubmenu?.type === menuType && openSubmenu?.index === index
+                      ? `${subMenuHeight[`${menuType}-${index}`]}px`
+                      : "0px",
+                }}
+              >
+                <ul className="mt-2 space-y-1 ml-9">
+                  {nav.subItems.map((subItem) => (
+                    <li key={subItem.name}>
+                      <Link
+                        href={subItem.path}
+                        className={`menu-dropdown-item ${
+                          isActive(subItem.path)
+                            ? "menu-dropdown-item-active"
+                            : "menu-dropdown-item-inactive"
+                        }`}
+                      >
+                        {subItem.name}
+                        <span className="flex items-center gap-1 ml-auto">
+                          {subItem.new && (
+                            <span
+                              className={`ml-auto ${
+                                isActive(subItem.path)
+                                  ? "menu-dropdown-badge-active"
+                                  : "menu-dropdown-badge-inactive"
+                              } menu-dropdown-badge`}
+                            >
+                              new
+                            </span>
+                          )}
+                          {subItem.super && (
+                            <span
+                              className={`ml-auto ${
+                                isActive(subItem.path)
+                                  ? "menu-dropdown-badge-active"
+                                  : "menu-dropdown-badge-inactive"
+                              } menu-dropdown-badge`}
+                            >
+                              super
+                            </span>
+                          )}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </li>
+        );
+      })}
     </ul>
   );
 
   return (
     <aside
-      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 text-gray-900 h-screen transition-all duration-300 z-50 border-r border-gray-200
+      className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 text-gray-900 h-screen transition-all duration-300 z-50 border-r border-gray-200 dark:border-gray-800
         ${isExpanded || isMobileOpen || isHovered ? "w-[260px]" : "w-[90px]"}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
@@ -331,7 +332,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
               <h2 className="mb-4 text-xs uppercase leading-[20px] text-gray-400">
                 {isExpanded || isHovered || isMobileOpen ? "Settings" : <HorizontaLDots />}
               </h2>
-              {renderMenuItems(superItems, "others")}
+              {renderMenuItems(settingItems, "others")}
             </div>
           </div>
         </nav>
