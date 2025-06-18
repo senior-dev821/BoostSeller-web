@@ -154,18 +154,13 @@ export default function ResponseTimeCard() {
 				Response Time
 			</h3>
       <div className="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between">
-        <div className="w-full flex gap-2">
-					<Badge
-						size="md"
-						color={"primary"}
-					>
-						Avg Res Time : {totalAvgResponseTime} s
+        <div className="w-full flex gap-2 ">
+					<Badge size="md" color="primary">
+						Avg Res Time: <span className="notranslate">{totalAvgResponseTime} s</span>
 					</Badge>
-					<Badge
-						size="md"
-						color={"info"}
-					>
-						SLA Rates :{totalSlaCompliance} %
+
+					<Badge size="md" color="success">
+						SLA Rates: <span className="notranslate">{totalSlaCompliance} %</span>
 					</Badge>
         </div>
         <div className="flex items-start w-full gap-2 sm:justify-end">
@@ -186,3 +181,11 @@ export default function ResponseTimeCard() {
     </div>
   );
 }
+
+
+// //<Badge size="sm" color={`primary`}>
+// Avg Res Time : {totalAvgResponseTime} s
+// </Badge>
+// <Badge size="sm" color={`info`}>
+// 	SLA Rates :{totalSlaCompliance} %
+// </Badge>

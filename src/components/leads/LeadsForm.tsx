@@ -690,7 +690,7 @@ export default function LeadForm() {
                                 </div>
                               </div>
                             )
-                            : ("Not Yet.")
+                            : ("-")
                           }
                         </TableCell>
                         <TableCell className="px-5 py-4 sm:px-6 text-center">
@@ -719,26 +719,26 @@ export default function LeadForm() {
                                 </div>
                               </div>
                             )
-                            // : ("Not Yet.")
-                            : (
-                              <div className="flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-5 w-5 text-yellow-500"
-                                  fill="none"
-                                  viewBox="0 0 24 24"
-                                  stroke="currentColor"
-                                  strokeWidth={2}
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
-                                  />
-                                </svg>
-                                <span className="text-theme-sm font-medium">Not Assigned Yet</span>
-                              </div>
-                            )
+                            : ("Not Yet.")
+                            // : (
+                            //   <div className="flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500">
+                            //     <svg
+                            //       xmlns="http://www.w3.org/2000/svg"
+                            //       className="h-5 w-5 text-yellow-500"
+                            //       fill="none"
+                            //       viewBox="0 0 24 24"
+                            //       stroke="currentColor"
+                            //       strokeWidth={2}
+                            //     >
+                            //       <path
+                            //         strokeLinecap="round"
+                            //         strokeLinejoin="round"
+                            //         d="M12 9v2m0 4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+                            //       />
+                            //     </svg>
+                            //     <span className="text-theme-sm font-medium">Not Assigned Yet</span>
+                            //   </div>
+                            // )
                           }
 
                         </TableCell>

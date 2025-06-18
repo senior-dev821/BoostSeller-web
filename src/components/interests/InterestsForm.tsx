@@ -86,7 +86,7 @@ export default function InterestsForm() {
     <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-200">Interest Groups</h1>
+        <h1 className="text-2xl font-semibold dark:text-gray-200 text-gray-700 ">Interest Groups</h1>
         <Button onClick={() => {
           setEditingInterest({ id: 0, name: '', description: '' });
           setModalOpen(true);

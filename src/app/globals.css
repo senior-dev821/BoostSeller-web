@@ -869,3 +869,12 @@ span.flatpickr-weekday,
     @apply bg-background text-foreground;
   }
 }
+
+
+/*
+  ---break---
+*/
+
+.skiptranslate {
+	display: none !important;
+}

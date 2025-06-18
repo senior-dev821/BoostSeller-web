@@ -125,7 +125,7 @@ export default function LeadFormPage() {
     <div className="flex p-6 gap-6">
       <div className="flex-1 space-y-6">
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold text-gray-300">Default Fields</h2>
+          <h2 className="text-xl font-semibold dark:text-gray-200 text-gray-700 ">Default Fields</h2>
           <div className="grid gap-4 md:grid-cols-2">
             <Input disabled placeholder="Name (fixed)" />
             <Input disabled placeholder="Phone (fixed)" />
@@ -136,7 +136,7 @@ export default function LeadFormPage() {
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-gray-300">Custom Fields</h2>
+            <h2 className="text-xl font-semibold dark:text-gray-200 text-gray-700 ">Custom Fields</h2>
             <Button onClick={addField}>+ Add Field</Button>
           </div>
 
@@ -221,7 +221,7 @@ export default function LeadFormPage() {
 
       {/* Preview */}
       <div className="w-[320px] shrink-0 ml-20 mr-10">
-        <h2 className="text-xl font-semibold mb-2 text-gray-300">Preview</h2>
+        <h2 className="text-xl font-semibold mb-2 dark:text-gray-200 text-gray-700">Preview</h2>
         <div className="border rounded-2xl shadow-lg p-4 bg-gray-100 dark:bg-gray-800 space-y-4">
           <form className="space-y-4">
             <div>

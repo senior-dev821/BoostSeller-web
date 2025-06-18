@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   // other metadata
 };
 
-export default async function BasicTables() {
+export default async function HostessTables() {
 
 	const cookieStore = await cookies();
 		const token = cookieStore.get('token')?.value;

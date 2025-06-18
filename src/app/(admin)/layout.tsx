@@ -1,39 +1,27 @@
-"use client";
+// File: src/app/(admin)/layout.tsx
+import { cookies } from 'next/headers';
+import jwt from 'jsonwebtoken';
+import AdminLayoutClient from '@/layout/AdminLayoutClient'; // New client component
 
-import { useSidebar } from "@/context/SidebarContext";
-import AppHeader from "@/layout/AppHeader";
-import AppSidebar from "@/layout/AppSidebar";
-import Backdrop from "@/layout/Backdrop";
-import React from "react";
+const JWT_SECRET = process.env.JWT_SECRET || 'BoostSellerSecret';
 
-export default function AdminLayout({
+export default  async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+	const cookieStore = await cookies();
+	const token = cookieStore.get('token')?.value;
+  let userRole = 'user';
 
-  // Dynamic class for main content margin based on sidebar state
-  const mainContentMargin = isMobileOpen
-    ? "ml-0"
-    : isExpanded || isHovered
-    ? "lg:ml-[290px]"
-    : "lg:ml-[90px]";
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload;
+      userRole = decoded.role || 'user';
+    } catch (err) {
+      console.error('Invalid JWT token');
+    }
+  }
 
-  return (
-    <div className="min-h-screen xl:flex">
-      {/* Sidebar and Backdrop */}
-      <AppSidebar />
-      <Backdrop />
-      {/* Main Content Area */}
-      <div
-        className={`flex-1 transition-all  duration-300 ease-in-out ${mainContentMargin}`}
-      >
-        {/* Header */}
-        <AppHeader />
-        {/* Page Content */}
-        <div className="p-4 mx-auto max-w-(--breakpoint-2xl) md:p-6">{children}</div>
-      </div>
-    </div>
-  );
+  return <AdminLayoutClient userRole={userRole}>{children}</AdminLayoutClient>;
 }
