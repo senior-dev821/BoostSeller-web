@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { parseCookies, setCookie } from "nookies";
+import { parseCookies} from "nookies";
 import { Globe } from "lucide-react";
 
 const COOKIE_NAME = "googtrans";
@@ -18,11 +18,7 @@ declare global {
       languages: LanguageDescriptor[];
       defaultLanguage: string;
     };
-    google?: {
-      translate?: {
-        TranslateElement?: new (...args: any[]) => any;
-      };
-    };
+    
   }
 }
 
