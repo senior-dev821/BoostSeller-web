@@ -1,84 +1,7 @@
-// "use client";
-
-// import { useEffect, useState } from "react";
-// import { parseCookies, setCookie } from "nookies";
-// import { Globe } from "lucide-react";
-
-// const COOKIE_NAME = "googtrans";
-
-// interface LanguageDescriptor {
-//   name: string;
-//   title: string;
-// }
-
-// // Declare global interface safely
-// declare global {
-//   interface Window {
-//     __GOOGLE_TRANSLATION_CONFIG__?: {
-//       languages: LanguageDescriptor[];
-//       defaultLanguage: string;
-//     };
-//   }
-// }
-
-// export default function LanguageSwitcher() {
-//   const [currentLanguage, setCurrentLanguage] = useState<string>();
-//   const [languageConfig, setLanguageConfig] = useState<{
-//     languages: LanguageDescriptor[];
-//     defaultLanguage: string;
-//   }>();
-
-//   useEffect(() => {
-//     const cookies = parseCookies();
-//     const existingCookie = cookies[COOKIE_NAME];
-//     let langValue;
-
-//     if (existingCookie) {
-//       const parts = existingCookie.split("/");
-//       if (parts.length > 2) {
-//         langValue = parts[2];
-//       }
-//     }
-
-//     const config = window.__GOOGLE_TRANSLATION_CONFIG__;
-//     if (config && !langValue) {
-//       langValue = config.defaultLanguage;
-//     }
-
-//     if (langValue) setCurrentLanguage(langValue);
-//     if (config) {
-//       setLanguageConfig(config);
-//     }
-//   }, []);
-
-//   if (!currentLanguage || !languageConfig) return null;
-
-//   const switchLanguage = () => {
-//     const langs = languageConfig.languages;
-//     const currentIndex = langs.findIndex((l) => l.name === currentLanguage);
-//     const nextIndex = (currentIndex + 1) % langs.length;
-//     const nextLang = langs[nextIndex].name;
-
-//     setCookie(null, COOKIE_NAME, "/auto/" + nextLang);
-//     window.location.reload();
-//   };
-
-//   return (
-//     <button
-//       onClick={switchLanguage}
-//       className="inline-flex size-14 items-center justify-center rounded-full bg-brand-500 text-white transition-colors hover:bg-brand-600"
-//       aria-label={`Switch language, current language is ${currentLanguage}`}
-//     >
-//       <Globe size={20} />
-//     </button>
-//   );
-// }
-
-
 "use client";
 
 import { useEffect, useState } from "react";
-import { parseCookies, setCookie, destroyCookie } from "nookies";
+import { parseCookies, setCookie } from "nookies";
 import { Globe } from "lucide-react";
 
 const COOKIE_NAME = "googtrans";
@@ -88,12 +11,17 @@ interface LanguageDescriptor {
   title: string;
 }
 
-// Declare global interface safely
+// Extend Window for Google Translate support
 declare global {
   interface Window {
     __GOOGLE_TRANSLATION_CONFIG__?: {
       languages: LanguageDescriptor[];
       defaultLanguage: string;
+    };
+    google?: {
+      translate?: {
+        TranslateElement?: new (...args: any[]) => any;
+      };
     };
   }
 }
@@ -124,54 +52,61 @@ export default function LanguageSwitcher() {
     }
 
     if (langValue) setCurrentLanguage(langValue);
-    if (config) {
-      setLanguageConfig(config);
-    }
+    if (config) setLanguageConfig(config);
   }, []);
 
   if (!currentLanguage || !languageConfig) return null;
 
-	const switchLanguage = (lang: string) => {
-		const normalizedLang = lang.toLowerCase();
-	
-		if (normalizedLang === "en") {
-			destroyCookie(null, "googtrans");
-		} else {
-			setCookie(null, "googtrans", `/auto/${normalizedLang}`);
-		}
-	
-		window.location.reload();
-	};
+  const switchLanguage = (lang: string) => {
+    const normalizedLang = lang.toLowerCase();
 
-	return (
-		<div
-			className="inline-flex items-center relative"
-			onMouseEnter={() => setIsHovered(true)}
-			onMouseLeave={() => setIsHovered(false)}
-		>
-			{/* Hover buttons shown to the left, inline */}
-			{isHovered && (
-				<div className="flex flex-row-reverse gap-2 mr-2">
-					{languageConfig.languages.map((lang) => (
-						<button
-							key={lang.name}
-							onClick={() => switchLanguage(lang.name)}
-							className="inline-flex size-14 items-center justify-center rounded-full bg-brand-500 text-white transition-colors hover:bg-brand-600"
-						>
-							<span className="notranslate">{lang.name.toUpperCase()}</span>
-						</button>
-					))}
-				</div>
-			)}
-	
-			{/* Main language button */}
-			<button
-				className="inline-flex size-14 items-center justify-center rounded-full bg-brand-500 text-white transition-colors hover:bg-brand-600"
-				aria-label={`Switch language, current language is ${currentLanguage}`}
-			>
-				<Globe size={20} />
-			</button>
-		</div>
-	);
-	
+    if (normalizedLang === "en") {
+      // Reset translation (clear cookie, iframe, and TranslateElement)
+      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = `googtrans=; domain=${window.location.hostname}; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
+      sessionStorage.removeItem("googtrans");
+
+      const iframe = document.querySelector("iframe.goog-te-banner-frame, iframe[id^=':']");
+      if (iframe) iframe.remove();
+
+      const el = document.getElementById("google_translate_element");
+      if (el) el.innerHTML = "";
+    } else {
+      // Set translation cookie
+      document.cookie = `googtrans=/auto/${normalizedLang}; path=/`;
+    }
+
+    window.location.reload();
+  };
+
+  return (
+    <div
+      className="inline-flex items-center relative"
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+    >
+      {isHovered && (
+        <div className="flex flex-row-reverse gap-2 mr-2">
+          {languageConfig.languages.map((lang) => (
+            <button
+              key={lang.name}
+              onClick={() => switchLanguage(lang.name)}
+              className="inline-flex size-14 items-center justify-center rounded-full bg-brand-500 text-white transition-colors hover:bg-brand-600"
+            >
+              <span className="notranslate" translate="no">
+                {lang.name.toUpperCase()}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <button
+        className="inline-flex size-14 items-center justify-center rounded-full bg-brand-500 text-white transition-colors hover:bg-brand-600"
+        aria-label={`Switch language, current language is ${currentLanguage}`}
+      >
+        <Globe size={20} />
+      </button>
+    </div>
+  );
 }
