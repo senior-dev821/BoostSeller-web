@@ -52,27 +52,42 @@ export default function LanguageSwitchButton() {
 
   if (!currentLanguage || !languageConfig) return null;
 
-  // const switchLanguage = () => {
-  //   const langs = languageConfig.languages;
-  //   const currentIndex = langs.findIndex((l) => l.name === currentLanguage);
-  //   const nextIndex = (currentIndex + 1) % langs.length;
-  //   const nextLang = langs[nextIndex].name;
-
-  //   setCookie(null, COOKIE_NAME, "/auto/" + nextLang);
-  //   window.location.reload();
-  // };
+	const clearAllCookies = () => {
+		const cookies = document.cookie.split(";");
+	
+		for (const cookie of cookies) {
+			const eqPos = cookie.indexOf("=");
+			const name = eqPos > -1 ? cookie.slice(0, eqPos).trim() : cookie.trim();
+	
+			// Try removing from current domain
+			document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+	
+			// Try removing from parent domain (if on subdomain)
+			document.cookie = `${name}=; path=/; domain=.boostseller.ai; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+		}
+	
+		try {
+			sessionStorage.clear();
+			localStorage.clear();
+		} catch (e) {
+			console.warn("Storage cleanup failed:", e);
+		}
+	};
+	
 	const switchLanguage = (lang: string) => {
-    setCookie(null, COOKIE_NAME, "/auto/" + lang, {
-			path: '/',
-			domain: '.boostseller.ai',
-		});
-		setCookie(null, COOKIE_NAME, "/auto/" + lang, {
-			path: '/',
-			domain: 'cp.boostseller.ai',
-		});
-    window.location.reload();
-  };
-
+		clearAllCookies(); // First, clear everything
+	
+		// Then set the correct googtrans value
+		if (lang !== languageConfig?.defaultLanguage) {
+			document.cookie = `googtrans=/auto/${lang}; path=/; domain=.boostseller.ai;`;
+		}
+	
+		// Clean reload
+		setTimeout(() => {
+			const cleanUrl = window.location.origin + window.location.pathname;
+			window.location.href = cleanUrl;
+		}, 150);
+	};
 	return (
 		<div
 			className="inline-flex items-center relative"
