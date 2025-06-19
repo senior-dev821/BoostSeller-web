@@ -66,6 +66,10 @@ export default function LanguageSwitchButton() {
 			path: '/',
 			domain: '.boostseller.ai',
 		});
+		setCookie(null, COOKIE_NAME, "/auto/" + lang, {
+			path: '/',
+			domain: 'cp.boostseller.ai',
+		});
     window.location.reload();
   };
 
