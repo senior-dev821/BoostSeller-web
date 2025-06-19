@@ -54,18 +54,34 @@ export default function LanguageSwitchButton() {
 
 	const switchLanguage = (lang: string) => {
 		if (lang === languageConfig?.defaultLanguage) {
-			// Clear cookie
-			setCookie(null, COOKIE_NAME, '', { maxAge: -1, path: '/' });
+			// Remove the translation cookie
+			document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 	
-			// Clear Translate's internal iframe state by reloading to un-translated URL
-			const url = new URL(window.location.href);
-			url.searchParams.delete('googtrans'); // Remove any manual lang hints
-			window.location.href = url.toString(); // Force reload
+			// Remove possible sessionStorage/localStorage flags
+			try {
+				sessionStorage.removeItem('googtrans');
+				localStorage.removeItem('googtrans');
+			} catch (e) {
+				// storage might be restricted
+			}
+	
+			// Reload without translate element flash
+			const iframe = document.querySelector('iframe.goog-te-menu-frame') as HTMLIFrameElement;
+			if (iframe) iframe.remove();
+	
+			const skip = document.querySelector('iframe.skiptranslate') as HTMLIFrameElement;
+			if (skip?.parentElement) skip.parentElement.remove();
+	
+			// Delay slightly to give time to remove everything
+			setTimeout(() => {
+				window.location.href = window.location.origin + window.location.pathname;
+			}, 100);
 		} else {
-			setCookie(null, COOKIE_NAME, `/auto/${lang}`, { path: '/' });
+			// Set translation cookie for target language
+			document.cookie = `googtrans=/auto/${lang}; path=/;`;
 			window.location.reload();
 		}
-	};
+	};	
 	
   return (
     <div
