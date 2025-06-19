@@ -23,7 +23,7 @@ export default function RootLayout({
           src="//translate.google.com/translate_a/element.js?cb=TranslateInit"
           strategy="afterInteractive"
         />
-{/* 
+
         <Script id="hide-google-toolbar" strategy="afterInteractive">
           {`
             const hideToolbar = () => {
@@ -61,7 +61,7 @@ export default function RootLayout({
             \`;
             document.head.appendChild(style);
           `}
-        </Script> */}
+        </Script>
       </head>
       <body className={`${outfit.className} dark:bg-gray-900`}>
         <ThemeProvider>
