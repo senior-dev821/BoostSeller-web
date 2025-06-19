@@ -23,7 +23,7 @@ export default function RootLayout({
           src="//translate.google.com/translate_a/element.js?cb=TranslateInit"
           strategy="afterInteractive"
         />
-
+{/* 
         <Script id="hide-google-toolbar" strategy="afterInteractive">
           {`
             const hideToolbar = () => {
@@ -39,7 +39,7 @@ export default function RootLayout({
             hideToolbar();
           `}
         </Script>
-        {/* <Script id="google-hide-style" strategy="afterInteractive">
+        <Script id="google-hide-style" strategy="afterInteractive">
           {`
             const style = document.createElement('style');
             style.innerHTML = \`
