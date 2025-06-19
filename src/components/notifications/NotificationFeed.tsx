@@ -124,67 +124,65 @@ export default function NotificationFeed() {
   }
 
   return (
-    <div className="min-h-screen w-full flex justify-center items-start px-4">
-      <div className="space-y-4 p-6 max-w-2xl w-full mx-auto">
-        {notifications.length === 0 ? (
-          <p className="text-gray-500 text-center">No notifications found.</p>
-        ) : (
-          notifications.map(noti => (
-            <div
-              key={noti.id}
-              onClick={() => {handleClick(noti.title, noti.id)}}
-              className={clsx(
-                'w-full flex justify-between gap-4 rounded-xl border p-4 shadow-sm transition hover:shadow-md',
-                noti.isRead
-                  ? 'bg-white dark:bg-gray-800'
-                  : 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-500'
-              )}
-            >
-              {/* Icon + content */}
-              <div className="flex gap-3 items-start flex-1">
-                <div className="text-blue-500 dark:text-blue-400 mt-1">
-                  👤
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-semibold text-gray-900 dark:text-white">{noti.title}</h4>
-                  <p className="text-gray-700 dark:text-gray-300">{noti.message}</p>
-                </div>
+    <div className="space-y-4 p-6 max-w-2xl w-full mx-auto">
+      {notifications.length === 0 ? (
+        <p className="text-gray-500 text-center">No notifications found.</p>
+      ) : (
+        notifications.map(noti => (
+          <div
+            key={noti.id}
+            onClick={() => {handleClick(noti.title, noti.id)}}
+            className={clsx(
+              'w-full flex justify-between gap-4 rounded-xl border p-4 shadow-sm transition hover:shadow-md',
+              noti.isRead
+                ? 'bg-white dark:bg-gray-800'
+                : 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-500'
+            )}
+          >
+            {/* Icon + content */}
+            <div className="flex gap-3 items-start flex-1">
+              <div className="text-blue-500 dark:text-blue-400 mt-1">
+                👤
               </div>
+              <div className="space-y-1">
+                <h4 className="font-semibold text-gray-900 dark:text-white">{noti.title}</h4>
+                <p className="text-gray-700 dark:text-gray-300">{noti.message}</p>
+              </div>
+            </div>
 
-              {/* Actions + date */}
-              <div className="flex flex-col items-end justify-between min-w-[90px] text-sm">
-                <div className="flex gap-2">
-                  {!noti.isRead && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        markAsRead(noti.id);
-                      }}
-                      className="text-green-600 hover:text-green-800"
-                      title="Mark as read"
-                    >
-                      <CheckIcon className="w-4 h-4" />
-                    </button>
-                  )}
+            {/* Actions + date */}
+            <div className="flex flex-col items-end justify-between min-w-[90px] text-sm">
+              <div className="flex gap-2">
+                {!noti.isRead && (
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      deleteNotification(noti.id);
+                      markAsRead(noti.id);
                     }}
-                    className="text-red-500 hover:text-red-700"
-                    title="Delete"
+                    className="text-green-600 hover:text-green-800"
+                    title="Mark as read"
                   >
-                    <Trash2Icon className="w-4 h-4" />
+                    <CheckIcon className="w-4 h-4" />
                   </button>
-                </div>
-                <p className="text-gray-400 text-xs mt-2">
-                  {formatTimeAgo(noti.createdAt)}
-                </p>
+                )}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteNotification(noti.id);
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                  title="Delete"
+                >
+                  <Trash2Icon className="w-4 h-4" />
+                </button>
               </div>
+              <p className="text-gray-400 text-xs mt-2">
+                {formatTimeAgo(noti.createdAt)}
+              </p>
             </div>
-          ))
-        )}
-      </div>
+          </div>
+        ))
+      )}
     </div>
   );
 }
