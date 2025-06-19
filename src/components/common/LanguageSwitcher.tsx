@@ -53,36 +53,35 @@ export default function LanguageSwitchButton() {
   if (!currentLanguage || !languageConfig) return null;
 
 	const switchLanguage = (lang: string) => {
-		if (lang === languageConfig?.defaultLanguage) {
-			// Remove the translation cookie
-			document.cookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+		const domain = ".boostseller.ai";
+		const isDefault = lang === languageConfig?.defaultLanguage;
 	
-			// Remove possible sessionStorage/localStorage flags
-			try {
-				sessionStorage.removeItem('googtrans');
-				localStorage.removeItem('googtrans');
-			} catch (e) {
-				console.log("Error On ", e);
-				// storage might be restricted
-			}
-	
-			// Reload without translate element flash
-			const iframe = document.querySelector('iframe.goog-te-menu-frame') as HTMLIFrameElement;
-			if (iframe) iframe.remove();
-	
-			const skip = document.querySelector('iframe.skiptranslate') as HTMLIFrameElement;
-			if (skip?.parentElement) skip.parentElement.remove();
-	
-			// Delay slightly to give time to remove everything
-			setTimeout(() => {
-				window.location.href = window.location.origin + window.location.pathname;
-			}, 100);
+		if (isDefault) {
+			// Remove cookie on full domain
+			document.cookie = `googtrans=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 		} else {
-			// Set translation cookie for target language
-			document.cookie = `googtrans=/auto/${lang}; path=/;`;
-			window.location.reload();
+			// Set cookie on full domain
+			document.cookie = `googtrans=/auto/${lang}; path=/; domain=${domain};`;
 		}
-	};	
+	
+		try {
+			sessionStorage.removeItem("googtrans");
+			localStorage.removeItem("googtrans");
+		} catch {}
+	
+		// Remove frames
+		const frame = document.querySelector("iframe.goog-te-menu-frame") as HTMLIFrameElement;
+		if (frame) frame.remove();
+		const skip = document.querySelector("iframe.skiptranslate") as HTMLIFrameElement;
+		if (skip?.parentElement) skip.parentElement.remove();
+	
+		// Force reload without query string
+		setTimeout(() => {
+			const cleanUrl = window.location.origin + window.location.pathname;
+			window.location.href = cleanUrl;
+		}, 150);
+	};
+	
 	
   return (
     <div
