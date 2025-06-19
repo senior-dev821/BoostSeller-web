@@ -78,7 +78,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { parseCookies, setCookie } from "nookies";
+import { parseCookies, setCookie, destroyCookie } from "nookies";
 import { Globe } from "lucide-react";
 
 const COOKIE_NAME = "googtrans";
@@ -131,10 +131,17 @@ export default function LanguageSwitcher() {
 
   if (!currentLanguage || !languageConfig) return null;
 
-  const switchLanguage = (lang: string) => {
-    setCookie(null, COOKIE_NAME, "/auto/" + lang);
-    window.location.reload();
-  };
+	const switchLanguage = (lang: string) => {
+		const normalizedLang = lang.toLowerCase();
+	
+		if (normalizedLang === "en") {
+			destroyCookie(null, "googtrans");
+		} else {
+			setCookie(null, "googtrans", `/auto/${normalizedLang}`);
+		}
+	
+		window.location.reload();
+	};
 
 	return (
 		<div
