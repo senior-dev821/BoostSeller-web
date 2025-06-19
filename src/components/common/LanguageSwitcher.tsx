@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { parseCookies, setCookie } from "nookies";
+import { parseCookies } from "nookies";
 import { Globe } from "lucide-react";
 
 const COOKIE_NAME = "googtrans";
@@ -62,6 +62,7 @@ export default function LanguageSwitchButton() {
 				sessionStorage.removeItem('googtrans');
 				localStorage.removeItem('googtrans');
 			} catch (e) {
+				console.log("Error On ", e);
 				// storage might be restricted
 			}
 	
