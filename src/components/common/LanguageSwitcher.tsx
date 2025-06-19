@@ -52,36 +52,42 @@ export default function LanguageSwitchButton() {
 
   if (!currentLanguage || !languageConfig) return null;
 
-	const switchLanguage = (lang: string) => {
-		const domain = ".boostseller.ai";
-		const isDefault = lang === languageConfig?.defaultLanguage;
+	const clearAllCookies = () => {
+		const cookies = document.cookie.split(";");
 	
-		if (isDefault) {
-			// Remove cookie on full domain
-			document.cookie = `googtrans=; path=/; domain=${domain}; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-		} else {
-			// Set cookie on full domain
-			document.cookie = `googtrans=/auto/${lang}; path=/; domain=${domain};`;
+		for (const cookie of cookies) {
+			const eqPos = cookie.indexOf("=");
+			const name = eqPos > -1 ? cookie.slice(0, eqPos).trim() : cookie.trim();
+	
+			// Try removing from current domain
+			document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+	
+			// Try removing from parent domain (if on subdomain)
+			document.cookie = `${name}=; path=/; domain=.boostseller.ai; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
 		}
 	
 		try {
-			sessionStorage.removeItem("googtrans");
-			localStorage.removeItem("googtrans");
-		} catch {}
+			sessionStorage.clear();
+			localStorage.clear();
+		} catch (e) {
+			console.warn("Storage cleanup failed:", e);
+		}
+	};
 	
-		// Remove frames
-		const frame = document.querySelector("iframe.goog-te-menu-frame") as HTMLIFrameElement;
-		if (frame) frame.remove();
-		const skip = document.querySelector("iframe.skiptranslate") as HTMLIFrameElement;
-		if (skip?.parentElement) skip.parentElement.remove();
+	const switchLanguage = (lang: string) => {
+		clearAllCookies(); // First, clear everything
 	
-		// Force reload without query string
+		// Then set the correct googtrans value
+		if (lang !== languageConfig?.defaultLanguage) {
+			document.cookie = `googtrans=/auto/${lang}; path=/; domain=.boostseller.ai;`;
+		}
+	
+		// Clean reload
 		setTimeout(() => {
 			const cleanUrl = window.location.origin + window.location.pathname;
 			window.location.href = cleanUrl;
 		}, 150);
 	};
-	
 	
   return (
     <div
