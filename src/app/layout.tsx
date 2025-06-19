@@ -39,7 +39,7 @@ export default function RootLayout({
             hideToolbar();
           `}
         </Script>
-        <Script id="google-hide-style" strategy="afterInteractive">
+        {/* <Script id="google-hide-style" strategy="afterInteractive">
           {`
             const style = document.createElement('style');
             style.innerHTML = \`
@@ -61,7 +61,7 @@ export default function RootLayout({
             \`;
             document.head.appendChild(style);
           `}
-        </Script>
+        </Script> */}
       </head>
       <body className={`${outfit.className} dark:bg-gray-900`}>
         <ThemeProvider>
