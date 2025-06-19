@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { parseCookies} from "nookies";
+import { parseCookies, setCookie } from "nookies";
 import { Globe } from "lucide-react";
 
 const COOKIE_NAME = "googtrans";
@@ -11,25 +11,22 @@ interface LanguageDescriptor {
   title: string;
 }
 
-// Extend Window for Google Translate support
 declare global {
   interface Window {
     __GOOGLE_TRANSLATION_CONFIG__?: {
       languages: LanguageDescriptor[];
       defaultLanguage: string;
     };
-    
   }
 }
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitchButton() {
   const [currentLanguage, setCurrentLanguage] = useState<string>();
   const [languageConfig, setLanguageConfig] = useState<{
     languages: LanguageDescriptor[];
     defaultLanguage: string;
   }>();
   const [isHovered, setIsHovered] = useState<boolean>(false);
-
   useEffect(() => {
     const cookies = parseCookies();
     const existingCookie = cookies[COOKIE_NAME];
@@ -48,33 +45,28 @@ export default function LanguageSwitcher() {
     }
 
     if (langValue) setCurrentLanguage(langValue);
-    if (config) setLanguageConfig(config);
+    if (config) {
+      setLanguageConfig(config);
+    }
   }, []);
 
   if (!currentLanguage || !languageConfig) return null;
 
-  const switchLanguage = (lang: string) => {
-    const normalizedLang = lang.toLowerCase();
-
-    if (normalizedLang === "en") {
-      // Reset translation (clear cookie, iframe, and TranslateElement)
-      document.cookie = "googtrans=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-      document.cookie = `googtrans=; domain=${window.location.hostname}; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;`;
-      sessionStorage.removeItem("googtrans");
-
-      const iframe = document.querySelector("iframe.goog-te-banner-frame, iframe[id^=':']");
-      if (iframe) iframe.remove();
-
-      const el = document.getElementById("google_translate_element");
-      if (el) el.innerHTML = "";
-    } else {
-      // Set translation cookie
-      document.cookie = `googtrans=/auto/${normalizedLang}; path=/`;
-    }
-
-    window.location.reload();
-  };
-
+	const switchLanguage = (lang: string) => {
+		if (lang === languageConfig?.defaultLanguage) {
+			// Clear cookie
+			setCookie(null, COOKIE_NAME, '', { maxAge: -1, path: '/' });
+	
+			// Clear Translate's internal iframe state by reloading to un-translated URL
+			const url = new URL(window.location.href);
+			url.searchParams.delete('googtrans'); // Remove any manual lang hints
+			window.location.href = url.toString(); // Force reload
+		} else {
+			setCookie(null, COOKIE_NAME, `/auto/${lang}`, { path: '/' });
+			window.location.reload();
+		}
+	};
+	
   return (
     <div
       className="inline-flex items-center relative"
