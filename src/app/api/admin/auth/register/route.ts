@@ -34,21 +34,7 @@ export async function POST(req: Request) {
       },
     });
 
-    // 4. Create role-specific record
-    if (role === 'hostess') {
-      await prisma.hostess.create({ 
-				data: { 
-					userId: user.id 
-				} 
-			});
-    } else if (role === 'performer') {
-      await prisma.performer.create({ 
-				data: { 
-					userId: user.id 
-				} 
-			});
-    }
-		else if (role === 'admin') {
+    if (role === 'admin') {
       await prisma.admin.create({ 
 				data: { 
 					userId: user.id 
