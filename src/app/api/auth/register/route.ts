@@ -39,7 +39,7 @@ export async function POST(req: Request) {
         await prisma.hostess.create({ 
           data: { 
             userId: user.id,
-            adminId: adminId,
+            adminId: parseInt(adminId),
              
           } 
         });
@@ -52,7 +52,7 @@ export async function POST(req: Request) {
         await prisma.performer.create({ 
           data: { 
             userId: user.id,
-            adminId: adminId,
+            adminId: parseInt(adminId),
             groupIds: [], 
           } 
         });
