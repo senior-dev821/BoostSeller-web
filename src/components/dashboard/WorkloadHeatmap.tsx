@@ -121,7 +121,7 @@ export default function WorkloadHeatmap() {
 	}
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 gap-y-4">
+    <div className="rounded-2xl border border-gray-200 bg-white px-5 pt-5 dark:border-gray-800 dark:bg-white/[0.03] sm:px-6 sm:pt-6 gap-y-4">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Workload & Traffic</h2>
       </div>

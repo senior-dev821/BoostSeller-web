@@ -27,6 +27,7 @@ export default function LanguageSwitchButton() {
     defaultLanguage: string;
   }>();
   const [isHovered, setIsHovered] = useState<boolean>(false);
+
   useEffect(() => {
     const cookies = parseCookies();
     const existingCookie = cookies[COOKIE_NAME];
@@ -52,43 +53,52 @@ export default function LanguageSwitchButton() {
 
   if (!currentLanguage || !languageConfig) return null;
 
-	const clearAllCookies = () => {
-		const cookies = document.cookie.split(";");
-	
-		for (const cookie of cookies) {
-			const eqPos = cookie.indexOf("=");
-			const name = eqPos > -1 ? cookie.slice(0, eqPos).trim() : cookie.trim();
-	
-			// Try removing from current domain
-			document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-	
-			// Try removing from parent domain (if on subdomain)
-			document.cookie = `${name}=; path=/; domain=.boostseller.ai; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-		}
-	
-		try {
-			sessionStorage.clear();
-			localStorage.clear();
-		} catch (e) {
-			console.warn("Storage cleanup failed:", e);
-		}
-	};
-	
-	const switchLanguage = (lang: string) => {
-		clearAllCookies(); // First, clear everything
-	
-		// Then set the correct googtrans value
-		if (lang !== languageConfig?.defaultLanguage) {
-			document.cookie = `googtrans=/auto/${lang}; path=/; domain=.boostseller.ai;`;
-		}
-	
-		// Clean reload
-		setTimeout(() => {
-			const cleanUrl = window.location.origin + window.location.pathname;
-			window.location.href = cleanUrl;
-		}, 150);
-	};
-	
+  const clearAllCookiesPreserveTheme = () => {
+    // ✅ Save theme before clearing localStorage
+    const savedTheme = localStorage.getItem("theme");
+
+    const cookies = document.cookie.split(";");
+    for (const cookie of cookies) {
+      const eqPos = cookie.indexOf("=");
+      const name = eqPos > -1 ? cookie.slice(0, eqPos).trim() : cookie.trim();
+
+      // Clear from both current and parent domain
+      document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+      document.cookie = `${name}=; path=/; domain=.boostseller.ai; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+    }
+
+    try {
+      sessionStorage.clear();
+      localStorage.clear();
+      if (savedTheme) {
+        localStorage.setItem("theme", savedTheme);
+      }
+    } catch (e) {
+      console.warn("Storage cleanup failed:", e);
+    }
+  };
+
+  const switchLanguage = (lang: string) => {
+    clearAllCookiesPreserveTheme(); // ✅ Clean cookies but keep theme
+
+    // Set new language cookie only if not default
+    if (lang !== languageConfig?.defaultLanguage) {
+      document.cookie = `googtrans=/auto/${lang}; path=/; domain=.boostseller.ai;`;
+    }
+
+    // Optional: remove Google Translate iframes (cleanup)
+    const frame = document.querySelector("iframe.goog-te-menu-frame") as HTMLIFrameElement;
+    if (frame) frame.remove();
+    const skip = document.querySelector("iframe.skiptranslate") as HTMLIFrameElement;
+    if (skip?.parentElement) skip.parentElement.remove();
+
+    // Reload page without query string
+    setTimeout(() => {
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.location.href = cleanUrl;
+    }, 150);
+  };
+
   return (
     <div
       className="inline-flex items-center relative"

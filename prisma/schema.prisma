@@ -36,6 +36,7 @@ model User {
 model Admin {
   id        Int      @id @default(autoincrement())
   userId    Int      @unique @map("user_id")
+  teamName  String?   @db.VarChar(100)
   endDate   DateTime @default(now()) @map("approve_end_at")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
@@ -44,6 +45,7 @@ model Admin {
 
 model Hostess {
   id             Int      @id @default(autoincrement())
+  adminId        Int      @map("admin_id")
   userId         Int      @unique @map("user_id")
   totalCount     Int      @default(0) @map("total_count")
   acceptedCount  Int      @default(0) @map("accepted_count")
@@ -56,6 +58,7 @@ model Hostess {
 
 model Performer {
   id              Int      @id @default(autoincrement())
+  adminId         Int      @map("admin_id")
   userId          Int      @unique @map("user_id")
   available       Boolean  @default(true)
   assignedCount   Int      @default(0) @map("assigned_count")
@@ -75,7 +78,7 @@ model Lead {
   id                Int       @id @default(autoincrement())
   name              String    @db.VarChar(100)
   registerId        String    @unique @map("register_id")
-  idStr             String    @map("id_str")
+  idStr             String?    @map("id_str")
   phoneNumber       String?   @map("phone_number") @db.VarChar(15)
   interestId        Int       @map("interest_id")
   isReturn          Boolean   @default(false) @map("is_return")

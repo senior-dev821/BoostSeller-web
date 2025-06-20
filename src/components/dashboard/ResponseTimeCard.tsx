@@ -167,25 +167,16 @@ export default function ResponseTimeCard() {
           <ChartTab selected={view} onChange={setView} />
         </div>
       </div>
-
-      <div className="max-w-full overflow-x-auto custom-scrollbar">
-        <div className="min-w-[1000px] xl:min-w-full">
-          <ReactApexChart
-            options={options}
-            series={series}
-            type="line"
-            height={350}
-          />
-        </div>
-      </div>
+			<div className="max-w-full overflow-x-auto custom-scrollbar">
+				<div className="min-w-[1000px] xl:min-w-full" style={{ height: '350px' }}>
+					<ReactApexChart
+						options={options}
+						series={series}
+						type="line"
+						height={350}
+					/>
+				</div>
+			</div>
     </div>
   );
 }
-
-
-// //<Badge size="sm" color={`primary`}>
-// Avg Res Time : {totalAvgResponseTime} s
-// </Badge>
-// <Badge size="sm" color={`info`}>
-// 	SLA Rates :{totalSlaCompliance} %
-// </Badge>

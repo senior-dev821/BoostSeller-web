@@ -130,7 +130,7 @@ export default function LeadFormPage() {
             <Input disabled placeholder="Name (fixed)" />
             <Input disabled placeholder="Phone (fixed)" />
             <Input disabled placeholder="Interest (fixed)" />
-						<Input disabled placeholder="ID" />
+						{/* <Input disabled placeholder="ID" /> */}
           </div>
         </div>
 
@@ -243,10 +243,10 @@ export default function LeadFormPage() {
 								onChange={() => {}}
               />
             </div>
-						<div>
+						{/* <div>
               <Label className="block mb-1">ID <span className="text-red-500">*</span></Label>
               <Input placeholder="ID" />
-            </div>
+            </div> */}
 
             {customFields.map((field) => (
               <div key={field.uid}>
