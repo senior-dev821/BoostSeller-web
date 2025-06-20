@@ -9,13 +9,16 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { assignPeriod } = body;
+  const { assignPeriod, adminId } = body;
 
   let setting = await prisma.setting.findFirst();
 
   if (!setting) {
     setting = await prisma.setting.create({
-      data: { assignPeriod },
+      data: { 
+        assignPeriod: assignPeriod,
+        adminId: adminId,
+       },
     });
   } else {
     setting = await prisma.setting.update({

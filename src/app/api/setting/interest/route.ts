@@ -30,7 +30,7 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, description } = await req.json();
+    const { name, description, adminId } = await req.json();
 
     const existing = await prisma.interest.findUnique({
       where: { name: name },
@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const interest = await prisma.interest.create({ data: { name, description } });
+    const interest = await prisma.interest.create({ data: { name, description, adminId } });
 
     await prisma.group.create({
       data: {
