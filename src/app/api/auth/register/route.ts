@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 export async function POST(req: Request) {
   try {
-    const { name, email, phoneNumber, password, role } = await req.json();
+    const { name, email, phoneNumber, password, role, adminId } = await req.json();
 
     // Check for existing user
     const existingUser = await prisma.user.findUnique({ where: { email } });
@@ -38,7 +38,9 @@ export async function POST(req: Request) {
         }
         await prisma.hostess.create({ 
           data: { 
-            userId: user.id 
+            userId: user.id,
+            adminId: adminId,
+             
           } 
         });
       } else if (role === 'performer') {
@@ -50,6 +52,7 @@ export async function POST(req: Request) {
         await prisma.performer.create({ 
           data: { 
             userId: user.id,
+            adminId: adminId,
             groupIds: [], 
           } 
         });
