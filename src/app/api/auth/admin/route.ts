@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         email: email,
         isApproved: true,

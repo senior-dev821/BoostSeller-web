@@ -9,7 +9,16 @@ export async function POST(req: Request) {
   try {
     const { email, password, fcmToken } = await req.json()
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findFirst(
+      { 
+        where: { 
+          email: email, 
+          role: {
+            in: ['performer', 'hostess'],
+          }
+        } 
+      }
+    );
     if (!user) {
       return new Response(JSON.stringify({error: true, message: "user-not-found" }), {});
     }
