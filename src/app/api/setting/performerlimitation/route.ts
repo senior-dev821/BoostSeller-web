@@ -9,13 +9,13 @@ export async function GET() {
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { performLimit } = body;
+  const { performLimit, adminId } = body;
 
   let setting = await prisma.setting.findFirst();
 
   if (!setting) {
     setting = await prisma.setting.create({
-      data: { performLimit },
+      data: { performLimit, adminId },
     });
   } else {
     setting = await prisma.setting.update({

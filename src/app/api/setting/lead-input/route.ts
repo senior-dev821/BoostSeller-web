@@ -8,6 +8,7 @@ type LeadInputField = {
   sequence: number;
   items?: string[];
   required: boolean;
+  adminId: number;
 };
 
 export async function POST(req: Request) {
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
     const fields = body as LeadInputField[];
 
     const operations = fields.map(async (field) => {
-      const { id, label, type, sequence, items = [], required } = field;
+      const { id, label, type, sequence, items = [], required, adminId, } = field;
 
       if (id) {
         // Updating an existing field
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
         }
 
         return await prisma.leadInputSetting.create({
-          data: { label, type, sequence, required, items },
+          data: { label, type, sequence, required, items, adminId },
         });
       }
     });
