@@ -15,8 +15,11 @@ export async function POST(req: Request) {
           email: email, 
           role: {
             in: ['performer', 'hostess'],
-          }
-        } 
+          },
+        },
+        include: {
+          admin: true,
+        }, 
       }
     );
     if (!user) {
@@ -57,6 +60,8 @@ export async function POST(req: Request) {
       }
     }
 
+    
+
     const token = jwt.sign(
       { id: user.id, email: user.email },
       JWT_SECRET,
@@ -76,6 +81,7 @@ export async function POST(req: Request) {
         is_verified: user.isVerified,
         is_approved: user.isApproved,
         avatar_path: user.avatarPath,
+        adminId: user.admin?.id,
         hostess: hostess,
         performer: performer,
       }
