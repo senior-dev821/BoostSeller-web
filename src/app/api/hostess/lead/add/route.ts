@@ -94,11 +94,12 @@ export async function POST(req: Request) {
     });
 
     function generateNumericUUID(phoneNumber: string, hostessId: number, interestId: number): string {
-      const raw = `${phoneNumber}${hostessId}${interestId}`;
+      const timestamp = Date.now(); // current time in milliseconds
+      const raw = `${phoneNumber}${hostessId}${interestId}${timestamp}`;
       let hash = 0;
 
       for (let i = 0; i < raw.length; i++) {
-        hash = (hash * 31 + raw.charCodeAt(i)) % 10000000000;
+        hash = (hash * 31 + raw.charCodeAt(i)) % 10000000000; // 10-digit limit
       }
 
       return hash.toString().padStart(10, '0');
