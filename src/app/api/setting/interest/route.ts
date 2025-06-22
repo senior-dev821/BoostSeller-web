@@ -1,68 +1,81 @@
-
 import { NextRequest, NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import { getUserFromToken } from '@/lib/auth';
 
+const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    const interests = await prisma.interest.findMany();
-    if(interests.length == 0) {
-        return new NextResponse(JSON.stringify({ error: true, empty: true, message: "Not found Interests." }), {
-          
-        });
+    const currentUser = await getUserFromToken();
+
+    if (!currentUser) {
+      return NextResponse.json({ error: true, message: 'Unauthorized' }, { status: 401 });
     }
-    return new NextResponse(JSON.stringify({
-      error: false,
-      interests,
-    }), {
-      status: 200,
-      
-    });
-   
+
+    let interests;
+
+    if (currentUser.role === 'super') {
+      interests = await prisma.interest.findMany();
+    } else if (currentUser.role === 'admin') {
+      interests = await prisma.interest.findMany({
+        where: { adminId: currentUser.id },
+      });
+    } else {
+      return NextResponse.json({ error: true, message: 'Forbidden' }, { status: 403 });
+    }
+
+    if (interests.length === 0) {
+      return NextResponse.json({ error: true, empty: true, message: 'No interests found.' }, { status: 200 });
+    }
+
+    return NextResponse.json({ error: false, interests }, { status: 200 });
+
   } catch (error) {
-    console.error("fetching error:", error);
-    return new NextResponse(JSON.stringify({error: true,  message: "Failed to fetch interests. \n Please try again." }), {
-      
-    });
+    console.error('GET /interests error:', error);
+    return NextResponse.json({ error: true, message: 'Failed to fetch interests. Please try again.' }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, description, adminId } = await req.json();
+    const currentUser = await getUserFromToken();
+
+    if (!currentUser || currentUser.role !== 'admin') {
+      return NextResponse.json({ error: true, message: 'Only admin can create interests' }, { status: 403 });
+    }
+
+    const { name, description } = await req.json();
 
     const existing = await prisma.interest.findUnique({
-      where: { name: name },
+      where: { name },
     });
 
     if (existing) {
       return NextResponse.json(
-        { error: 'An interest with this name already exists.' },
+        { error: true, message: 'An interest with this name already exists.' },
         { status: 400 }
       );
     }
 
-    const interest = await prisma.interest.create({ data: { name, description, adminId } });
+    const interest = await prisma.interest.create({
+      data: {
+        name,
+        description,
+        adminId: currentUser.id,
+      },
+    });
 
     await prisma.group.create({
       data: {
-        name: name,
+        name,
         interestId: interest.id,
       },
     });
 
-    // ✅ Return a response after successful creation
-    return NextResponse.json(
-      { success: true, interest },
-      { status: 201 }
-    );
+    return NextResponse.json({ success: true, interest }, { status: 201 });
 
   } catch (error) {
-    console.error("fetching error:", error);
-    return NextResponse.json(
-      { error: true, message: "Failed to add interest. Please try again." },
-      { status: 500 }
-    );
+    console.error('POST /interests error:', error);
+    return NextResponse.json({ error: true, message: 'Failed to add interest. Please try again.' }, { status: 500 });
   }
 }
