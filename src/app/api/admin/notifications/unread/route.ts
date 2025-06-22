@@ -11,7 +11,7 @@ export async function GET() {
   }
   const unReadNotifications  = await prisma.notification.findMany({
     where : {
-      receiveId: currentUser.id,
+      receiveId: currentUser.userId,
       isRead: false,
     },
     orderBy: {
