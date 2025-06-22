@@ -79,7 +79,7 @@ app.prepare().then(() => {
         }
       });
 
-      const adminId = lead.hostess.adminId;
+      const adminId = lead.hostess?.adminId;
 
       const triedPerformerIds = lead.triedPerformerIds;
       const intersteId = lead.interest.id;
