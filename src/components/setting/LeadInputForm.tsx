@@ -25,8 +25,6 @@ export default function LeadFormPage() {
   const [customFields, setCustomFields] = useState<LeadInputSetting[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [fieldToDelete, setFieldToDelete] = useState<LeadInputSetting | null>(null);
-  const [adminId, setAdminId] = useState<number | null>(null);
-  
 
   const generateUID = () => `${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
 
@@ -102,7 +100,7 @@ export default function LeadFormPage() {
     try {
       
       const payload = customFields.map((field, index) => {
-        const { uid, ...rest } = field;
+        const { ...rest } = field;
         return {
           ...rest,
           sequence: index + 1,
