@@ -16,6 +16,10 @@ export async function POST(req: Request) {
       );
     }
 
+		const adminRecord = await prisma.admin.findUnique({
+			where: { userId: user.id },
+		});
+
     if (user.role === "admin" || user.role === "super") {
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
@@ -30,9 +34,7 @@ export async function POST(req: Request) {
 
       if (!user.isApproved) {
         // Check admin record and end date
-        const adminRecord = await prisma.admin.findUnique({
-          where: { userId: user.id },
-        });
+       
 
         if (adminRecord) {
           const now = new Date();
@@ -61,9 +63,9 @@ export async function POST(req: Request) {
       }
 
       const token = jwt.sign(
-        { id: user.id, email: user.email, role: user.role },
+        { id: adminRecord?.id, email: user.email, role: user.role },
         JWT_SECRET,
-        { expiresIn: '7d' }
+        { expiresIn: '1d' }
       );
 
       const responseHeaders = new Headers({

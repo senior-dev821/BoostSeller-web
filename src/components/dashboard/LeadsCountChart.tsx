@@ -16,7 +16,10 @@ export default function LeadsCountChart() {
   const stageLabels = ["New", "In-Progress", "Processed", "Lost", "Converted"];
 
 // Date range state
-  const [startDate, setStartDate] = useState<Date | null>(new Date());
+  const [startDate, setStartDate] = useState<Date>(()=> {
+    const today = new Date()
+    return new Date(today.setDate(today.getDate() - 7))
+  });
   const [endDate, setEndDate] = useState<Date | null>(new Date());
   const [newToProgressRate, setNewToProgressRate] = useState(0);
   const [progressToProcessedRate, setProgressToProcessedRate] = useState(0);

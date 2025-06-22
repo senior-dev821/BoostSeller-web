@@ -1,18 +1,41 @@
-
 import { PrismaClient } from '@prisma/client';
+import { NextResponse } from 'next/server';
+import { getUserFromToken } from '@/lib/auth';
+
 const prisma = new PrismaClient();
-import { NextResponse } from "next/server";
 
 export async function GET() {
-  const hostesses  = await prisma.hostess.findMany({
-    include: {
-        user:true,
-        lead:true,
-    },
-    orderBy: {
-        createdAt: 'asc',
-    },
-  });
+  try {
+    const currentUser = await getUserFromToken();
 
-   return NextResponse.json(hostesses);
+    if (!currentUser) {
+      return NextResponse.json({ error: true, message: 'Unauthorized' }, { status: 401 });
+    }
+
+    let whereCondition = {};
+
+    if (currentUser.role === 'admin') {
+      whereCondition = {
+        adminId: currentUser.id,
+      };
+    } else if (currentUser.role !== 'super') {
+      return NextResponse.json({ error: true, message: 'Forbidden' }, { status: 403 });
+    }
+
+    const hostesses = await prisma.hostess.findMany({
+      where: whereCondition,
+      include: {
+        user: true,
+        lead: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    return NextResponse.json(hostesses);
+  } catch (error) {
+    console.error('Error fetching hostesses:', error);
+    return NextResponse.json({ error: true, message: 'Internal server error' }, { status: 500 });
+  }
 }
