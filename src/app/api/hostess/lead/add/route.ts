@@ -26,17 +26,6 @@ export async function POST(req: Request) {
           }
         });
 
-        function generateNumericUUID(phoneNumber: string, hostessId: number, interestId: number): string {
-          const raw = `${phoneNumber}${hostessId}${interestId}`;
-          let hash = 0;
-
-          for (let i = 0; i < raw.length; i++) {
-            hash = (hash * 31 + raw.charCodeAt(i)) % 10000000000;
-          }
-
-          return hash.toString().padStart(10, '0');
-        }
-
         const registerId = generateNumericUUID(phoneNumber, parsedHostessId, parsedInterestId);
 
         // Create new lead
@@ -93,17 +82,7 @@ export async function POST(req: Request) {
       }
     });
 
-    function generateNumericUUID(phoneNumber: string, hostessId: number, interestId: number): string {
-      const timestamp = Date.now(); // current time in milliseconds
-      const raw = `${phoneNumber}${hostessId}${interestId}${timestamp}`;
-      let hash = 0;
-
-      for (let i = 0; i < raw.length; i++) {
-        hash = (hash * 31 + raw.charCodeAt(i)) % 10000000000; // 10-digit limit
-      }
-
-      return hash.toString().padStart(10, '0');
-    }
+    
 
     const registerId = generateNumericUUID(phoneNumber, parsedHostessId, parsedInterestId);
 
@@ -148,3 +127,15 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({ error: true, message: 'Failed to add lead. Please try again.' }));
   }
 }
+
+function generateNumericUUID(phoneNumber: string, hostessId: number, interestId: number): string {
+      const timestamp = Date.now(); // current time in milliseconds
+      const raw = `${phoneNumber}${hostessId}${interestId}${timestamp}`;
+      let hash = 0;
+
+      for (let i = 0; i < raw.length; i++) {
+        hash = (hash * 31 + raw.charCodeAt(i)) % 10000000000; // 10-digit limit
+      }
+
+      return hash.toString().padStart(10, '0');
+    }
