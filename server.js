@@ -78,12 +78,12 @@ app.prepare().then(() => {
           interest: true,
         }
       });
-
-      const adminId = lead.hostess.adminId;
+      
+      const adminId = lead.hostess?.adminId;
 
       const triedPerformerIds = lead.triedPerformerIds;
-      const intersteId = lead.interest.id;
-      const assignedGroup = await prisma.group.findUnique({
+      const intersteId = lead.interestId;
+      const assignedGroup = await prisma.group.findFirst({
         where: {
           interestId: intersteId,
         }
@@ -142,7 +142,6 @@ app.prepare().then(() => {
         });
 
       const assignedPerformer = rankedPerformers[0];
-      console.log(assignedPerformer);
       if (!assignedPerformer) {
         console.log('No more performers to assign');
         const penddingLead = await prisma.lead.update({
@@ -397,10 +396,6 @@ app.prepare().then(() => {
       console.log('Client disconnected:', socket.id);
     });
   });
-
-
-
-
 
   const PORT = process.env.PORT || 3000;
 
