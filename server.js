@@ -88,6 +88,16 @@ app.prepare().then(() => {
           interestId: intersteId,
         }
       });
+      if (!assignedGroup) {
+        await prisma.update({
+          where: {
+            id: lead.id,
+          },
+          data: {
+            status: 'pendding',
+          },
+        });
+      }
       const assignedGroupId = assignedGroup.id;
       const setting = await prisma.setting.findFirst({
         where: {
@@ -143,7 +153,7 @@ app.prepare().then(() => {
 
       const assignedPerformer = rankedPerformers[0];
       console.log(assignedPerformer);
-      if (!assignedPerformer) {
+      if (!assignedPerformer && !assignedGroup) {
         console.log('No more performers to assign');
         const penddingLead = await prisma.lead.update({
           where: { id: leadId },
@@ -397,10 +407,6 @@ app.prepare().then(() => {
       console.log('Client disconnected:', socket.id);
     });
   });
-
-
-
-
 
   const PORT = process.env.PORT || 3000;
 
