@@ -77,7 +77,7 @@ export async function POST(req: Request) {
           status: 201,
         });
       } else {
-        return new Response(JSON.stringify({ error: true, message: 'Lead or ID already exist. Please try again.' }), {
+        return new Response(JSON.stringify({ error: true, exist: true, message: 'Lead or ID already exist. Please try again.' }), {
         });
       }
     }
