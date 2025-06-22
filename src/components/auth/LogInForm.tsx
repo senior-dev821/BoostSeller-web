@@ -72,6 +72,11 @@ export default function SignInForm() {
         setAlertVariant('success');
         setAlertVisible(true);
         // Redirect to dashboard on success
+				if(data.user.role == 'super')
+        setTimeout(() => {
+          router.push("/admin");
+        }, 800); // Redirect after 800 mili seconds
+				else
         setTimeout(() => {
           router.push("/dashboard");
         }, 800); // Redirect after 800 mili seconds
