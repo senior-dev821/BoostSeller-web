@@ -13,11 +13,17 @@ export async function GET() {
     }
 
     let whereCondition = {};
+    let interestIds: number[] = [];
 
     if (currentUser.role === 'admin') {
-      whereCondition = {
-        adminId: currentUser.id,
-      };
+      whereCondition = { adminId: currentUser.id };
+
+      // Get interests that belong to this admin
+      const interests = await prisma.interest.findMany({
+        where: { adminId: currentUser.id },
+        select: { id: true },
+      });
+      interestIds = interests.map((i) => i.id);
     } else if (currentUser.role !== 'super') {
       return NextResponse.json({ error: true, message: 'Forbidden' }, { status: 403 });
     }
@@ -29,8 +35,12 @@ export async function GET() {
       },
     });
 
-    const allGroups = await prisma.group.findMany();
-    const groupMap = new Map(allGroups.map(group => [group.id, group.name]));
+    // Filter groups based on interestIds if role is admin, otherwise get all
+    const groups = await prisma.group.findMany({
+      where: currentUser.role === 'admin' ? { interestId: { in: interestIds } } : undefined,
+    });
+
+    const groupMap = new Map(groups.map(group => [group.id, group.name]));
 
     const rankedPerformers = performers
       .map(performer => {
