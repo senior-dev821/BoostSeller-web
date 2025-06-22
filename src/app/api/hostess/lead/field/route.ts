@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     return new Response(JSON.stringify({
       error: false,
       fields: fields,
-    }), {
+			    }), {
       status: 200,
     });
   } catch (error) {
