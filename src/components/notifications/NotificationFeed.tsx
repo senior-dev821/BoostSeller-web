@@ -5,6 +5,7 @@ import { CheckIcon, Trash2Icon } from 'lucide-react';
 import clsx from 'clsx';
 import { io, Socket } from 'socket.io-client';
 import { useRouter } from 'next/navigation';
+import { jwtDecode } from 'jwt-decode';
 
 interface Notification {
   id: string;
@@ -33,6 +34,17 @@ export default function NotificationFeed() {
   }, []);
 
   useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      let userId = null;
+      try {
+        const decoded = jwtDecode<{ userId?: number }>(token);
+        userId = decoded.userId ?? null;
+      } catch (err) {
+        console.error('Invalid token', err);
+      }
+  
+      if (!userId) return;
       if (!socketRef.current) {
         socketRef.current = io(); // connect to current origin
       }
@@ -41,6 +53,7 @@ export default function NotificationFeed() {
   
       socket.on("connect", () => {
         console.log("Connected to WebSocket server");
+        socket.emit("register", userId);
       });
   
   
