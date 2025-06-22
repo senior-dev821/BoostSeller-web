@@ -182,7 +182,16 @@ export default function LeadFormPage() {
 
               <div className="text-right">
                  <button
-                  onClick={() => setFieldToDelete(field)}
+                  onClick={() => {
+                    if (field.id === 0) {
+                      // Not saved yet → remove directly
+                      setCustomFields(prev => prev.filter(f => f.uid !== field.uid));
+                      setHasChanges(true);
+                    } else {
+                      // Saved in DB → show confirmation modal
+                      setFieldToDelete(field);
+                    }
+                  }}
                   className="text-gray-300 hover:text-gray-500"
                   title="Remove"
                 >
