@@ -78,26 +78,16 @@ app.prepare().then(() => {
           interest: true,
         }
       });
-
+      
       const adminId = lead.hostess?.adminId;
 
       const triedPerformerIds = lead.triedPerformerIds;
-      const intersteId = lead.interest.id;
-      const assignedGroup = await prisma.group.findUnique({
+      const intersteId = lead.interestId;
+      const assignedGroup = await prisma.group.findFirst({
         where: {
           interestId: intersteId,
         }
       });
-      if (!assignedGroup) {
-        await prisma.update({
-          where: {
-            id: lead.id,
-          },
-          data: {
-            status: 'pendding',
-          },
-        });
-      }
       const assignedGroupId = assignedGroup.id;
       const setting = await prisma.setting.findFirst({
         where: {
@@ -152,8 +142,7 @@ app.prepare().then(() => {
         });
 
       const assignedPerformer = rankedPerformers[0];
-      console.log(assignedPerformer);
-      if (!assignedPerformer && !assignedGroup) {
+      if (!assignedPerformer) {
         console.log('No more performers to assign');
         const penddingLead = await prisma.lead.update({
           where: { id: leadId },
