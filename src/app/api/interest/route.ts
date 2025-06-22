@@ -9,6 +9,9 @@ export async function POST(req: Request) {
         where: {
             adminId: parseInt(adminId),
         },
+        orderBy: {
+          createdAt: 'asc',
+        },
     });
 
     

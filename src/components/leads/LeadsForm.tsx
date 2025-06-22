@@ -415,7 +415,12 @@ export default function LeadForm() {
                             return (
                               <div
                                 key={stage.id}
-                                className="relative min-h-[60px] group cursor-pointer  hover:bg-gray-50 dark:hover:bg-gray-700 p-2"
+                                // className="relative min-h-[60px] group cursor-pointer  hover:bg-gray-50 dark:hover:bg-gray-700 p-2"
+                                className={`relative min-h-[60px] group cursor-pointer p-2 rounded-md transition
+                                ${stage.id === selectedLead.stageId
+                                  ? "bg-blue-200 dark:bg-blue-900 border border-blue-500 shadow text-blue-900 font-semibold"
+                                  : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                                }`}
                                 onClick={() => handleStageClick(stage, status)}
                               >
                                 <div className="flex items-center justify-between gap-2">
@@ -459,9 +464,16 @@ export default function LeadForm() {
 
                       {/* Exception Case: All Skipped */}
                       {selectedLead.stageId === 0 ? (
+                        <>
                         <div className="p-4 bg-gray-300 dark:bg-gray-900 border rounded-md text-gray-600 dark:text-gray-25 text-md">
                           <strong>Skipped:</strong> This lead has been marked as skipped. No sales stage information is available.
                         </div>
+                       
+                          <div className="mt-4 p-4 bg-gray-300 dark:bg-gray-900 rounded-md text-gray-600 dark:text-gray-25 text-md">
+                            <strong>Closed Reason:</strong> All Skipped
+                          </div>
+                         
+                        </>
 
                       ) : (
                         <>
@@ -480,9 +492,23 @@ export default function LeadForm() {
                           {
                             selectedStageStatus === 'closed'
                               ? (
-                                <div className="p-4 bg-gray-300 dark:bg-gray-900  rounded-md text-gray-600 dark:text-gray-25 text-md">
+                                <>
+                                <div className="p-4 bg-gray-300 dark:bg-gray-900 rounded-md text-gray-600 dark:text-gray-25 text-md">
                                   <strong>Closed:</strong> This lead is closed.
                                 </div>
+
+                                {selectedStage?.curValues && (
+                                  <div className="mt-4 p-4 bg-gray-300 dark:bg-gray-900 rounded-md text-gray-600 dark:text-gray-25 text-md">
+                                    <strong>Reason:</strong> {selectedStage.curValues.reason}
+                                    {selectedStage.curValues.comment && (
+                                      <>
+                                        <br />
+                                        <strong>Comment:</strong> {selectedStage.curValues.comment}
+                                      </>
+                                    )}
+                                  </div>
+                                  )}
+                                </>
                               )
                               : selectedStageStatus === 'upcoming'
                                 ?

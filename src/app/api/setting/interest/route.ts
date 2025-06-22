@@ -15,10 +15,17 @@ export async function GET() {
     let interests;
 
     if (currentUser.role === 'super') {
-      interests = await prisma.interest.findMany();
+      interests = await prisma.interest.findMany({
+        orderBy: {
+          createdAt: 'asc',
+        },
+      });
     } else if (currentUser.role === 'admin') {
       interests = await prisma.interest.findMany({
         where: { adminId: currentUser.id },
+        orderBy: {
+          createdAt: 'asc',
+        },
       });
     } else {
       return NextResponse.json({ error: true, message: 'Forbidden' }, { status: 403 });
