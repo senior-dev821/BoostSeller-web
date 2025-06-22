@@ -4,12 +4,13 @@ const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
-    const { idStr, name, phoneNumber, additionalInfo, hostessId, interestId } = await req.json();
+    const { name, phoneNumber, additionalInfo, hostessId, interestId } = await req.json();
     const parsedInterestId = parseInt(interestId);
     const parsedHostessId = parseInt(hostessId);
     const existingLead = await prisma.lead.findFirst({
       where: {
-        idStr: idStr,
+        name: name,
+        phoneNumber: phoneNumber,
       }
     });
     if (existingLead) {
@@ -48,7 +49,6 @@ export async function POST(req: Request) {
             additionalInfo: additionalInfo,
             registerId: registerId,
             stageId: 0,
-            idStr: idStr,
             isReturn: true,
           },
         });
@@ -116,7 +116,6 @@ export async function POST(req: Request) {
         additionalInfo: additionalInfo,
         registerId: registerId,
         stageId: 0,
-        idStr: idStr,
       },
     });
 

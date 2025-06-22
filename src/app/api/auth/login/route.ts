@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
     let hostess  = {};
     let performer = {};
-
+    let adminId;
     if (user.role === 'hostess') {
       const existHostess = await prisma.hostess.findUnique({
         where: {
@@ -48,6 +48,7 @@ export async function POST(req: Request) {
       });
       if (existHostess) {
         hostess = existHostess;
+        adminId = existHostess.adminId;
       }
     } else if (user.role === 'performer') {
       const existPerformer = await prisma.performer.findUnique({
@@ -57,10 +58,9 @@ export async function POST(req: Request) {
       });
       if (existPerformer) {
         performer = existPerformer;
+        adminId = existPerformer.adminId;
       }
     }
-
-    
 
     const token = jwt.sign(
       { id: user.id, email: user.email },
@@ -68,6 +68,7 @@ export async function POST(req: Request) {
       { expiresIn: '7d' } // Optional: adjust token lifespan
     );
 
+    
     return new Response(JSON.stringify({
       error: false,
       message: "Logged in successfully!",
@@ -81,7 +82,7 @@ export async function POST(req: Request) {
         is_verified: user.isVerified,
         is_approved: user.isApproved,
         avatar_path: user.avatarPath,
-        adminId: user.admin?.id,
+        adminId: adminId,
         hostess: hostess,
         performer: performer,
       }

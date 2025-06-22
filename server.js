@@ -79,6 +79,8 @@ app.prepare().then(() => {
         }
       });
 
+      const adminId = lead.hostess.adminId;
+
       const triedPerformerIds = lead.triedPerformerIds;
       const intersteId = lead.interest.id;
       const assignedGroup = await prisma.group.findUnique({
@@ -87,7 +89,11 @@ app.prepare().then(() => {
         }
       });
       const assignedGroupId = assignedGroup.id;
-      const setting = await prisma.setting.findFirst();
+      const setting = await prisma.setting.findFirst({
+        where: {
+          adminId: adminId,
+        }
+      });
       const assignPeriod = setting.assignPeriod;
       const performLimit = setting.performLimit;
       const performers = await prisma.performer.findMany({
@@ -103,12 +109,13 @@ app.prepare().then(() => {
           groupIds: {
             has: assignedGroupId,
           },
+          adminId: adminId,
 
         },
       });
 
       const filteredPerformers = performers.filter(p =>
-        (p.acceptedCount - p.closedCount - p.completedCount) <= performLimit
+        (p.acceptedCount - p.closedCount - p.completedCount) < performLimit
       );
 
       const rankedPerformers = filteredPerformers
