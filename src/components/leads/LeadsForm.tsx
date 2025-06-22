@@ -404,7 +404,9 @@ export default function LeadForm() {
                         <p className="text-center text-red-500 font-semibold">Lead is all skipped</p>
                       ) : selectedLead.status === 'closed' && selectedLead.stageId === 0 ? (
                         <p className="text-center text-red-500 font-semibold">Lead is all skipped and Closed</p>
-                      ) : (
+                      ) : selectedLead.status === 'assigned' ? (
+                         <p className="text-center text-red-500 font-semibold">This lead hasn’t been accepted yet.</p>
+                      )  : (
                         <div className="relative pl-8">
                           {selectedLead.stages.map((stage, index) => {
                             const isClosed = selectedLead.status === "closed";
@@ -463,7 +465,11 @@ export default function LeadForm() {
                       </div>
 
                       {/* Exception Case: All Skipped */}
-                      {selectedLead.stageId === 0 ? (
+                      {selectedLead.status === 'assigned' ? (
+                        <div className="p-4 bg-gray-300 dark:bg-gray-900 border rounded-md text-gray-600 dark:text-gray-25 text-md">
+                          <strong>Not Accepted</strong> lead was not accepted by the performer.
+                        </div>
+                      ) : selectedLead.stageId === 0 ? (
                         <>
                         <div className="p-4 bg-gray-300 dark:bg-gray-900 border rounded-md text-gray-600 dark:text-gray-25 text-md">
                           <strong>Skipped:</strong> This lead has been marked as skipped. No sales stage information is available.
