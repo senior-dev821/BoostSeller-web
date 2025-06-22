@@ -53,6 +53,7 @@ interface BackendStageItem {
 interface Interest {
   id: number;
   name: string;
+	adminId:number;
 }
 
 interface SortableItemProps {
