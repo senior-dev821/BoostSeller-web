@@ -76,10 +76,13 @@ app.prepare().then(() => {
         where: { id: leadId },
         include: {
           interest: true,
-        }
+          hostess: true,
+        },
       });
       
       const adminId = lead.hostess?.adminId;
+
+      console.log(adminId);
 
       const triedPerformerIds = lead.triedPerformerIds;
       const intersteId = lead.interestId;
@@ -110,9 +113,10 @@ app.prepare().then(() => {
             has: assignedGroupId,
           },
           adminId: adminId,
-
         },
       });
+
+      console.log(performers);
 
       const filteredPerformers = performers.filter(p =>
         (p.acceptedCount - p.closedCount - p.completedCount) < performLimit
