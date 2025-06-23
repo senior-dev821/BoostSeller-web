@@ -46,11 +46,11 @@ const navItems: NavItem[] = [
       { name: "Performer", path: "/performer", super: false },
     ],
   },
-	{
+  {
     icon: <UserCircleIcon />,
     name: "Admins",
-		path: "/admin",
-		super: true,  
+    path: "/admin",
+    super: true,
   },
   {
     icon: <GroupIcon />,
@@ -94,6 +94,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
     type: "main" | "others";
     index: number;
   } | null>(null);
+
   const [subMenuHeight, setSubMenuHeight] = useState<Record<string, number>>({});
   const subMenuRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
@@ -147,9 +148,6 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
         };
       })
       .filter((nav) => {
-        // Keep only:
-        // - If it has subItems after filtering
-        // - OR If it has a path, AND its super property matches the role
         if (nav.subItems?.length) return true;
         if (nav.path !== undefined) {
           return isSuper ? nav.super === true : nav.super !== true;
@@ -264,6 +262,25 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
     </ul>
   );
 
+  const renderMenuSection = (
+    title: string,
+    icon: React.ReactNode,
+    items: NavItem[],
+    menuType: "main" | "others"
+  ) => {
+    const filtered = filterNavItems(items);
+    if (filtered.length === 0) return null;
+
+    return (
+      <div>
+        <h2 className="mb-4 text-xs uppercase leading-[20px] text-gray-400">
+          {isExpanded || isHovered || isMobileOpen ? title : icon}
+        </h2>
+        {renderMenuItems(items, menuType)}
+      </div>
+    );
+  };
+
   return (
     <aside
       className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-white dark:bg-gray-900 text-gray-900 h-screen transition-all duration-300 z-50 border-r border-gray-200 dark:border-gray-800
@@ -300,18 +317,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
       <div className="flex flex-col overflow-y-auto duration-300 ease-linear no-scrollbar">
         <nav className="mb-6">
           <div className="flex flex-col gap-4">
-            <div>
-              <h2 className="mb-4 text-xs uppercase leading-[20px] text-gray-400">
-                {isExpanded || isHovered || isMobileOpen ? "Main" : <HorizontaLDots />}
-              </h2>
-              {renderMenuItems(navItems, "main")}
-            </div>
-            <div>
-              <h2 className="mb-4 text-xs uppercase leading-[20px] text-gray-400">
-                {isExpanded || isHovered || isMobileOpen ? "Settings" : <HorizontaLDots />}
-              </h2>
-              {renderMenuItems(settingItems, "others")}
-            </div>
+            {renderMenuSection("Main", <HorizontaLDots />, navItems, "main")}
+            {renderMenuSection("Settings", <HorizontaLDots />, settingItems, "others")}
           </div>
         </nav>
       </div>
