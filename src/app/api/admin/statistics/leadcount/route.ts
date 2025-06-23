@@ -86,7 +86,7 @@ export async function POST(req: NextRequest) {
             : 0;
 
         const progressToProcessedRate = inProgressLeadCount > 0
-            ? parseFloat(((processedLeadCount / inProgressLeadCount) * 100).toFixed(2))
+            ? parseFloat(((processedLeadCount / (inProgressLeadCount + processedLeadCount)) * 100).toFixed(2))
             : 0;
 
         const processedToConvertedRate = processedLeadCount > 0
