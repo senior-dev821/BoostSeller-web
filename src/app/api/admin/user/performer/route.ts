@@ -41,9 +41,17 @@ export async function GET() {
     });
 
     const groupMap = new Map(groups.map(group => [group.id, group.name]));
+    const setting = await prisma.setting.findFirst({
+      where: {
+        adminId: currentUser.id,
+      },
+    });
+
+    const assignPeriod = setting?.assignPeriod ?? 0;
 
     const rankedPerformers = performers
       .map(performer => {
+        let score;
         const {
           acceptedCount,
           completedCount,
@@ -53,10 +61,16 @@ export async function GET() {
         } = performer;
 
         const conversion = acceptedCount === 0 ? 0 : completedCount / acceptedCount;
-        const responseSpeed = avgResponseTime === 0 ? 0 : 1 / avgResponseTime;
+        const responseSpeed = avgResponseTime === 0 || assignPeriod === 0
+              ? 0
+              : (assignPeriod / assignPeriod + avgResponseTime);
         const acceptanceRatio = assignedCount === 0 ? 0 : acceptedCount / assignedCount;
-        const score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
-
+        if (performer.assignedCount === 0) {
+          score = 0;
+        } else {
+           score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
+        }
+       
         const groupNames = groupIds.map(id => groupMap.get(id)).filter(Boolean);
 
         return {

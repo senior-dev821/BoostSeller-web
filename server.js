@@ -124,20 +124,26 @@ app.prepare().then(() => {
 
       const rankedPerformers = filteredPerformers
         .map(performer => {
-          const acceptedCount = performer.acceptedCount;
-          const completedCount = performer.completedCount;
-          const assignedCount = performer.assignedCount;
-          const avgResponseTime = performer.avgResponseTime;
-          const conversion = acceptedCount === 0
-            ? 0
-            : completedCount / acceptedCount;
-          const responseSpeed = avgResponseTime === 0
-            ? 0
-            : 1 - (avgResponseTime / assignPeriod);
-          const acceptanceRatio = assignedCount === 0
-            ? 0
-            : acceptedCount / assignedCount;
-          const score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
+          let score;
+          if (performer.assignedCount == 0) {
+            score = 1;
+          } else {
+            const acceptedCount = performer.acceptedCount;
+            const completedCount = performer.completedCount;
+            const assignedCount = performer.assignedCount;
+            const avgResponseTime = performer.avgResponseTime;
+            const conversion = acceptedCount === 0
+              ? 0
+              : completedCount / acceptedCount;
+            const responseSpeed = avgResponseTime === 0 || assignPeriod === 0
+              ? 0
+              : (assignPeriod / assignPeriod + avgResponseTime);
+            const acceptanceRatio = assignedCount === 0
+              ? 0
+              : acceptedCount / assignedCount;
+            score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
+          }
+          
           return { ...performer, score };
         })
         .sort((a, b) => {
