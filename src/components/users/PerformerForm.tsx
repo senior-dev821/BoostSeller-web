@@ -363,9 +363,8 @@ export default function PerformerTable() {
                           </TableCell>
                           <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
                             {new Intl.DateTimeFormat(undefined, {
-                              dateStyle: "medium",
-                              timeStyle: "short",
-															timeZoneName: "short"
+                              dateStyle: "full",
+															timeStyle: "long",															
                             }).format(new Date(performer.createdAt))}
                           </TableCell>
                           <TableCell className="px-4 py-3 space-x-2 text-center">
