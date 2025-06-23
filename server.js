@@ -135,9 +135,9 @@ app.prepare().then(() => {
             const conversion = acceptedCount === 0
               ? 0
               : completedCount / acceptedCount;
-            const responseSpeed = avgResponseTime === 0 || assignPeriod === 0
+            const responseSpeed = avgResponseTime === 0
               ? 0
-              : (assignPeriod / assignPeriod + avgResponseTime);
+              : 1 / avgResponseTime;
             const acceptanceRatio = assignedCount === 0
               ? 0
               : acceptedCount / assignedCount;
