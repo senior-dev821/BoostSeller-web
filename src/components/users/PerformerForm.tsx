@@ -365,6 +365,7 @@ export default function PerformerTable() {
                             {new Intl.DateTimeFormat(undefined, {
                               dateStyle: "medium",
                               timeStyle: "short",
+															timeZoneName: "short"
                             }).format(new Date(performer.createdAt))}
                           </TableCell>
                           <TableCell className="px-4 py-3 space-x-2 text-center">
