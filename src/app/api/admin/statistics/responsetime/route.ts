@@ -65,7 +65,7 @@ export async function POST(req: NextRequest) {
       where: { adminId: currentUser.id },
     });
 
-    let SLA_SECONDS = setting?.slaTarget ?? 120;
+    const SLA_SECONDS = setting?.slaTarget ?? 120;
 
     const ranges = getDateRanges(view);
     const tzOffsetMs = timezoneOffset * 60 * 1000;
