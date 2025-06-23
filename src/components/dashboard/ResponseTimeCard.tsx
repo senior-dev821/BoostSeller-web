@@ -32,6 +32,8 @@ export default function ResponseTimeCard() {
         },
         body: JSON.stringify({
           view: view,
+					timezoneOffset: new Date().getTimezoneOffset(), // in minutes
+					locale: navigator.language || 'en-US',
 				}),
       });
 

@@ -47,9 +47,9 @@ export default function LeadsCountChart() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          startDate: start.toISOString(),
-          endDate: end.toISOString(),
-        }),
+					startDate: new Date(start.setHours(0, 0, 0, 0)).toISOString(),  // ⬅️ Start of local day
+					endDate: new Date(end.setHours(23, 59, 59, 999)).toISOString(), // ⬅️ End of local day
+				}),				
       });
 
       const data = await res.json();

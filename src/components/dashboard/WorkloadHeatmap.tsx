@@ -41,20 +41,25 @@ export default function WorkloadHeatmap() {
 
   const router = useRouter()
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const params = new URLSearchParams({
-        from: fromDate.toISOString(),
-        to: toDate.toISOString(),
-      })
-      const res = await fetch(`/api/admin/statistics/worktraffic?${params}`)
-      const data = await res.json()
-      setHeatmapData(data.heatmap)
-      setGroupStatus(data.groupStatus)
-      setRiskCounts(data.riskCounts)
-    }
-    fetchData()
-  }, [fromDate, toDate])
+	useEffect(() => {
+		const fetchData = async () => {
+			const fromUTC = new Date(fromDate.getTime() - fromDate.getTimezoneOffset() * 60000);
+			const toUTC = new Date(toDate.getTime() - toDate.getTimezoneOffset() * 60000);
+			const params = new URLSearchParams({
+				from: fromUTC.toISOString(),
+				to: toUTC.toISOString(),
+			});
+	
+			const res = await fetch(`/api/admin/statistics/worktraffic?${params}`);
+			const data = await res.json();
+			setHeatmapData(data.heatmap);
+			setGroupStatus(data.groupStatus);
+			setRiskCounts(data.riskCounts);
+		};
+	
+		fetchData();
+	}, [fromDate, toDate]);
+	
 
 	// Get flat list of all hour values
 	const allValues = heatmapData.flatMap((row) => row.hours)
