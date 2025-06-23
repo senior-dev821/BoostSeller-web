@@ -274,7 +274,7 @@ export default function AdminTable() {
                             {admin.user.email}
                           </TableCell>
                           <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-														{new Intl.DateTimeFormat("en-US", {
+														{new Intl.DateTimeFormat(undefined, {
 															dateStyle: "medium", // 
 														}).format(new Date(admin.createdAt))}
 													</TableCell>
@@ -287,7 +287,7 @@ export default function AdminTable() {
                             </Badge>
                           </TableCell>
 													<TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-														{new Intl.DateTimeFormat("en-US", {
+														{new Intl.DateTimeFormat(undefined, {
 															dateStyle: "medium", // This gives you something like: "Jun 18, 2025"
 														}).format(new Date(admin.endDate))}
 													</TableCell>
@@ -459,10 +459,13 @@ export default function AdminTable() {
 										id="to-date"
 										label=""
 										placeholder="Select end date"
-										defaultDate={editEndDate}
+										defaultDate={editEndDate ? new Date(editEndDate) : undefined}
 										onChange={(selectedDates) => {
-											const d = selectedDates[0] as Date
-											if (d) setEditEndDate(d.toISOString())
+											const d = selectedDates[0] as Date;
+											if (d) {
+												const localDate = d.toISOString().split('T')[0]; // Format: "2025-06-20"
+												setEditEndDate(localDate);
+											}
 										}}
 									/>
                 </div>

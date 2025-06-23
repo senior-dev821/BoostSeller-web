@@ -272,9 +272,9 @@ export default function HostessTable() {
                       {hostess.completedCount}/ {hostess.acceptedCount}/ {hostess.totalCount}
                     </TableCell>
                     <TableCell className="px-4 py-3 text-gray-500 text-center text-theme-sm dark:text-gray-400">
-                      {new Intl.DateTimeFormat("en-US", {
+                      {new Intl.DateTimeFormat(undefined, {
                         dateStyle: "medium",
-                        // timeStyle: "short",
+                        timeStyle: "short",
                       }).format(new Date(hostess.createdAt))}
                     </TableCell>
                     <TableCell className="px-4 py-3 space-x-2 text-center">
