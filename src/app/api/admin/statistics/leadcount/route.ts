@@ -1,9 +1,11 @@
 import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 import { NextRequest, NextResponse } from "next/server";
+import { getUserFromToken } from '@/lib/auth';
 
 export async function POST(req: NextRequest) {
     try {
+
         const body = await req.json();
         const { startDate, endDate } = body;
 
@@ -11,11 +13,31 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Missing dates" }, { status: 400 });
         }
 
+        const currentUser = await getUserFromToken();
+
+        if (!currentUser) {
+        return NextResponse.json({ error: true, message: "Unauthorized" }, { status: 401 });
+        }
+
+        const hostesses = await prisma.hostess.findMany({
+            where: {
+            adminId: currentUser.id,
+            },
+            select: {
+            id: true,
+            },
+        });
+
+        const hostessIds = hostesses.map(h => h.id);
+
         const newLeadCount = await prisma.lead.count({
             where: {
                 createdAt: {
                     gte: new Date(startDate),
                     lte: new Date(endDate),
+                },
+                addedBy: {
+                    in: hostessIds,
                 },
             },
         });
@@ -34,6 +56,9 @@ export async function POST(req: NextRequest) {
                         "pendding"
                     ],
                 },
+                addedBy: {
+                    in: hostessIds,
+                },
 
             },
         });
@@ -51,6 +76,9 @@ export async function POST(req: NextRequest) {
                         "pendding"
                     ],
                 },
+                addedBy: {
+                    in: hostessIds,
+                },
 
             },
         });
@@ -64,7 +92,11 @@ export async function POST(req: NextRequest) {
                     lte: new Date(endDate),
                 },
                 status: "closed",
+                addedBy: {
+                    in: hostessIds,
+                },
             },
+            
         });
 
         const convertedLeadCount = await prisma.lead.count({
@@ -74,6 +106,9 @@ export async function POST(req: NextRequest) {
                     lte: new Date(endDate),
                 },
                 status: "completed",
+                addedBy: {
+                    in: hostessIds,
+                },
             },
         });
 

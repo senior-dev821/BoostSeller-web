@@ -7,6 +7,7 @@ import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { io, Socket } from 'socket.io-client';
 import Alert from "@/components/ui/alert/Alert";
+import { jwtDecode } from 'jwt-decode';
 
 type Notification = {
   id: string,
@@ -28,6 +29,18 @@ export default function NotificationDropdown() {
   const router = useRouter();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) return;
+    let userId = null;
+    try {
+      const decoded = jwtDecode<{ userId?: number }>(token);
+      userId = decoded.userId ?? null;
+    } catch (err) {
+      console.error('Invalid token', err);
+    }
+
+    if (!userId) return;
+
     if (!socketRef.current) {
       socketRef.current = io(); // connect to current origin
     }
@@ -36,8 +49,10 @@ export default function NotificationDropdown() {
 
     socket.on("connect", () => {
       console.log("Connected to WebSocket server");
+      socket.emit("register", userId);
     });
 
+    
 
     socket.on("user_register", (data) => {
       console.log("Received new notification:", data);

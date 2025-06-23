@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from "next/server";
+import { getUserFromToken } from '@/lib/auth';
 
 const prisma = new PrismaClient();
 
@@ -64,8 +65,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid view type" }, { status: 400 });
     }
 
+    const currentUser = await getUserFromToken();
+
+    if (!currentUser) {
+      return NextResponse.json({ error: true, message: "Unauthorized" }, { status: 401 });
+    }
+
+
     // Constants for SLA - define your SLA time in seconds here
-		const setting = await prisma.setting.findFirst();
+		const setting = await prisma.setting.findFirst({
+      where: {
+        adminId: currentUser.id,
+      },
+    });
 
     let SLA_SECONDS = 120; // e.g., 2 minutes
 		if(setting)

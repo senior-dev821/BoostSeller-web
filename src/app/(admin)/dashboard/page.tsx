@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default async function Ecommerce() {
 
 	const cookieStore = await cookies();
-		const token = cookieStore.get('token')?.value;
+	const token = cookieStore.get('token')?.value;
 
   // 2. Verify token, redirect if invalid or missing
   if (!token) {

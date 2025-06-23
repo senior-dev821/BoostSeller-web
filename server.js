@@ -76,10 +76,13 @@ app.prepare().then(() => {
         where: { id: leadId },
         include: {
           interest: true,
-        }
+          hostess: true,
+        },
       });
       
       const adminId = lead.hostess?.adminId;
+
+      console.log(adminId);
 
       const triedPerformerIds = lead.triedPerformerIds;
       const intersteId = lead.interestId;
@@ -110,9 +113,10 @@ app.prepare().then(() => {
             has: assignedGroupId,
           },
           adminId: adminId,
-
         },
       });
+
+      console.log(performers);
 
       const filteredPerformers = performers.filter(p =>
         (p.acceptedCount - p.closedCount - p.completedCount) < performLimit
@@ -376,16 +380,49 @@ app.prepare().then(() => {
 
     socket.on('user_register', async (data) => {
       const userRole = data.userRole.charAt(0).toUpperCase() + data.userRole.slice(1);
+      const userName = data.userName;
+      const adminId = data.adminId;
+      const admin = await prisma.admin.findFirst({
+        where: {
+          id: adminId,
+        }
+      });
+
+      if (!admin) {
+        console.log('admin not found.');
+        retrun;
+      }
+
+      const user = await prisma.user.findFirst({
+        where: {
+          id: admin.userId,
+        },
+      });
+
+      if (!user) {
+        console.log('user not found.');
+        retrun;
+      }
+
+      const userId = user.id;
+
+      console.log(user.id);
       const notification = await prisma.notification.create({
         data: {
-          receiveId: 0,
-          title: `New ${userRole} Registered!`,
+          receiveId: userId,
+          title: `New ${userRole} - ${userName} Registered!`,
           message: `${data.userName} just signed with the email ${data.userEmail}. Awaiting verification.`,
           isRead: false,
         },
       });
 
-      socket.broadcast.emit('user_register', notification);
+      const adminSocket = clients.get(userId);
+
+      if (adminSocket) {
+        adminSocket.emit('user_register', notification);
+      } else {
+        console.log(`Admin socket not found for user ID ${userId}`);
+      }
 
     });
 

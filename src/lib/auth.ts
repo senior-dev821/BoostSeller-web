@@ -11,7 +11,7 @@ export async function getUserFromToken() {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    return decoded as { id: number; email: string; role: string };
+    return decoded as { id: number; email: string; role: string, userId: number, };
   } catch (err) {
     console.error("Invalid token:", err);
     return null;
