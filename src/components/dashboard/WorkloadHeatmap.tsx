@@ -45,9 +45,13 @@ export default function WorkloadHeatmap() {
 		const fetchData = async () => {
 			const fromUTC = new Date(fromDate.getTime() - fromDate.getTimezoneOffset() * 60000);
 			const toUTC = new Date(toDate.getTime() - toDate.getTimezoneOffset() * 60000);
+	
+			const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	
 			const params = new URLSearchParams({
 				from: fromUTC.toISOString(),
 				to: toUTC.toISOString(),
+				tz, // 👈 include timezone here
 			});
 	
 			const res = await fetch(`/api/admin/statistics/worktraffic?${params}`);
@@ -59,6 +63,7 @@ export default function WorkloadHeatmap() {
 	
 		fetchData();
 	}, [fromDate, toDate]);
+	
 	
 
 	// Get flat list of all hour values
