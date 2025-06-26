@@ -327,7 +327,7 @@ export default function LeadForm() {
                       <Image
                         width={64}
                         height={64}
-                        src="/images/user/user-10.jpg"
+                        src="/images/user/avatar_lead.png"
                         alt={selectedLead.name}
                       />
                     </div>
@@ -681,7 +681,7 @@ export default function LeadForm() {
                                 src={
                                   lead.hostess.user.avatarPath
                                     ? `${nextServerUrl}${lead.hostess.user.avatarPath}`
-                                    : "/images/user/user-04.jpg"}
+                                    : "/images/user/avatar_hostess.png"}
                                 alt={lead.name}
                               />
                             </div>
@@ -707,7 +707,7 @@ export default function LeadForm() {
                                     src={
                                       lead.assignedAvatarPath
                                         ? `${nextServerUrl}${lead.assignedAvatarPath}`
-                                        : "/images/user/user-01.jpg"
+                                        : "/images/user/avatar_performer.png"
                                     }
                                     alt={lead.assignedName}
                                   />
@@ -736,7 +736,7 @@ export default function LeadForm() {
                                     src={
                                       lead.acceptedAvatarPath
                                         ? `${nextServerUrl}${lead.acceptedAvatarPath}`
-                                        : "/images/user/user-01.jpg"
+                                        : "/images/user/avatar_performer.png"
                                     }
                                     alt={lead.acceptedName}
                                   />

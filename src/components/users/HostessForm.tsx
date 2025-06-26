@@ -239,7 +239,7 @@ export default function HostessTable() {
                             src={
                               hostess.user.avatarPath
                                 ? `${nextServerUrl}${hostess.user.avatarPath}`
-                                : "/images/user/user-04.jpg"
+                                : "/images/user/avatar_hostess.png"
                             }
                             alt={hostess.user.name}
                           />
@@ -384,7 +384,7 @@ export default function HostessTable() {
                     src={
                       editHostess?.user.avatarPath
                         ? `${nextServerUrl}${editHostess?.user.avatarPath}`
-                        : "/images/user/user-04.jpg"
+                        : "/images/user/avatar_hostess.png"
                     }
                     alt={editName}
                     className="object-cover"
@@ -472,7 +472,7 @@ export default function HostessTable() {
                     src={
                       selectedHostess?.user.avatarPath
                         ? `${nextServerUrl}${selectedHostess?.user.avatarPath}`
-                        : "/images/user/user-04.jpg"
+                        : "/images/user/avatar_hostess.png"
                     }
                     alt={selectedHostess?.user.name ?? ""}
                     className="object-cover"

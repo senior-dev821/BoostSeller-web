@@ -115,7 +115,7 @@ export default function UserMetaCard() {
                   height={80}
                   src={ userData.avatarPath
                                       ? `${nextServerUrl}${userData.avatarPath}`
-                                      : "/images/user/owner.jpg"}
+                                      : `/images/user/avatar_admin.png`}
                   alt="user"
                   className="rounded-full border border-gray-300 dark:border-gray-700"
                 />

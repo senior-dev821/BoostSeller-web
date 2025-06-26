@@ -252,7 +252,7 @@ export default function AdminTable() {
                                   src={
                                     admin.user.avatarPath
                                       ? `${nextServerUrl}${admin.user.avatarPath}`
-                                      : "/images/user/user-01.jpg"
+                                      : "/images/user/avatar_performer.png"
                                   }
                                   alt={admin.user.name}
                                 />
@@ -391,7 +391,7 @@ export default function AdminTable() {
                     src={
                       editAdmin?.user.avatarPath
                         ? `${nextServerUrl}${editAdmin?.user.avatarPath}`
-                        : "/images/user/user-01.jpg"
+                        : "/images/user/avatar_performer.png"
                     }
                     alt={editName}
                     className="object-cover"
@@ -492,7 +492,7 @@ export default function AdminTable() {
                     src={
                       selectedAdmin?.user.avatarPath
                         ? `${nextServerUrl}${selectedAdmin?.user.avatarPath}`
-                        : "/images/user/user-01.jpg"
+                        : "/images/user/avatar_performer.png"
                     }
                     alt={selectedAdmin?.user.name ?? ""}
                     className="object-cover"

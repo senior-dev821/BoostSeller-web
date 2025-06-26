@@ -313,7 +313,7 @@ export default function PerformerTable() {
                                   src={
                                     performer.user.avatarPath
                                       ? `${nextServerUrl}${performer.user.avatarPath}`
-                                      : "/images/user/user-01.jpg"
+                                      : "/images/user/avatar_performer.png"
                                   }
                                   alt={performer.user.name}
                                 />
@@ -468,7 +468,7 @@ export default function PerformerTable() {
                     src={
                       editPerformer?.user.avatarPath
                         ? `${nextServerUrl}${editPerformer?.user.avatarPath}`
-                        : "/images/user/user-01.jpg"
+                        : "/images/user/avatar_performer.png"
                     }
                     alt={editName}
                     className="object-cover"
@@ -615,7 +615,7 @@ export default function PerformerTable() {
                     src={
                       selectedPerformer?.user.avatarPath
                         ? `${nextServerUrl}${selectedPerformer?.user.avatarPath}`
-                        : "/images/user/user-01.jpg"
+                        : "/images/user/avatar_performer.png"
                     }
                     alt={selectedPerformer?.user.name ?? ""}
                     className="object-cover"

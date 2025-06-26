@@ -105,7 +105,7 @@ export default function RecentPerformers() {
                   src={
                     selectedPerformer.user.avatarPath
                       ? `${nextServerUrl}${selectedPerformer.user.avatarPath}`
-                      : "/images/user/user-01.jpg"
+                      : "/images/user/avatar_performer.png"
                   }
                   alt={selectedPerformer.user.name}
                 />
