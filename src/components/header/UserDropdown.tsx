@@ -1,21 +1,72 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
+import { jwtDecode } from 'jwt-decode';
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
 
-function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-  e.stopPropagation();
-  setIsOpen((prev) => !prev);
-}
+	function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
+		e.stopPropagation();
+		setIsOpen((prev) => !prev);
+	}
 
   function closeDropdown() {
     setIsOpen(false);
   }
+	const [userData, setUserData] = useState({
+		name: '',
+		role: '',
+		email: '',
+		phone: '',
+		avatarPath: '',
+		endDate: '',
+	});
+
+	const [userId, setUserId] = useState<number | null>(null);
+
+	const nextServerUrl = process.env.NEXT_PUBLIC_SERVER_URL;
+
+	useEffect(() => {
+		const token = localStorage.getItem('token');
+		if (!token) return;
+
+		try {
+			const decoded = jwtDecode<{ userId?: number }>(token);
+			if (decoded.userId !== undefined) {
+				setUserId(decoded.userId);
+			}
+		} catch (err) {
+			console.error('Invalid token', err);
+		}
+	}, []);
+
+	// fetch user data once userId is set
+	useEffect(() => {
+		if (userId === null) return;
+
+		async function fetchUser() {
+			try {
+				const res = await fetch('/api/admin/profile', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({ userId }),
+				});
+				const data = await res.json();
+				setUserData(data.profile);
+			} catch (err) {
+				console.error("Failed to fetch user", err);
+			}
+		}
+
+		fetchUser();
+	}, [userId]);
+
   return (
     <div className="relative">
       <button
@@ -23,15 +74,18 @@ function toggleDropdown(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
         className="flex items-center text-gray-700 dark:text-gray-400 dropdown-toggle"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <Image
-            width={44}
-            height={44}
-            src="/images/user/avatar_admin.png"
-            alt="User"
-          />
+					<Image
+						width={44}
+						height={44}
+						src={ userData.avatarPath
+																? `${nextServerUrl}${userData.avatarPath}`
+																: "/images/user/avatar_admin.png"}
+						alt="user"
+						className="rounded-full border border-gray-300 dark:border-gray-700"
+					/>
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">Vladimir</span>
+        <span className="block mr-1 font-medium text-theme-sm">{userData.name}</span>
 
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
