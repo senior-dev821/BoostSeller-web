@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       user: updatedUser, // optional if you want to return it
     }), { status: 200 });
 
-  } catch (err: any) {
+  } catch (err) {
     console.error('[Edit Profile Error]', err);
     return new Response(JSON.stringify({
       error: true,
