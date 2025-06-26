@@ -1,18 +1,116 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
+import { jwtDecode } from 'jwt-decode';
 
 export default function UserInfoCard() {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const [userData, setUserData] = useState({
+        name: '',
+        role: '',
+        email: '',
+        phone: '',
+        avatarPath: '',
+        endDate: '',
+        registerDate: '',
+    });
+  
+    const [userId, setUserId] = useState<number | null>(null);
+    const [editName, setEditName] = useState('');
+    const [editEmail, setEditEmail] = useState('');
+    const [editPhone, setEditPhone] = useState('');
+
+   
+  
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+  
+      try {
+        const decoded = jwtDecode<{ userId?: number }>(token);
+        if (decoded.userId !== undefined) {
+          setUserId(decoded.userId);
+        }
+      } catch (err) {
+        console.error('Invalid token', err);
+      }
+    }, []);
+  
+    // fetch user data once userId is set
+    useEffect(() => {
+      if (userId === null) return;
+  
+      async function fetchUser() {
+        try {
+          const res = await fetch('/api/admin/profile', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ userId }),
+          });
+          const data = await res.json();
+          setUserData(data.profile);
+          setEditName(data.profile.name || '');
+          setEditEmail(data.profile.email || '');
+          setEditPhone(data.profile.phone || '');
+        } catch (err) {
+          console.error("Failed to fetch user", err);
+        }
+      }
+  
+      fetchUser();
+    }, [userId]);
+
+  const formatDate = (dateStr: string) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC", // 👈 Force consistent timezone display
+  });
   };
+  
+  const handleSave = async () => {
+    if (!userId) return;
+
+    try {
+      const res = await fetch('/api/admin/profile/edit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          name: editName,
+          email: editEmail,
+          phone: editPhone,
+        }),
+      });
+
+      const result = await res.json();
+      if (!result.error) {
+        setUserData((prev) => ({
+          ...prev,
+          name: editName,
+          email: editEmail,
+          phone: editPhone,
+        }));
+        closeModal();
+      } else {
+        console.error(result.message || 'Update failed');
+      }
+    } catch (err) {
+      console.error("Save error", err);
+    }
+  };
+
+
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
@@ -24,48 +122,37 @@ export default function UserInfoCard() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                First Name
+                Name
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {userData.name}
               </p>
             </div>
-
-            <div>
-              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Last Name
-              </p>
-              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
-              </p>
-            </div>
-
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
                 Email address
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {userData.email}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Phone
+                Phone Number
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {userData.phone}
               </p>
             </div>
-
-            {/* <div>
+            <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Bio
+                Register Date
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
+                {formatDate(userData.registerDate)}
               </p>
-            </div> */}
+            </div>
           </div>
         </div>
 
@@ -104,42 +191,7 @@ export default function UserInfoCard() {
           </div>
           <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              {/* <div>
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Social Links
-                </h5>
-
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
-                    <Label>Facebook</Label>
-                    <Input
-                      type="text"
-                      defaultValue="https://www.facebook.com/PimjoHQ"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>X.com</Label>
-                    <Input type="text" defaultValue="https://x.com/PimjoHQ" />
-                  </div>
-
-                  <div>
-                    <Label>Linkedin</Label>
-                    <Input
-                      type="text"
-                      defaultValue="https://www.linkedin.com/company/pimjo"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input
-                      type="text"
-                      defaultValue="https://instagram.com/PimjoHQ"
-                    />
-                  </div>
-                </div>
-              </div> */}
+              
               <div className="mt-7">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
                   Personal Information
@@ -147,29 +199,31 @@ export default function UserInfoCard() {
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
-                    <Input type="text" defaultValue="Musharof" />
+                    <Label>Name</Label>
+                     <Input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                    />
                   </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
-                    <Input type="text" defaultValue="Chowdhury" />
-                  </div>
-
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Email Address</Label>
-                    <Input type="text" defaultValue="randomuser@pimjo.com" />
+                    <Input
+                      type="email"
+                      value={editEmail}
+                      onChange={(e) => setEditEmail(e.target.value)}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
                     <Label>Phone</Label>
-                    <Input type="text" defaultValue="+09 363 398 46" />
+                    <Input
+                      type="tel"
+                      value={editPhone}
+                      onChange={(e) => setEditPhone(e.target.value)}
+                    />
                   </div>
 
-                  {/* <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input type="text" defaultValue="Team Manager" />
-                  </div> */}
                 </div>
               </div>
             </div>

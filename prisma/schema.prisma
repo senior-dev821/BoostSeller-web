@@ -24,7 +24,7 @@ model User {
   isApproved  Boolean  @default(false) @map("is_approved")
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
-  avatarPath  String?  @map("avatar_path") @db.VarChar(100)
+  avatarPath  String?  @map("avatar_path") @db.VarChar(1000)
   fcmToken    String?  @db.VarChar(255)
 
   // relation
