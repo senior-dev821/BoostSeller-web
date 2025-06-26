@@ -73,26 +73,27 @@ export default function WorkloadHeatmap() {
 	const rangeCount = 7
   const rangeSize = Math.max(1, Math.ceil((max - min + 1) / rangeCount))
 
-	// Generate 7 ranges with equal size
 	const brandColors = [
-    "#eee9ff", // 100
-    "#d8ccff", // 200
-    "#b8a8ff", // 300
-    "#9380ff", // 400
-    "#6b5eff", // 500
-    "#4a3dd8", // 600
-    "#36279e", // 700
-  ]
+		"#eef1ff", // 0 - lightest
+		"#7f98ff", // 300
+		"#5d79ff", // 400
+		"#465fff", // 500 - base
+		"#2d42d4", // 600 - darker
+		"#1e2e9e", // 700 - darkest
+		"#151f73", // 
+		"#0d144d",
+	]
+	
+	
 	const colorRanges = Array.from({ length: rangeCount }, (_, i) => {
-    const from = min + i * rangeSize
-    const to = from + rangeSize - 1
-    return {
-      from,
-      to,
-      color: brandColors[i],
-    }
-  })
-
+		const from = min + i * rangeSize 
+		const to = from + rangeSize - 1
+		return {
+			from,
+			to,
+			color: brandColors[i + 1],
+		}
+	})
   const series = heatmapData.map((row) => ({
     name: format(parseISO(row.date), "dd/MM"),
     data: row.hours.map((val, idx) => ({
