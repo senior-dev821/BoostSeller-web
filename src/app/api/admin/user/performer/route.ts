@@ -59,7 +59,7 @@ export async function GET() {
               : 1 / avgResponseTime;
         const acceptanceRatio = assignedCount === 0 ? 0 : acceptedCount / assignedCount;
         if (performer.assignedCount === 0) {
-          score = 0;
+          score = 1;
         } else {
            score = (conversion * 0.6) + (responseSpeed * 0.2) + (acceptanceRatio * 0.2);
         }

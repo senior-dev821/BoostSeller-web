@@ -53,8 +53,11 @@ export async function POST(req: NextRequest) {
 
     const { name, description } = await req.json();
 
-    const existing = await prisma.interest.findUnique({
-      where: { name },
+		const existing = await prisma.interest.findUnique({
+      where: { 
+        name: name,
+        adminId: currentUser.id,
+      },
     });
 
     if (existing) {

@@ -31,7 +31,8 @@ export async function POST(req: Request) {
       });
       
       if (role === 'hostess') {
-        const existingHostess = await prisma.hostess.findUnique({ where: { userId: user.id } });
+        const existingHostess = await prisma.hostess.findUnique({ where: { userId: user.id, adminId: adminId, 
+				} });
           if (existingHostess) {
             return new Response(JSON.stringify({ error: true, message: 'User already exists.', exist: true,}), {
           });
@@ -40,11 +41,12 @@ export async function POST(req: Request) {
           data: { 
             userId: user.id,
             adminId: parseInt(adminId),
-             
+            
           } 
         });
       } else if (role === 'performer') {
-        const existingPerformer = await prisma.performer.findUnique({ where: { userId: user.id } });
+        const existingPerformer = await prisma.performer.findUnique({ where: { userId: user.id, adminId: parseInt(adminId),
+				} });
           if (existingPerformer) {
             return new Response(JSON.stringify({ error: true, message: 'User already exists.', exist: true,}), {
           });

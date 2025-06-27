@@ -32,11 +32,12 @@ export async function GET(req: NextRequest) {
   const interestIds = interests.map(i => i.id);
 
   const leads = await prisma.lead.findMany({
-    where: {
-      createdAt: { gte: from, lte: to },
-    },
-    select: { createdAt: true },
-  });
+		where: {
+			createdAt: { gte: from, lte: to },
+			addedBy: { in: hostessIds },
+		},
+		select: { createdAt: true },
+	});	
 
   const days = eachDayOfInterval({ start: from, end: to });
   const heatmap = days.map((day) => {
