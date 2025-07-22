@@ -176,3 +176,215 @@ model Notification {
   createdAt DateTime @default(now()) @map("created_at")
   isRead    Boolean  @default(false) @map("is_read")
 }
+
+///////////////Payment////////////////////
+model LandingUser {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(100)
+  email       String    @unique @db.VarChar(100)
+  password    String    @db.VarChar(255)
+  role        String    @db.VarChar(50)
+  phoneNumber String    @map("phone_number") @db.VarChar(15)
+  planId      Int?      @map("plan_id")
+  paymentType Int?      @map("payment_type")
+  startAt     DateTime? @map("start_date")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @default(now()) @updatedAt @map("updated_at")
+}
+
+/////////////// Contents for landing page ////////////////
+
+// === Legal Pages ===
+model LegalPage {
+  id        Int            @id @default(autoincrement())
+  slug      String         @unique
+  title     String
+  welcome   String // HTML or paragraph block
+  sections  LegalSection[] @relation("PageSections")
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @default(now()) @updatedAt @map("updated_at")
+}
+
+model LegalSection {
+  id      Int       @id @default(autoincrement())
+  title   String
+  content String
+  list    String[]
+  order   Int
+  pageId  Int
+  page    LegalPage @relation("PageSections", fields: [pageId], references: [id])
+}
+
+// === Landing Page Sections ===
+
+model HeroButton {
+  id     Int         @id @default(autoincrement())
+  text   String
+  type   String
+  url    String
+  heroId Int
+  hero   HeroSection @relation(fields: [heroId], references: [id])
+}
+
+model HeroSection {
+  id         Int          @id @default(autoincrement())
+  title      String[] // multiple title parts
+  subtitle   String
+  ctaButtons HeroButton[]
+  createdAt  DateTime     @default(now()) @map("created_at")
+  updatedAt  DateTime     @default(now()) @updatedAt @map("updated_at")
+}
+
+model FeaturesSection {
+  id        Int       @id @default(autoincrement())
+  title     String
+  subtitle  String
+  features  Feature[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @default(now()) @updatedAt @map("updated_at")
+}
+
+model Feature {
+  id          Int             @id @default(autoincrement())
+  title       String
+  description String
+  icon        String
+  order       Int
+  sectionId   Int
+  section     FeaturesSection @relation(fields: [sectionId], references: [id])
+}
+
+model AboutSectionOne {
+  id         Int      @id @default(autoincrement())
+  title      String
+  subtitle   String
+  contents   String[]
+  listItems1 String[]
+  listItems2 String[]
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model AboutSectionTwo {
+  id        Int        @id @default(autoincrement())
+  title     String
+  subtitle  String
+  benefites Benefits[]
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @default(now()) @updatedAt @map("updated_at")
+}
+
+model Benefits {
+  id          Int             @id @default(autoincrement())
+  title       String
+  description String
+  sectionId   Int
+  section     AboutSectionTwo @relation(fields: [sectionId], references: [id])
+}
+
+model TestimonialsSection {
+  id           Int           @id @default(autoincrement())
+  title        String
+  subtitle     String
+  testimonials Testimonial[]
+  createdAt    DateTime      @default(now()) @map("created_at")
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at")
+}
+
+model Testimonial {
+  id        Int                 @id @default(autoincrement())
+  name      String
+  company   String
+  message   String
+  avatarUrl String
+  rating    Int
+  sectionId Int
+  section   TestimonialsSection @relation(fields: [sectionId], references: [id])
+}
+
+model PricingSection {
+  id        Int           @id @default(autoincrement())
+  title     String
+  subtitle  String
+  plans     PricingPlan[]
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @default(now()) @updatedAt @map("updated_at")
+}
+
+model PricingPlan {
+  id          Int            @id @default(autoincrement())
+  tag         String
+  description String
+  price       Float
+  duration    String
+  ctaText     String
+  ctaUrl      String
+  features    PlanFeature[]
+  sectionId   Int
+  order       Int
+  section     PricingSection @relation(fields: [sectionId], references: [id])
+}
+
+model PlanFeature {
+  id     Int         @id @default(autoincrement())
+  text   String
+  active Boolean
+  planId Int
+  plan   PricingPlan @relation(fields: [planId], references: [id])
+}
+
+model TeamSection {
+  id        Int          @id @default(autoincrement())
+  title     String
+  subtitle  String
+  members   TeamMember[]
+  createdAt DateTime     @default(now()) @map("created_at")
+  updatedAt DateTime     @default(now()) @updatedAt @map("updated_at")
+}
+
+model TeamMember {
+  id        Int         @id @default(autoincrement())
+  name      String
+  role      String
+  bio       String
+  avatarUrl String
+  sectionId Int
+  section   TeamSection @relation(fields: [sectionId], references: [id])
+}
+
+model ContactSection {
+  id        Int      @id @default(autoincrement())
+  title     String
+  subtitle  String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model NewsletterSection {
+  id        Int      @id @default(autoincrement())
+  title     String
+  subtitle  String
+  email     String
+  phone     String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at")
+}
+
+model WorkingStepsSection {
+  id        Int           @id @default(autoincrement())
+  title     String
+  subtitle  String
+  videoUrl  String
+  steps     WorkingStep[]
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @default(now()) @updatedAt @map("updated_at")
+}
+
+model WorkingStep {
+  id          Int                 @id @default(autoincrement())
+  title       String
+  description String
+  order       Int
+  sectionId   Int
+  section     WorkingStepsSection @relation(fields: [sectionId], references: [id])
+}
