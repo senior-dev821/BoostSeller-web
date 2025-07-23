@@ -36,7 +36,7 @@ export default function FeaturesTable() {
     fetchFeatures();
   }, []);
 
-  const handleChange = (field: keyof FeaturesSection, value: String) => {
+  const handleChange = <K extends keyof FeaturesSection>( field: K, value: FeaturesSection[K]) => {
     if (form) setForm({ ...form, [field]: value });
   };
 

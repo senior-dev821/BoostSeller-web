@@ -83,6 +83,12 @@ const settingItems: NavItem[] = [
       { name: "Lead Input Fields", path: "/leadinputform", super: false },
     ],
   },
+	{
+    icon: <PageIcon />,
+    name: "CMS",
+    path: "/cms",
+		super: true,
+  },
 ];
 
 const AppSidebar: React.FC<AppSidebarProps> = ({ userRole }) => {
