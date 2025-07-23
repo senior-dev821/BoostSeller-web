@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { LegalSection } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -50,7 +51,7 @@ export async function PUT(req: Request) {
     // Use map with index to set order properly
     if (Array.isArray(sections) && sections.length > 0) {
       await prisma.legalSection.createMany({
-        data: sections.map((section: any, index: number) => ({
+        data: sections.map((section: LegalSection, index: number) => ({
           title: section.title,
           content: section.content,
           list: section.list ?? [],

@@ -57,7 +57,7 @@ export default function TeamSectionTable() {
     fetchData();
   }, []);
 
-  const handleChange = (field: keyof TeamSection, value: any) => {
+  const handleChange =  <K extends keyof TeamSection>( field: K, value: TeamSection[K]) => {
     setForm({ ...form, [field]: value });
   };
 

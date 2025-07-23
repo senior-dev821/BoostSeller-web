@@ -248,7 +248,7 @@ export default function WorkingStepsTable() {
     }
   }, [form, data]);
 
-  const handleChange = (field: keyof WorkingStepsSection, value: any) => {
+  const handleChange = <K extends keyof WorkingStepsSection>( field: K, value: WorkingStepsSection[K]) => {
     if (!form) return;
     setForm({ ...form, [field]: value });
   };

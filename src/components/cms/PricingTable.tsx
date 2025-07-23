@@ -238,13 +238,13 @@ export default function PricingTable() {
   fetchData();
 }, []);
 
-  const handlePlanChange = (index: number, field: keyof PricingPlan, value: any) => {
+  const handlePlanChange = <K extends keyof PricingPlan>(index: number, field: K, value: PricingPlan[K]) => {
     const updatedPlans = [...form.plans];
     updatedPlans[index] = { ...updatedPlans[index], [field]: value };
     setForm({ ...form, plans: updatedPlans });
   };
 
-  const handleFeatureChange = (planIndex: number, featureIndex: number, field: keyof PlanFeature, value: any) => {
+  const handleFeatureChange = <K extends keyof PlanFeature>(planIndex: number, featureIndex: number, field: K, value: PlanFeature[K])  => {
     const updatedPlans = [...form.plans];
     const updatedFeatures = [...updatedPlans[planIndex].features];
     updatedFeatures[featureIndex] = { ...updatedFeatures[featureIndex], [field]: value };

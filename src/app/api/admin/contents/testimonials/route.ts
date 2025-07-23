@@ -124,10 +124,10 @@ export async function PUT(req: Request) {
     });
 
     return NextResponse.json(updatedSection);
-  } catch (error: any) {
+  } catch (error) {
     console.error('[PUT testimonials]', error);
 
-    if (error.code === 'P2003') {
+    if (error === 'P2003') {
       return NextResponse.json({ error: 'Foreign key constraint violation. Please check sectionId.' }, { status: 400 });
     }
 

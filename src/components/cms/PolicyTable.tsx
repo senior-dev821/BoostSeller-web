@@ -38,12 +38,12 @@ export default function PolicyTable() {
     fetchData();
   }, []);
 
-  const handleChange = (field: keyof LegalPageData, value: any) => {
+  const handleChange = <K extends keyof LegalPageData>(field: K, value: LegalPageData[K]) => {
     if (!form) return;
     setForm({ ...form, [field]: value });
   };
 
-  const handleSectionChange = (index: number, field: keyof LegalSection, value: any) => {
+  const handleSectionChange = <K extends keyof LegalSection>(index: number, field: K, value: LegalSection[K]) => {
     if (!form) return;
     const updatedSections = [...form.sections];
     updatedSections[index] = { ...updatedSections[index], [field]: value };

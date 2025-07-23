@@ -36,7 +36,7 @@ export default function HeroTable() {
     fetchHero();
   }, []);
 
-  const handleChange = (field: keyof HeroSection, value: any) => {
+  const handleChange = <K extends keyof HeroSection>(field: K, value: HeroSection[K]) => {
     if (form) setForm({ ...form, [field]: value });
   };
 

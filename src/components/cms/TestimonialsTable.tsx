@@ -245,11 +245,11 @@ export default function TestimonialsTable() {
 }, []);
 
 
-  const handleChange = (field: keyof TestimonialsSection, value: any) => {
+  const handleChange = <K extends keyof TestimonialsSection>( field: K, value: TestimonialsSection[K]) => {
     if (form) setForm({ ...form, [field]: value });
   };
 
-  const handleItemChange = (index: number, field: keyof Testimonial, value: any) => {
+  const handleItemChange = <K extends keyof Testimonial>( index: number, field: K, value: Testimonial[K]) => {
     if (!form) return;
     const newItems = [...form.testimonials];
     newItems[index] = { ...newItems[index], [field]: value };
