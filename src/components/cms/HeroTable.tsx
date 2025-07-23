@@ -69,7 +69,20 @@ export default function HeroTable() {
     setIsEditing(false);
   };
 
-  if (!form || !data) return <p className="text-gray-500">Loading...</p>;
+  // if (!form || !data) return <p className="text-gray-500">Loading...</p>;
+  if (!form || !data) {
+    // You can show empty strings or empty arrays so UI doesn't crash
+    const emptyForm: HeroSection = {
+      id: 0,
+      title: [],
+      subtitle: '',
+      ctaButtons: []
+    };
+    setForm(emptyForm);
+    setData(emptyForm);
+    // or just return null to avoid flickering
+    return null;
+  }
 
   return (
     <div className="space-y-8">

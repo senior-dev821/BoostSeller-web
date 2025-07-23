@@ -20,33 +20,67 @@ export async function PUT(req: Request) {
     const body = await req.json();
     const { sectionOne, sectionTwo } = body;
 
+    // Handle sectionOne
     if (sectionOne) {
-      await prisma.aboutSectionOne.update({
+      const existsOne = await prisma.aboutSectionOne.findUnique({
         where: { id: sectionOne.id },
-        data: {
-          title: sectionOne.title,
-          subtitle: sectionOne.subtitle,
-          contents: sectionOne.contents,
-          listItems1: sectionOne.listItems1,
-          listItems2: sectionOne.listItems2,
-        },
       });
+
+      if (existsOne) {
+        await prisma.aboutSectionOne.update({
+          where: { id: sectionOne.id },
+          data: {
+            title: sectionOne.title,
+            subtitle: sectionOne.subtitle,
+            contents: sectionOne.contents,
+            listItems1: sectionOne.listItems1,
+            listItems2: sectionOne.listItems2,
+          },
+        });
+      } else {
+        // Create if not exists
+        await prisma.aboutSectionOne.create({
+          data: {
+            id: sectionOne.id, // Make sure your DB allows specifying ID or generate new
+            title: sectionOne.title,
+            subtitle: sectionOne.subtitle,
+            contents: sectionOne.contents,
+            listItems1: sectionOne.listItems1,
+            listItems2: sectionOne.listItems2,
+          },
+        });
+      }
     }
 
+    // Handle sectionTwo
     if (sectionTwo) {
-      await prisma.aboutSectionTwo.update({
+      const existsTwo = await prisma.aboutSectionTwo.findUnique({
         where: { id: sectionTwo.id },
-        data: {
-          title: sectionTwo.title,
-          subtitle: sectionTwo.subtitle,
-        },
       });
 
+      if (existsTwo) {
+        await prisma.aboutSectionTwo.update({
+          where: { id: sectionTwo.id },
+          data: {
+            title: sectionTwo.title,
+            subtitle: sectionTwo.subtitle,
+          },
+        });
+      } else {
+        await prisma.aboutSectionTwo.create({
+          data: {
+            id: sectionTwo.id,
+            title: sectionTwo.title,
+            subtitle: sectionTwo.subtitle,
+          },
+        });
+      }
+
       if (sectionTwo.benefites) {
-        // First delete existing benefits
+        // Delete existing benefits first
         await prisma.benefits.deleteMany({ where: { sectionId: sectionTwo.id } });
 
-        // Then re-create
+        // Re-create benefits
         await prisma.benefits.createMany({
           data: sectionTwo.benefites.map((b: any) => ({
             title: b.title,

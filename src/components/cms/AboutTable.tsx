@@ -42,8 +42,27 @@ export default function AboutTable() {
     const fetchData = async () => {
       const res = await fetch('/api/admin/contents/about');
       const json = await res.json();
-      setData(json);
-      setForm(json);
+
+      // Provide default values if missing to avoid null errors
+      const safeData: AboutData = {
+        sectionOne: json.sectionOne ?? {
+          id: 0,
+          title: '',
+          subtitle: '',
+          contents: [],
+          listItems1: [],
+          listItems2: [],
+        },
+        sectionTwo: json.sectionTwo ?? {
+          id: 0,
+          title: '',
+          subtitle: '',
+          benefites: [],
+        },
+      };
+
+      setData(safeData);
+      setForm(safeData);
     };
     fetchData();
   }, []);
@@ -59,7 +78,7 @@ export default function AboutTable() {
   };
 
   const handleBenefitChange = (index: number, field: keyof Benefit, value: string) => {
-    if (!form) return;
+    if (!form || !form.sectionTwo) return;
     const updated = [...form.sectionTwo.benefites];
     updated[index] = { ...updated[index], [field]: value };
     setForm({ ...form, sectionTwo: { ...form.sectionTwo, benefites: updated } });
@@ -67,15 +86,32 @@ export default function AboutTable() {
 
   const addBenefit = () => {
     if (!form) return;
-    const newBenefit: Benefit = { title: '', description: '' };
+
+    // Initialize sectionTwo if null
+    if (!form.sectionTwo) {
+      setForm({
+        ...form,
+        sectionTwo: {
+          id: 0,
+          title: '',
+          subtitle: '',
+          benefites: [{ title: '', description: '' }],
+        },
+      });
+      return;
+    }
+
     setForm({
       ...form,
-      sectionTwo: { ...form.sectionTwo, benefites: [...form.sectionTwo?.benefites, newBenefit] },
+      sectionTwo: {
+        ...form.sectionTwo,
+        benefites: [...(form.sectionTwo.benefites ?? []), { title: '', description: '' }],
+      },
     });
   };
 
   const removeBenefit = (index: number) => {
-    if (!form) return;
+    if (!form || !form.sectionTwo) return;
     const updated = form.sectionTwo.benefites.filter((_, i) => i !== index);
     setForm({ ...form, sectionTwo: { ...form.sectionTwo, benefites: updated } });
   };
@@ -89,25 +125,51 @@ export default function AboutTable() {
         <h2 className="text-lg font-semibold mb-4">About Section One</h2>
         {isEditing ? (
           <>
-            <TextArea value={form.sectionOne?.title} onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, title: val } })} placeholder="Title" />
-            <TextArea value={form.sectionOne?.subtitle} onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, subtitle: val } })} placeholder="Subtitle" />
-            <TextArea value={form.sectionOne?.contents.join('\n')} onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, contents: val.split('\n') } })} placeholder="Contents (each line)" />
-            <TextArea value={form.sectionOne?.listItems1.join('\n')} onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, listItems1: val.split('\n') } })} placeholder="List 1 (each line)" />
-            <TextArea value={form.sectionOne?.listItems2.join('\n')} onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, listItems2: val.split('\n') } })} placeholder="List 2 (each line)" />
+            <TextArea
+              value={form.sectionOne.title}
+              onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, title: val } })}
+              placeholder="Title"
+            />
+            <TextArea
+              value={form.sectionOne.subtitle}
+              onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, subtitle: val } })}
+              placeholder="Subtitle"
+            />
+            <TextArea
+              value={form.sectionOne.contents.join('\n')}
+              onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, contents: val.split('\n') } })}
+              placeholder="Contents (each line)"
+            />
+            <TextArea
+              value={form.sectionOne.listItems1.join('\n')}
+              onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, listItems1: val.split('\n') } })}
+              placeholder="List 1 (each line)"
+            />
+            <TextArea
+              value={form.sectionOne.listItems2.join('\n')}
+              onChange={(val) => setForm({ ...form, sectionOne: { ...form.sectionOne, listItems2: val.split('\n') } })}
+              placeholder="List 2 (each line)"
+            />
           </>
         ) : (
           <>
-            <h3 className="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">{data.sectionOne?.title}</h3>
-            <p className="text-muted-foreground mb-3">{data?.sectionOne?.subtitle}</p>
+            <h3 className="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">{data.sectionOne.title}</h3>
+            <p className="text-muted-foreground mb-3">{data.sectionOne.subtitle}</p>
             <ul className="list-disc pl-6 text-sm text-gray-500 dark:text-gray-400 mb-2">
-              {data.sectionOne?.contents.map((item, idx) => <li key={idx}>{item}</li>)}
+              {data.sectionOne.contents.map((item, idx) => (
+                <li key={idx}>{item}</li>
+              ))}
             </ul>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <ul className="list-disc pl-6 text-sm text-gray-500 dark:text-gray-400">
-                {data.sectionOne?.listItems1.map((item, idx) => <li key={idx}>{item}</li>)}
+                {data.sectionOne.listItems1.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
               </ul>
               <ul className="list-disc pl-6 text-sm text-gray-500 dark:text-gray-400">
-                {data.sectionOne?.listItems2.map((item, idx) => <li key={idx}>{item}</li>)}
+                {data.sectionOne.listItems2.map((item, idx) => (
+                  <li key={idx}>{item}</li>
+                ))}
               </ul>
             </div>
           </>
@@ -119,25 +181,53 @@ export default function AboutTable() {
         <h2 className="text-lg font-semibold mb-4">About Section Two</h2>
         {isEditing ? (
           <>
-            <TextArea value={form.sectionTwo?.title} onChange={(val) => setForm({ ...form, sectionTwo: { ...form.sectionTwo, title: val } })} placeholder="Title" />
-            <TextArea value={form.sectionTwo?.subtitle} onChange={(val) => setForm({ ...form, sectionTwo: { ...form.sectionTwo, subtitle: val } })} placeholder="Subtitle" />
-            {form.sectionTwo?.benefites.map((b, idx) => (
-              <div key={idx} className="grid grid-cols-2 gap-4 mb-4">
-                <Input value={b.title} onChange={(e) => handleBenefitChange(idx, 'title', e.target.value)} placeholder="Title" />
-                <Input value={b.description} onChange={(e) => handleBenefitChange(idx, 'description', e.target.value)} placeholder="Description" />
-                <Button variant="outline" size="icon" onClick={() => removeBenefit(idx)} startIcon={<Trash2Icon />}>
+            <TextArea
+              value={form.sectionTwo.title}
+              onChange={(val) => setForm({ ...form, sectionTwo: { ...form.sectionTwo, title: val } })}
+              placeholder="Title"
+            />
+            <TextArea
+              value={form.sectionTwo.subtitle}
+              onChange={(val) => setForm({ ...form, sectionTwo: { ...form.sectionTwo, subtitle: val } })}
+              placeholder="Subtitle"
+            />
+            {form.sectionTwo.benefites.map((b, idx) => (
+              <div key={idx} className="grid grid-cols-2 gap-4 mb-4 items-center">
+                <Input
+                  value={b.title}
+                  onChange={(e) => handleBenefitChange(idx, 'title', e.target.value)}
+                  placeholder="Title"
+                />
+                <Input
+                  value={b.description}
+                  onChange={(e) => handleBenefitChange(idx, 'description', e.target.value)}
+                  placeholder="Description"
+                />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => removeBenefit(idx)}
+                  startIcon={<Trash2Icon />}
+                  className="self-start"
+                >
                   {' '}
                 </Button>
               </div>
             ))}
-            <Button size="sm" onClick={addBenefit} startIcon={<PlusIcon />}>Add Benefit</Button>
+            <Button size="sm" onClick={addBenefit} startIcon={<PlusIcon />}>
+              Add Benefit
+            </Button>
           </>
         ) : (
           <>
-            <h3 className="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">{data.sectionTwo?.title}</h3>
-            <p className="text-muted-foreground mb-3">{data.sectionTwo?.subtitle}</p>
+            <h3 className="text-md font-medium text-gray-700 dark:text-gray-300 mb-2">{data.sectionTwo.title}</h3>
+            <p className="text-muted-foreground mb-3">{data.sectionTwo.subtitle}</p>
             <ul className="list-disc pl-6 text-sm text-gray-500 dark:text-gray-400 space-y-1">
-              {data.sectionTwo?.benefites.map((b, i) => <li key={i}><strong>{b.title}</strong>: {b.description}</li>)}
+              {data.sectionTwo.benefites.map((b, i) => (
+                <li key={i}>
+                  <strong>{b.title}</strong>: {b.description}
+                </li>
+              ))}
             </ul>
           </>
         )}
@@ -146,9 +236,13 @@ export default function AboutTable() {
       {/* Action */}
       <div className="text-right">
         {isEditing ? (
-          <Button onClick={handleSave} startIcon={<SaveIcon />}>Save</Button>
+          <Button onClick={handleSave} startIcon={<SaveIcon />}>
+            Save
+          </Button>
         ) : (
-          <Button onClick={() => setIsEditing(true)} variant="outline" startIcon={<PencilIcon />}>Edit</Button>
+          <Button onClick={() => setIsEditing(true)} variant="outline" startIcon={<PencilIcon />}>
+            Edit
+          </Button>
         )}
       </div>
     </div>

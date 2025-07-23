@@ -19,23 +19,51 @@ export async function PUT(req: NextRequest) {
   try {
     const { contact, newsletter } = await req.json();
 
-    const updatedContact = await prisma.contactSection.update({
-      where: { id: contact.id },
-      data: {
-        title: contact.title,
-        subtitle: contact.subtitle,
-      },
-    });
+    if (!contact || !newsletter) {
+      return new NextResponse('Missing contact or newsletter data', { status: 400 });
+    }
 
-    const updatedNewsletter = await prisma.newsletterSection.update({
-      where: { id: newsletter.id },
-      data: {
-        title: newsletter.title,
-        subtitle: newsletter.subtitle,
-        email: newsletter.email,
-        phone: newsletter.phone,
-      },
-    });
+    let updatedContact;
+    if (contact.id) {
+      updatedContact = await prisma.contactSection.update({
+        where: { id: contact.id },
+        data: {
+          title: contact.title,
+          subtitle: contact.subtitle,
+        },
+      });
+    } else {
+      // If no id provided, create a new record
+      updatedContact = await prisma.contactSection.create({
+        data: {
+          title: contact.title,
+          subtitle: contact.subtitle,
+        },
+      });
+    }
+
+    let updatedNewsletter;
+    if (newsletter.id) {
+      updatedNewsletter = await prisma.newsletterSection.update({
+        where: { id: newsletter.id },
+        data: {
+          title: newsletter.title,
+          subtitle: newsletter.subtitle,
+          email: newsletter.email,
+          phone: newsletter.phone,
+        },
+      });
+    } else {
+      // If no id provided, create a new record
+      updatedNewsletter = await prisma.newsletterSection.create({
+        data: {
+          title: newsletter.title,
+          subtitle: newsletter.subtitle,
+          email: newsletter.email,
+          phone: newsletter.phone,
+        },
+      });
+    }
 
     return NextResponse.json({ contact: updatedContact, newsletter: updatedNewsletter });
   } catch (error) {

@@ -31,6 +31,7 @@ export default function PolicyTable() {
     const fetchData = async () => {
       const res = await fetch(`/api/admin/contents/policy`);
       const json = await res.json();
+      json.sections = json.sections || [];
       setData(json);
       setForm(json);
     };
@@ -83,7 +84,7 @@ export default function PolicyTable() {
       <div className="rounded-lg border p-6 bg-white dark:bg-gray-900 shadow-sm mb-4">
         <h2 className="text-lg font-semibold mb-2">Page Title</h2>
         {isEditing ? (
-          <Input value={form.title} onChange={(e) => handleChange('title', e.target.value)} />
+          <Input value={form.title ?? ''} onChange={(e) => handleChange('title', e.target.value)} />
         ) : (
           <p className="text-muted-foreground">{data.title}</p>
         )}
@@ -92,7 +93,7 @@ export default function PolicyTable() {
       <div className="rounded-lg border p-6 bg-white dark:bg-gray-900 shadow-sm mb-4">
         <h2 className="text-lg font-semibold mb-2">Welcome Message</h2>
         {isEditing ? (
-          <TextArea value={form.welcome} onChange={(val) => handleChange('welcome', val)} rows={4} />
+          <TextArea value={form.welcome ?? ''} onChange={(val) => handleChange('welcome', val)} rows={4} />
         ) : (
           <p className="text-muted-foreground whitespace-pre-line">{data.welcome}</p>
         )}
@@ -116,16 +117,16 @@ export default function PolicyTable() {
           </ul>
         ) : (
           <>
-            {form.sections.map((sec, index) => (
+            {(form.sections || []).map((sec, index) => (
               <div key={index} className="space-y-2 border rounded-md p-4 bg-gray-50 dark:bg-gray-800 mb-4">
                 <Input
                   placeholder="Section Title"
-                  value={sec.title}
+                  value={sec.title ?? ''}
                   onChange={(e) => handleSectionChange(index, 'title', e.target.value)}
                 />
                 <TextArea
                   placeholder="Content"
-                  value={sec.content}
+                  value={sec.content ?? ''}
                   onChange={(val) => handleSectionChange(index, 'content', val)}
                 />
                 <TextArea

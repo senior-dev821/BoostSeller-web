@@ -18,35 +18,42 @@ export async function PUT(req: Request) {
   try {
     const data = await req.json();
 
-    const section = await prisma.featuresSection.findFirst({ include: { features: true } });
+    // Find existing section or create a new one if missing
+    let section = await prisma.featuresSection.findFirst({ include: { features: true } });
     if (!section) {
-      return NextResponse.json({ error: 'Features section not found' }, { status: 404 });
-    }
-
-    // Update section title & subtitle
-    await prisma.featuresSection.update({
-      where: { id: section.id },
-      data: {
-        title: data.title,
-        subtitle: data.subtitle,
-      },
-    });
-
-    // Remove existing features
-    await prisma.feature.deleteMany({ where: { sectionId: section.id } });
-
-    // Re-insert updated features
-    for (const f of data.features) {
-      await prisma.feature.create({
+      section = await prisma.featuresSection.create({
         data: {
-          title: f.title,
-          description: f.description,
-          order: f.order,
-          section: { connect: { id: section.id } },
+          title: data.title,
+          subtitle: data.subtitle,
+        },
+        include: { features: true },  // Include features here on create
+      });
+    } else {
+      // Update section title and subtitle
+      await prisma.featuresSection.update({
+        where: { id: section.id },
+        data: {
+          title: data.title,
+          subtitle: data.subtitle,
         },
       });
+      // Delete old features linked to this section
+      await prisma.feature.deleteMany({ where: { sectionId: section.id } });
     }
 
+    // Prepare features to create, linking to sectionId, and cast order to number
+    const featuresToCreate = data.features.map((f: any) => ({
+      title: f.title,
+      description: f.description,
+      order: Number(f.order), // Fix: convert order to number here
+      icon: f.icon,
+      sectionId: section!.id,
+    }));
+
+    // Bulk create features
+    await prisma.feature.createMany({ data: featuresToCreate });
+
+    // Return the updated section with ordered features
     const updated = await prisma.featuresSection.findFirst({
       include: { features: { orderBy: { order: 'asc' } } },
     });
@@ -57,3 +64,4 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: 'Failed to update features' }, { status: 500 });
   }
 }
+

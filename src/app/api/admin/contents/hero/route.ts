@@ -30,17 +30,29 @@ export async function PUT(req: Request) {
       },
     });
 
-    // Update CTA Buttons
-    for (const btn of data.HeroButton) {
-      await prisma.heroButton.update({
-        where: { id: btn.id },
-        data: {
-          text: btn.text,
-          type: btn.type,
-          url: btn.url,
-        },
-      });
-    }
+    for (const btn of data.ctaButtons) {
+  if (btn.id) {
+    // Update existing button
+    await prisma.heroButton.update({
+      where: { id: btn.id },
+      data: {
+        text: btn.text,
+        type: btn.type,
+        url: btn.url,
+      },
+    });
+  } else {
+    // Create new button since no ID
+    await prisma.heroButton.create({
+      data: {
+        text: btn.text,
+        type: btn.type,
+        url: btn.url,
+        heroId: existingHero.id,
+      },
+    });
+  }
+}
 
     const result = await prisma.heroSection.findFirst({
       include: { ctaButtons: true },

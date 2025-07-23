@@ -83,7 +83,7 @@ export default function ContactTable() {
             <>
               <TextArea
                 placeholder="Contact Title"
-                value={form.contact?.title}
+                value={form.contact?.title ?? ''}
                 onChange={(val) => handleChange('contact', 'title', val)}
               />
               <TextArea
@@ -110,22 +110,22 @@ export default function ContactTable() {
             <>
               <TextArea
                 placeholder="Newsletter Title"
-                value={form.newsletter?.title}
+                value={form.newsletter?.title ?? ''}
                 onChange={(val) => handleChange('newsletter', 'title', val)}
               />
               <TextArea
                 placeholder="Newsletter Subtitle"
-                value={form.newsletter?.subtitle}
+                value={form.newsletter?.subtitle ?? ''}
                 onChange={(val) => handleChange('newsletter', 'subtitle', val)}
               />
               <Input
                 placeholder="Email"
-                value={form.newsletter?.email}
+                value={form.newsletter?.email ?? ''}
                 onChange={(e) => handleChange('newsletter', 'email', e.target.value)}
               />
               <Input
                 placeholder="Phone"
-                value={form.newsletter?.phone}
+                value={form.newsletter?.phone ?? ''}
                 onChange={(e) => handleChange('newsletter', 'phone', e.target.value)}
               />
             </>

@@ -7,11 +7,11 @@ import Button from '@/components/ui/button/Button';
 import { PlusIcon, PencilIcon, SaveIcon, Trash2Icon } from 'lucide-react';
 
 interface Feature {
-  id?: number;
+  id?: number;  // might be undefined for new items
   title: string;
   description: string;
-	icon: string;
-	order: number;
+  icon: string;
+  order: number;
 }
 
 interface FeaturesSection {
@@ -49,7 +49,7 @@ export default function FeaturesTable() {
 
   const addFeature = () => {
     if (!form) return;
-    const newFeature: Feature = { title: '', description: '', icon: '', order:0 };
+    const newFeature: Feature = { title: '', description: '', icon: '', order: 0 };
     setForm({ ...form, features: [...form.features, newFeature] });
   };
 
@@ -69,7 +69,17 @@ export default function FeaturesTable() {
     setIsEditing(false);
   };
 
-  if (!data || !form) return <p className="text-gray-500">Loading...</p>;
+  if (!form || !data) {
+    const emptyForm: FeaturesSection = {
+      id: 0,
+      title: '',
+      subtitle: '',
+      features: [],
+    };
+    setForm(emptyForm);
+    setData(emptyForm);
+    return null; // Prevent render flicker
+  }
 
   return (
     <div className="space-y-8">
@@ -94,63 +104,62 @@ export default function FeaturesTable() {
       <div className="rounded-lg border p-6 shadow-sm bg-white dark:bg-gray-900 mb-4">
         <h2 className="text-lg font-semibold mb-4">Features</h2>
         {!isEditing ? (
-					<ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
-						{data.features.map((feature) => (
-							<li key={feature.id}>
-								<span className="font-medium text-gray-800 dark:text-white">{feature.title}</span>:{" "}
-								<span className="text-gray-600 dark:text-gray-300">{feature.description}</span>
-							</li>
-						))}
-					</ul>
-				) : (
-					<>
-						{form.features.map((feature, index) => (
-							<div
-								key={index}
-								className="mb-4 rounded-md bg-gray-50 dark:bg-gray-800 p-4 border flex flex-col gap-4"
-							>
-								<div className="grid md:grid-cols-4 gap-4">
-									<Input
-										placeholder="Title"
-										value={feature.title}
-										onChange={(e) => handleFeatureChange(index, "title", e.target.value)}
-									/>
-									<TextArea
-										placeholder="Description"
-										value={feature.description}
-										onChange={(val) => handleFeatureChange(index, "description", val)}
-										rows={2}
-									/>
-									<Input
-										placeholder="Icon URL"
-										value={feature.icon}
-										onChange={(e) => handleFeatureChange(index, "icon", e.target.value)}
-									/>
-									<Input
-										placeholder="Order"
-										type="number"
-										value={feature.order}
-										onChange={(e) => handleFeatureChange(index, "order", e.target.value)}
-									/>
-								</div>
-								<div className="text-right">
-									<Button
-										size="icon"
-										variant="outline"
-										onClick={() => removeFeature(index)}
-										startIcon={<Trash2Icon />}
-									>
-										{" "}
-									</Button>
-								</div>
-							</div>
-						))}
-						<Button size="sm" onClick={addFeature} startIcon={<PlusIcon />}>
-							Add Feature
-						</Button>
-					</>
-				)}
-
+          <ul className="list-disc pl-6 text-sm text-muted-foreground space-y-1">
+            {data.features.map((feature, idx) => (
+              <li key={feature.id ?? `feature-${idx}`}>
+                <span className="font-medium text-gray-800 dark:text-white">{feature.title}</span>:{" "}
+                <span className="text-gray-600 dark:text-gray-300">{feature.description}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <>
+            {form.features.map((feature, index) => (
+              <div
+                key={feature.id ?? `edit-feature-${index}`}
+                className="mb-4 rounded-md bg-gray-50 dark:bg-gray-800 p-4 border flex flex-col gap-4"
+              >
+                <div className="grid md:grid-cols-4 gap-4">
+                  <Input
+                    placeholder="Title"
+                    value={feature.title}
+                    onChange={(e) => handleFeatureChange(index, "title", e.target.value)}
+                  />
+                  <TextArea
+                    placeholder="Description"
+                    value={feature.description}
+                    onChange={(val) => handleFeatureChange(index, "description", val)}
+                    rows={2}
+                  />
+                  <Input
+                    placeholder="Icon URL"
+                    value={feature.icon}
+                    onChange={(e) => handleFeatureChange(index, "icon", e.target.value)}
+                  />
+                  <Input
+                    placeholder="Order"
+                    type="number"
+                    value={feature.order}
+                    onChange={(e) => handleFeatureChange(index, "order", e.target.value)}
+                  />
+                </div>
+                <div className="text-right">
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={() => removeFeature(index)}
+                    startIcon={<Trash2Icon />}
+                  >
+                    {" "}
+                  </Button>
+                </div>
+              </div>
+            ))}
+            <Button size="sm" onClick={addFeature} startIcon={<PlusIcon />}>
+              Add Feature
+            </Button>
+          </>
+        )}
       </div>
 
       <div className="text-right">
