@@ -1,4 +1,5 @@
 import { prisma } from '@/lib/prisma';
+import { Benefits } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
@@ -82,7 +83,7 @@ export async function PUT(req: Request) {
 
         // Re-create benefits
         await prisma.benefits.createMany({
-          data: sectionTwo.benefites.map((b: any) => ({
+          data: sectionTwo.benefites.map((b: Benefits) => ({
             title: b.title,
             description: b.description,
             sectionId: sectionTwo.id,

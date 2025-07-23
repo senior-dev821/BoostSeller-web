@@ -1,6 +1,4 @@
 // app/(admin)/cms/page.tsx
-'use client';
-
 import ComponentCard from "@/components/common/ComponentCard";
 import CustomTabs from '@/components/ui/CustomTabs';
 import HeroTable from '@/components/cms/HeroTable';

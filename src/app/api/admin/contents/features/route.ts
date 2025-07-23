@@ -1,6 +1,7 @@
 // app/api/cms/features/route.ts
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { Feature } from '@prisma/client';
 
 export async function GET() {
   try {
@@ -42,7 +43,7 @@ export async function PUT(req: Request) {
     }
 
     // Prepare features to create, linking to sectionId, and cast order to number
-    const featuresToCreate = data.features.map((f: any) => ({
+    const featuresToCreate = data.features.map((f: Feature )=> ({
       title: f.title,
       description: f.description,
       order: Number(f.order), // Fix: convert order to number here

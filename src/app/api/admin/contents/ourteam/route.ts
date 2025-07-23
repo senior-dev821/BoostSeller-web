@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { TeamMember } from '@prisma/client';
 
 export async function GET() {
   try {
@@ -47,7 +48,7 @@ export async function PUT(req: NextRequest) {
     }
 
     // Clean members array
-    const cleanedMembers = (Array.isArray(members) ? members : []).map((m: any) => ({
+    const cleanedMembers = (Array.isArray(members) ? members : []).map((m: TeamMember) => ({
       name: (m.name ?? '').trim(),
       role: (m.role ?? '').trim(),
       bio: (m.bio ?? '').trim(),
@@ -101,10 +102,10 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json(updatedSection);
-  } catch (error: any) {
+  } catch (error) {
     console.error('PUT /api/admin/contents/team error:', error);
 
-    if (error.code === 'P2025') {
+    if (error === 'P2025') {
       return NextResponse.json(
         { error: 'Team section not found.' },
         { status: 404 }

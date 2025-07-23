@@ -22,7 +22,7 @@ export async function PUT(req: Request) {
     if (!existingHero) return NextResponse.json({ error: 'Hero section not found' }, { status: 404 });
 
     // Update main fields
-    const updatedHero = await prisma.heroSection.update({
+    await prisma.heroSection.update({
       where: { id: existingHero.id },
       data: {
         title: data.title,

@@ -50,9 +50,10 @@
 
 
 import { prisma } from '@/lib/prisma';
+import { LegalSection } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
+export async function GET() {
   try {
     const page = await prisma.legalPage.findUnique({
       where: { slug: 'policy' },
@@ -86,7 +87,7 @@ export async function PUT(req: Request) {
 
     // Create new sections
     await prisma.legalSection.createMany({
-      data: (sections || []).map((s: any, index: number) => ({
+      data: (sections || []).map((s: LegalSection, index: number) => ({
         title: s.title ?? '',
         content: s.content ?? '',
         list: s.list ?? [],
