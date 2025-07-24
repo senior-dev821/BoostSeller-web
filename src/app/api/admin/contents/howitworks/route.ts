@@ -15,77 +15,101 @@ interface BodyInput {
   steps: StepInput[];
 }
 
-export async function GET() {
-  const section = await prisma.workingStepsSection.findFirst({
-    include: {
-      steps: {
-        orderBy: { order: 'asc' },
-      },
-    },
-  });
+const allowedOrigin = 'https://your-frontend-domain.com'; // <-- Change this!
 
-  return NextResponse.json(section);
+function withCors(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+  response.headers.set('Access-Control-Allow-Methods', 'GET,PUT,OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return response;
 }
 
-export async function PUT(req: Request) {
-  const body: BodyInput = await req.json();
-  const { id, title, subtitle, videoUrl, steps } = body;
+export async function OPTIONS() {
+  // Handle CORS preflight requests
+  return withCors(new NextResponse(null, { status: 204 }));
+}
 
-  // Prepare step data for Prisma
-  const stepsData = steps.map((step) => ({
-    title: step.title,
-    description: step.description,
-    order: step.order,
-  }));
-
-  // Check if section exists
-  const existingSection = await prisma.workingStepsSection.findUnique({
-    where: { id },
-  });
-
-  if (!existingSection) {
-    // Create new section with steps if it does not exist
-    await prisma.workingStepsSection.create({
-      data: {
-        title,
-        subtitle,
-        videoUrl,
+export async function GET() {
+  try {
+    const section = await prisma.workingStepsSection.findFirst({
+      include: {
         steps: {
-          create: stepsData,
+          orderBy: { order: 'asc' },
         },
       },
     });
-  } else {
-    // Delete old steps first
-    await prisma.workingStep.deleteMany({
-      where: { sectionId: id },
-    });
 
-    // Update section data (without nested steps)
-    await prisma.workingStepsSection.update({
-      where: { id },
-      data: {
-        title,
-        subtitle,
-        videoUrl,
-      },
-    });
-
-    // Create new steps with the sectionId
-    await prisma.workingStep.createMany({
-      data: stepsData.map(step => ({ ...step, sectionId: id })),
-    });
+    return withCors(NextResponse.json(section));
+  } catch (error) {
+    console.error('[GET workingStepsSection]', error);
+    return withCors(new NextResponse('Internal Server Error', { status: 500 }));
   }
+}
 
-  // Return updated section with steps ordered
-  const updated = await prisma.workingStepsSection.findUnique({
-    where: { id },
-    include: {
-      steps: {
-        orderBy: { order: 'asc' },
+export async function PUT(req: Request) {
+  try {
+    const body: BodyInput = await req.json();
+    const { id, title, subtitle, videoUrl, steps } = body;
+
+    // Prepare step data for Prisma
+    const stepsData = steps.map((step) => ({
+      title: step.title,
+      description: step.description,
+      order: step.order,
+    }));
+
+    // Check if section exists
+    const existingSection = await prisma.workingStepsSection.findUnique({
+      where: { id },
+    });
+
+    if (!existingSection) {
+      // Create new section with steps if it does not exist
+      await prisma.workingStepsSection.create({
+        data: {
+          title,
+          subtitle,
+          videoUrl,
+          steps: {
+            create: stepsData,
+          },
+        },
+      });
+    } else {
+      // Delete old steps first
+      await prisma.workingStep.deleteMany({
+        where: { sectionId: id },
+      });
+
+      // Update section data (without nested steps)
+      await prisma.workingStepsSection.update({
+        where: { id },
+        data: {
+          title,
+          subtitle,
+          videoUrl,
+        },
+      });
+
+      // Create new steps with the sectionId
+      await prisma.workingStep.createMany({
+        data: stepsData.map(step => ({ ...step, sectionId: id })),
+      });
+    }
+
+    // Return updated section with steps ordered
+    const updated = await prisma.workingStepsSection.findUnique({
+      where: { id },
+      include: {
+        steps: {
+          orderBy: { order: 'asc' },
+        },
       },
-    },
-  });
+    });
 
-  return NextResponse.json(updated);
+    return withCors(NextResponse.json(updated));
+  } catch (error) {
+    console.error('[PUT workingStepsSection]', error);
+    return withCors(new NextResponse('Internal Server Error', { status: 500 }));
+  }
 }

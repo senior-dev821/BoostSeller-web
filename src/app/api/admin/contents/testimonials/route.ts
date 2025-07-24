@@ -1,6 +1,19 @@
-
+import { NextResponse, NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { NextResponse } from 'next/server';
+
+const allowedOrigin = 'https://your-frontend-domain.com'; // <-- Change this!
+
+function withCors(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+  response.headers.set('Access-Control-Allow-Methods', 'GET,PUT,OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return response;
+}
+
+export async function OPTIONS() {
+  // Handle CORS preflight requests
+  return withCors(new NextResponse(null, { status: 204 }));
+}
 
 export async function GET() {
   try {
@@ -24,17 +37,22 @@ export async function GET() {
         },
         include: { testimonials: true },
       });
-      return NextResponse.json(defaultSection, { status: 201 });
+      return withCors(NextResponse.json(defaultSection, { status: 201 }));
     }
 
-    return NextResponse.json(section);
+    return withCors(NextResponse.json(section));
   } catch (error) {
     console.error('[GET testimonials]', error);
-    return NextResponse.json({ error: 'Failed to fetch testimonials section' }, { status: 500 });
+    return withCors(
+      NextResponse.json(
+        { error: 'Failed to fetch testimonials section' },
+        { status: 500 }
+      )
+    );
   }
 }
 
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
   try {
     const body = await req.json();
 
@@ -58,17 +76,23 @@ export async function PUT(req: Request) {
     } = body;
 
     if (!id) {
-      return NextResponse.json({ error: 'Section ID is required' }, { status: 400 });
+      return withCors(
+        NextResponse.json({ error: 'Section ID is required' }, { status: 400 })
+      );
     }
 
     if (!Array.isArray(testimonials)) {
-      return NextResponse.json({ error: 'Testimonials must be an array' }, { status: 400 });
+      return withCors(
+        NextResponse.json({ error: 'Testimonials must be an array' }, { status: 400 })
+      );
     }
 
     // Check if section exists
     const sectionExists = await prisma.testimonialsSection.findUnique({ where: { id } });
     if (!sectionExists) {
-      return NextResponse.json({ error: 'Testimonials section not found' }, { status: 404 });
+      return withCors(
+        NextResponse.json({ error: 'Testimonials section not found' }, { status: 404 })
+      );
     }
 
     // Clean testimonials, trim strings and filter invalid entries (e.g. name missing)
@@ -83,7 +107,12 @@ export async function PUT(req: Request) {
       .filter(t => t.name.length > 0);
 
     if (cleanedTestimonials.length === 0) {
-      return NextResponse.json({ error: 'At least one valid testimonial is required' }, { status: 400 });
+      return withCors(
+        NextResponse.json(
+          { error: 'At least one valid testimonial is required' },
+          { status: 400 }
+        )
+      );
     }
 
     // Detect duplicate names (case-insensitive)
@@ -96,9 +125,11 @@ export async function PUT(req: Request) {
     });
 
     if (duplicates.length > 0) {
-      return NextResponse.json(
-        { error: `Duplicate testimonial names found: ${duplicates.map(d => d.name).join(', ')}` },
-        { status: 400 }
+      return withCors(
+        NextResponse.json(
+          { error: `Duplicate testimonial names found: ${duplicates.map(d => d.name).join(', ')}` },
+          { status: 400 }
+        )
       );
     }
 
@@ -123,14 +154,24 @@ export async function PUT(req: Request) {
       include: { testimonials: true },
     });
 
-    return NextResponse.json(updatedSection);
+    return withCors(NextResponse.json(updatedSection));
   } catch (error) {
     console.error('[PUT testimonials]', error);
 
     if (error === 'P2003') {
-      return NextResponse.json({ error: 'Foreign key constraint violation. Please check sectionId.' }, { status: 400 });
+      return withCors(
+        NextResponse.json(
+          { error: 'Foreign key constraint violation. Please check sectionId.' },
+          { status: 400 }
+        )
+      );
     }
 
-    return NextResponse.json({ error: 'Failed to update testimonials section' }, { status: 500 });
+    return withCors(
+      NextResponse.json(
+        { error: 'Failed to update testimonials section' },
+        { status: 500 }
+      )
+    );
   }
 }

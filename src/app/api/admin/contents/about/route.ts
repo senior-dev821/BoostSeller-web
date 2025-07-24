@@ -2,6 +2,20 @@ import { prisma } from '@/lib/prisma';
 import { Benefits } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
+const allowedOrigin = 'https://your-frontend-domain.com'; // <-- Change this!
+
+function withCors(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+  response.headers.set('Access-Control-Allow-Methods', 'GET,PUT,OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return response;
+}
+
+export async function OPTIONS() {
+  // Preflight CORS handler
+  return withCors(new NextResponse(null, { status: 204 }));
+}
+
 export async function GET() {
   try {
     const sectionOne = await prisma.aboutSectionOne.findFirst();
@@ -9,10 +23,10 @@ export async function GET() {
       include: { benefites: true },
     });
 
-    return NextResponse.json({ sectionOne, sectionTwo });
+    return withCors(NextResponse.json({ sectionOne, sectionTwo }));
   } catch (error) {
     console.error('[GET_ABOUT]', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return withCors(new NextResponse('Internal Server Error', { status: 500 }));
   }
 }
 
@@ -39,10 +53,9 @@ export async function PUT(req: Request) {
           },
         });
       } else {
-        // Create if not exists
         await prisma.aboutSectionOne.create({
           data: {
-            id: sectionOne.id, // Make sure your DB allows specifying ID or generate new
+            id: sectionOne.id,
             title: sectionOne.title,
             subtitle: sectionOne.subtitle,
             contents: sectionOne.contents,
@@ -92,9 +105,9 @@ export async function PUT(req: Request) {
       }
     }
 
-    return new NextResponse('Updated Successfully');
+    return withCors(new NextResponse('Updated Successfully'));
   } catch (error) {
     console.error('[PUT_ABOUT]', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return withCors(new NextResponse('Internal Server Error', { status: 500 }));
   }
 }

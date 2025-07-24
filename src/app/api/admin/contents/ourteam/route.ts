@@ -2,6 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { TeamMember } from '@prisma/client';
 
+const allowedOrigin = 'https://your-frontend-domain.com'; // <-- Change this!
+
+function withCors(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+  response.headers.set('Access-Control-Allow-Methods', 'GET,PUT,OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return response;
+}
+
+export async function OPTIONS() {
+  // Handle CORS preflight requests
+  return withCors(new NextResponse(null, { status: 204 }));
+}
+
 export async function GET() {
   try {
     // Fetch the first TeamSection with members
@@ -20,12 +34,14 @@ export async function GET() {
       });
     }
 
-    return NextResponse.json(section);
+    return withCors(NextResponse.json(section));
   } catch (error) {
     console.error('GET /api/admin/contents/team error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch team section.' },
-      { status: 500 }
+    return withCors(
+      NextResponse.json(
+        { error: 'Failed to fetch team section.' },
+        { status: 500 }
+      )
     );
   }
 }
@@ -65,9 +81,11 @@ export async function PUT(req: NextRequest) {
     });
 
     if (duplicates.length > 0) {
-      return NextResponse.json(
-        { error: `Duplicate member names: ${duplicates.map(d => d.name).join(', ')}` },
-        { status: 400 }
+      return withCors(
+        NextResponse.json(
+          { error: `Duplicate member names: ${duplicates.map(d => d.name).join(', ')}` },
+          { status: 400 }
+        )
       );
     }
 
@@ -101,20 +119,24 @@ export async function PUT(req: NextRequest) {
       include: { members: true },
     });
 
-    return NextResponse.json(updatedSection);
+    return withCors(NextResponse.json(updatedSection));
   } catch (error) {
     console.error('PUT /api/admin/contents/team error:', error);
 
     if (error === 'P2025') {
-      return NextResponse.json(
-        { error: 'Team section not found.' },
-        { status: 404 }
+      return withCors(
+        NextResponse.json(
+          { error: 'Team section not found.' },
+          { status: 404 }
+        )
       );
     }
 
-    return NextResponse.json(
-      { error: 'Failed to update team section.' },
-      { status: 500 }
+    return withCors(
+      NextResponse.json(
+        { error: 'Failed to update team section.' },
+        { status: 500 }
+      )
     );
   }
 }

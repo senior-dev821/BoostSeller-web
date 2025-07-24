@@ -3,15 +3,31 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Feature } from '@prisma/client';
 
+const allowedOrigin = 'https://your-frontend-domain.com'; // <-- Change this!
+
+function withCors(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+  response.headers.set('Access-Control-Allow-Methods', 'GET,PUT,OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return response;
+}
+
+export async function OPTIONS() {
+  // Handle CORS preflight requests
+  return withCors(new NextResponse(null, { status: 204 }));
+}
+
 export async function GET() {
   try {
     const section = await prisma.featuresSection.findFirst({
       include: { features: { orderBy: { order: 'asc' } } },
     });
-    return NextResponse.json(section);
+    return withCors(NextResponse.json(section));
   } catch (error) {
     console.error('[GET /api/cms/features]', error);
-    return NextResponse.json({ error: 'Failed to fetch features' }, { status: 500 });
+    return withCors(
+      NextResponse.json({ error: 'Failed to fetch features' }, { status: 500 })
+    );
   }
 }
 
@@ -27,7 +43,7 @@ export async function PUT(req: Request) {
           title: data.title,
           subtitle: data.subtitle,
         },
-        include: { features: true },  // Include features here on create
+        include: { features: true },
       });
     } else {
       // Update section title and subtitle
@@ -43,10 +59,10 @@ export async function PUT(req: Request) {
     }
 
     // Prepare features to create, linking to sectionId, and cast order to number
-    const featuresToCreate = data.features.map((f: Feature )=> ({
+    const featuresToCreate = data.features.map((f: Feature) => ({
       title: f.title,
       description: f.description,
-      order: Number(f.order), // Fix: convert order to number here
+      order: Number(f.order),
       icon: f.icon,
       sectionId: section!.id,
     }));
@@ -59,10 +75,11 @@ export async function PUT(req: Request) {
       include: { features: { orderBy: { order: 'asc' } } },
     });
 
-    return NextResponse.json(updated);
+    return withCors(NextResponse.json(updated));
   } catch (error) {
     console.error('[PUT /api/cms/features]', error);
-    return NextResponse.json({ error: 'Failed to update features' }, { status: 500 });
+    return withCors(
+      NextResponse.json({ error: 'Failed to update features' }, { status: 500 })
+    );
   }
 }
-

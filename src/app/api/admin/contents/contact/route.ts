@@ -3,15 +3,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+const allowedOrigin = 'https://your-frontend-domain.com'; // <-- Change this!
+
+function withCors(response: NextResponse) {
+  response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+  response.headers.set('Access-Control-Allow-Methods', 'GET,PUT,OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+  return response;
+}
+
+export async function OPTIONS() {
+  // Handle CORS preflight requests
+  return withCors(new NextResponse(null, { status: 204 }));
+}
+
 export async function GET() {
   try {
     const contact = await prisma.contactSection.findFirst();
     const newsletter = await prisma.newsletterSection.findFirst();
 
-    return NextResponse.json({ contact, newsletter });
+    return withCors(NextResponse.json({ contact, newsletter }));
   } catch (error) {
     console.error('GET /contact-newsletter error:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return withCors(new NextResponse('Internal Server Error', { status: 500 }));
   }
 }
 
@@ -20,7 +34,7 @@ export async function PUT(req: NextRequest) {
     const { contact, newsletter } = await req.json();
 
     if (!contact || !newsletter) {
-      return new NextResponse('Missing contact or newsletter data', { status: 400 });
+      return withCors(new NextResponse('Missing contact or newsletter data', { status: 400 }));
     }
 
     let updatedContact;
@@ -33,7 +47,6 @@ export async function PUT(req: NextRequest) {
         },
       });
     } else {
-      // If no id provided, create a new record
       updatedContact = await prisma.contactSection.create({
         data: {
           title: contact.title,
@@ -54,7 +67,6 @@ export async function PUT(req: NextRequest) {
         },
       });
     } else {
-      // If no id provided, create a new record
       updatedNewsletter = await prisma.newsletterSection.create({
         data: {
           title: newsletter.title,
@@ -65,9 +77,9 @@ export async function PUT(req: NextRequest) {
       });
     }
 
-    return NextResponse.json({ contact: updatedContact, newsletter: updatedNewsletter });
+    return withCors(NextResponse.json({ contact: updatedContact, newsletter: updatedNewsletter }));
   } catch (error) {
     console.error('PUT /contact-newsletter error:', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return withCors(new NextResponse('Internal Server Error', { status: 500 }));
   }
 }
