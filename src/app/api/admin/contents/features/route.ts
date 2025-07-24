@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { Feature } from '@prisma/client';
 
-const allowedOrigin = 'https://your-frontend-domain.com'; // <-- Change this!
+const allowedOrigin = 'https://boostseller.ai'; // <-- Change this!
 
 function withCors(response: NextResponse) {
   response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
