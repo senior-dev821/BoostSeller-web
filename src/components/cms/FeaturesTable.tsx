@@ -10,7 +10,6 @@ interface Feature {
   id?: number;  // might be undefined for new items
   title: string;
   description: string;
-  icon: string;
   order: number;
 }
 
@@ -49,7 +48,7 @@ export default function FeaturesTable() {
 
   const addFeature = () => {
     if (!form) return;
-    const newFeature: Feature = { title: '', description: '', icon: '', order: 0 };
+    const newFeature: Feature = { title: '', description: '', order: 0 };
     setForm({ ...form, features: [...form.features, newFeature] });
   };
 
@@ -130,11 +129,6 @@ export default function FeaturesTable() {
                     value={feature.description}
                     onChange={(val) => handleFeatureChange(index, "description", val)}
                     rows={2}
-                  />
-                  <Input
-                    placeholder="Icon URL"
-                    value={feature.icon}
-                    onChange={(e) => handleFeatureChange(index, "icon", e.target.value)}
                   />
                   <Input
                     placeholder="Order"

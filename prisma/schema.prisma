@@ -248,7 +248,6 @@ model Feature {
   id          Int             @id @default(autoincrement())
   title       String
   description String
-  icon        String
   order       Int
   sectionId   Int
   section     FeaturesSection @relation(fields: [sectionId], references: [id])

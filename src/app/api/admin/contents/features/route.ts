@@ -63,7 +63,6 @@ export async function PUT(req: Request) {
       title: f.title,
       description: f.description,
       order: Number(f.order),
-      icon: f.icon,
       sectionId: section!.id,
     }));
 
